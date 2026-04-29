@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: "Inter", sans-serif;
+}
+body {
+  box-sizing: border-box;
+}
+.css-ikdnna-MuiTabs-flexContainer {
+  display: flex;
+  justify-content: space-around !important;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.bg-dialog-header {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-image: url("./assets/images/bgDialogHeader.png");
+}
+.y-slider::-webkit-scrollbar {
+  width: 6px;
+}
+.y-slider::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.y-slider::-webkit-scrollbar-thumb:hover {
+  background-color: #ff004f;
+}
+.no-spinner {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.today-tile {
+  /* background: rgb(196, 196, 196) !important; */
+  background: none !important;
+  color: black !important;
+  font-weight: bold !important;
+}
+
+/* Make grid events compact so overflow triggers "+X more" */
+.rbc-month-view .rbc-event,
+.rbc-month-view .rbc-event-content {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Disable clicking on individual events in month view */
+.rbc-month-view .rbc-event {
+  cursor: default !important;
+  pointer-events: none; /* <- stops event clicks */
+}
+
+/* Keep "+X more" link clickable and visually clickable */
+.rbc-show-more {
+  cursor: pointer !important;
+}
+
+.rbc-overlay {
+  position: fixed !important; /* instead of absolute */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-height: 70vh; /* limit height */
+  width: 400px; /* optional, adjust as needed */
+  overflow-y: auto; /* scrollable */
+  z-index: 1000; /* bring above calendar */
+  background: white; /* ensure visibility */
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+.no-pdf {
+  display: table-cell;
+}
+
