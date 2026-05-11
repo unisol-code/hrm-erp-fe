@@ -227,7 +227,7 @@ const EmpLoanRequestList = () => {
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Header */}
         <div
-          className="p-6 border-b"
+          className="px-6 py-4 border-b"
           style={{ backgroundColor: theme.secondaryColor }}
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

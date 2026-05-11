@@ -210,7 +210,7 @@ const DrillDownTable = ({
                 <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-end">
                   <button
                     type="button"
-                    onClick={() => navigate('/loan')}
+                    onClick={() => navigate('/emp_loan_RequestList')}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border flex-shrink-0"
                   >
                     <Eye size={16} />
@@ -276,9 +276,9 @@ const DrillDownTable = ({
                             backgroundColor: `${theme.primaryColor}15`
                           }}
                           onClick={() => {
-                            const id = row._id || row.employeeId;
+                            const id = row.employeeId;
                             if (id) {
-                              navigate(`/loan/loanDetails/${id}?year=${selectedYear}&month=${selectedMonth}`);
+                              navigate(`/emp_loan_RequestList/per_Emp_Loan_Request/${id}?year=${selectedYear}&month=${selectedMonth}`);
                             }
                           }}
                         >

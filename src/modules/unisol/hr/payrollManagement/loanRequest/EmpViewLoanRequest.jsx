@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  HandCoins, Download, Calendar, User, FileText, DollarSign,
+  HandCoins, Download, Calendar, User, FileText, IndianRupee,
   Clock, Briefcase, Building, X, AlertCircle, ArrowLeft, CheckCircle, AlertTriangle
 } from "lucide-react";
 import Breadcrumb from "../../../../../components/BreadCrumb";
@@ -328,7 +328,7 @@ const EmpViewLoanRequest = () => {
             <StatCard
               title="Loan Amount"
               value={formatCurrency(empLoanReqDetailToAdmin.loanAmount)}
-              icon={DollarSign}
+              icon={IndianRupee}
               color={theme.primaryColor}
             />
             <StatCard
@@ -357,7 +357,7 @@ const EmpViewLoanRequest = () => {
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-blue-100 rounded-lg">
-                  <DollarSign size={20} className="text-blue-600" />
+                  <IndianRupee size={20} className="text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
@@ -470,7 +470,7 @@ const EmpViewLoanRequest = () => {
                 <InfoField
                   label="Monthly Salary"
                   value={formatCurrency(empLoanReqDetailToAdmin.salary)}
-                  icon={DollarSign}
+                  icon={IndianRupee}
                 />
                 <InfoField
                   label="Loan Type"
@@ -482,12 +482,12 @@ const EmpViewLoanRequest = () => {
 
             {/* Loan Details */}
             <div className="bg-white rounded-2xl shadow-md p-6">
-              <SectionHeader number="2" title="Loan Details" icon={DollarSign} />
+              <SectionHeader number="2" title="Loan Details" icon={IndianRupee} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InfoField
                   label="Required Loan Amount"
                   value={formatCurrency(empLoanReqDetailToAdmin.loanAmount)}
-                  icon={DollarSign}
+                  icon={IndianRupee}
                 />
                 <InfoField
                   label="Repayment Method"
@@ -502,7 +502,7 @@ const EmpViewLoanRequest = () => {
                 <InfoField
                   label="Monthly Deduction"
                   value={formatCurrency(empLoanReqDetailToAdmin.monthlyDeductionAmount)}
-                  icon={DollarSign}
+                  icon={IndianRupee}
                 />
               </div>
               <div className="mt-4">

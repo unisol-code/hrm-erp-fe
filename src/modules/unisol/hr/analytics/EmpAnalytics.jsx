@@ -332,6 +332,8 @@ const EmpAnalytics = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-[1400px] px-2 sm:px-1 py-2 space-y-4">
+        {/* KPI Cards */}
+        <KPICards empAnalyticsCards={empAnalyticsCards} theme={theme} />
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -375,9 +377,6 @@ const EmpAnalytics = () => {
             </div>
           </div>
         </div>
-
-        {/* KPI Cards */}
-        <KPICards empAnalyticsCards={empAnalyticsCards} theme={theme} />
 
         {/* Category Tabs */}
         <CategoryTabs

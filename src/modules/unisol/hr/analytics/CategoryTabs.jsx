@@ -4,7 +4,7 @@ import {
   Clock,
   Home,
   CreditCard,
-  DollarSign,
+  IndianRupee  ,
   Award,
   BookOpen,
 } from "lucide-react";
@@ -15,7 +15,7 @@ const CategoryTabs = ({ activeCategory, setActiveCategory, theme }) => {
     { id: "attendance", label: "Attendance", icon: Clock },
     { id: "leaves", label: "Leaves", icon: Home },
     { id: "expenses", label: "Expenses", icon: CreditCard },
-    { id: "loans", label: "Salary Loans", icon: DollarSign },
+    { id: "loans", label: "Salary Loans", icon: IndianRupee },
     { id: "appraisal", label: "Appraisal", icon: Award },
     // { id: "training", label: "Training", icon: BookOpen }
   ];

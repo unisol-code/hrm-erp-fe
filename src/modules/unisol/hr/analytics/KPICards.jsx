@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Users,
-  DollarSign,
+  IndianRupee,
   Clock,
   Home,
   CreditCard,
@@ -42,7 +42,7 @@ const KPICards = ({ empAnalyticsCards, theme }) => {
       id: 5,
       title: "Salary Loans",
       value: empAnalyticsCards?.totalLoans || 0,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: "red",
     },
     {
