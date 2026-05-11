@@ -139,9 +139,6 @@ const EmpAnalytics = () => {
     }
   }, [activeCategory, year, month, page, limit]);
 
-  console.log("analyticsAppraisalTrend", analyticsAppraisalTrend);
-  console.log("analyticsAppraisalDetails", analyticsAppraisalDetails);
-
   const selectedYear = year?.value;
   const selectedMonth = month?.value && month.value !== "All" ? month.value : null;
 
@@ -328,6 +325,10 @@ const EmpAnalytics = () => {
       </div>
     );
   }
+
+  console.log("attendanceData", attendanceData);
+  console.log("expensesData", expensesData);
+  console.log("loanData", loanData);
 
   return (
     <div className="min-h-screen">

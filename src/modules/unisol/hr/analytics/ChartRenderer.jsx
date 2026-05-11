@@ -111,18 +111,18 @@ const ChartRenderer = ({
                 className="relative"
                 style={{ minWidth: `${Math.max(attendanceData.length * 40, 500)}px` }}
               >
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none" style={{ height: `${chartHeight}px` }}>
+                <div className="absolute top-0 left-0 right-0 flex flex-col justify-between pointer-events-none border-b border-gray-200" style={{ height: `${chartHeight}px` }}>
                   {yAxisLabels.map((_, idx) => (
                     <div key={idx} className="border-t border-gray-200 w-full" />
                   ))}
                 </div>
 
-                <div className="flex items-end gap-3" style={{ height: `${chartHeight}px` }}>
+                <div className="flex items-start gap-3">
                   {attendanceData.map((item, index) => {
                     const barHeight = (item.value / maxValue) * chartHeight;
                     return (
                       <div key={index} className="flex flex-col items-center flex-1 min-w-[32px]">
-                        <div className="relative w-full flex justify-center">
+                        <div className="relative w-full flex justify-center items-end" style={{ height: `${chartHeight}px` }}>
                           <div
                             className="w-full rounded-t-lg transition-all duration-300 hover:opacity-80 cursor-pointer group"
                             style={{
@@ -132,9 +132,11 @@ const ChartRenderer = ({
                             }}
                             title={`${item.value}%`}
                           >
-                            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10">
-                              {item.value}%
-                            </div>
+                            {item.value > 0 && (
+                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10">
+                                {item.value}%
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="mt-2 text-[10px] text-gray-500 font-medium">
@@ -192,18 +194,18 @@ const ChartRenderer = ({
                 className="relative"
                 style={{ minWidth: `${Math.max(expensesData.length * 40, 500)}px` }}
               >
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none" style={{ height: `${chartHeight}px` }}>
+                <div className="absolute top-0 left-0 right-0 flex flex-col justify-between pointer-events-none border-b border-gray-200" style={{ height: `${chartHeight}px` }}>
                   {yAxisLabels.map((_, idx) => (
                     <div key={idx} className="border-t border-gray-200 w-full" />
                   ))}
                 </div>
 
-                <div className="flex items-end gap-3" style={{ height: `${chartHeight}px` }}>
+                <div className="flex items-start gap-3">
                   {expensesData.map((item, index) => {
                     const barHeight = maxValue > 0 ? (item.amount / maxValue) * chartHeight : 0;
                     return (
                       <div key={`${item.label}-${index}`} className="flex flex-col items-center flex-1 min-w-[32px]">
-                        <div className="relative w-full flex justify-center">
+                        <div className="relative w-full flex justify-center items-end" style={{ height: `${chartHeight}px` }}>
                           <div
                             className="w-full rounded-t-lg transition-all duration-300 hover:opacity-80 cursor-pointer group"
                             style={{
@@ -280,18 +282,18 @@ const ChartRenderer = ({
                 className="relative"
                 style={{ minWidth: `${Math.max(loanData.length * 40, 500)}px` }}
               >
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none" style={{ height: `${chartHeight}px` }}>
+                <div className="absolute top-0 left-0 right-0 flex flex-col justify-between pointer-events-none border-b border-gray-200" style={{ height: `${chartHeight}px` }}>
                   {yAxisLabels.map((_, idx) => (
                     <div key={idx} className="border-t border-gray-200 w-full" />
                   ))}
                 </div>
 
-                <div className="flex items-end gap-3" style={{ height: `${chartHeight}px` }}>
+                <div className="flex items-start gap-3">
                   {loanData.map((item, index) => {
                     const barHeight = maxValue > 0 ? (item.amount / maxValue) * chartHeight : 0;
                     return (
                       <div key={`${item.label}-${index}`} className="flex flex-col items-center flex-1 min-w-[32px]">
-                        <div className="relative w-full flex justify-center">
+                        <div className="relative w-full flex justify-center items-end" style={{ height: `${chartHeight}px` }}>
                           <div
                             className="w-full rounded-t-lg transition-all duration-300 hover:opacity-80 cursor-pointer group"
                             style={{
