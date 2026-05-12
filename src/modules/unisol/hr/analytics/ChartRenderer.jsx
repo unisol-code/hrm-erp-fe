@@ -80,6 +80,10 @@ const ChartRenderer = ({
     const yAxisLabels = getAttendanceYAxisLabels();
     const chartHeight = 200;
     const maxValue = Math.max(...attendanceData.map(d => d.value), 100);
+    const isHighDensity = attendanceData.length > 15;
+    const itemMultiplier = isHighDensity ? 30 : 40;
+    const gapClass = isHighDensity ? "gap-1.5" : "gap-3";
+    const itemMinWidth = isHighDensity ? "min-w-[20px]" : "min-w-[32px]";
 
     return (
       <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -109,7 +113,7 @@ const ChartRenderer = ({
             <div className="flex-1 overflow-x-auto">
               <div
                 className="relative"
-                style={{ minWidth: `${Math.max(attendanceData.length * 40, 500)}px` }}
+                style={{ minWidth: `${Math.max(attendanceData.length * itemMultiplier, 500)}px` }}
               >
                 <div className="absolute top-0 left-0 right-0 flex flex-col justify-between pointer-events-none border-b border-gray-200" style={{ height: `${chartHeight}px` }}>
                   {yAxisLabels.map((_, idx) => (
@@ -117,11 +121,11 @@ const ChartRenderer = ({
                   ))}
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className={`flex items-start ${gapClass}`}>
                   {attendanceData.map((item, index) => {
                     const barHeight = (item.value / maxValue) * chartHeight;
                     return (
-                      <div key={index} className="flex flex-col items-center flex-1 min-w-[32px]">
+                      <div key={index} className={`flex flex-col items-center flex-1 ${itemMinWidth}`}>
                         <div className="relative w-full flex justify-center items-end" style={{ height: `${chartHeight}px` }}>
                           <div
                             className="w-full rounded-t-lg transition-all duration-300 hover:opacity-80 cursor-pointer group"
@@ -159,6 +163,10 @@ const ChartRenderer = ({
     const yAxisLabels = getExpensesYAxisLabels();
     const chartHeight = 200;
     const maxValue = maxExpenseAmount;
+    const isHighDensity = expensesData.length > 15;
+    const itemMultiplier = isHighDensity ? 30 : 40;
+    const gapClass = isHighDensity ? "gap-1.5" : "gap-3";
+    const itemMinWidth = isHighDensity ? "min-w-[20px]" : "min-w-[32px]";
 
     return (
       <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -183,16 +191,16 @@ const ChartRenderer = ({
           <div className="flex">
             <div className="flex flex-col justify-between pr-3 text-right" style={{ height: `${chartHeight}px` }}>
               {yAxisLabels.map((label, idx) => (
-                <div key={idx} className="text-xs text-gray-500 whitespace-nowrap" style={{ lineHeight: '1.2' }}>
+                <div key={idx} className="text-xs text-gray-500" style={{ lineHeight: '1.2' }}>
                   {label.label}
                 </div>
               ))}
             </div>
-
+            {/* whitespace-nowrap */}
             <div className="flex-1 overflow-x-auto">
               <div
                 className="relative"
-                style={{ minWidth: `${Math.max(expensesData.length * 40, 500)}px` }}
+                style={{ minWidth: `${Math.max(expensesData.length * itemMultiplier, 500)}px` }}
               >
                 <div className="absolute top-0 left-0 right-0 flex flex-col justify-between pointer-events-none border-b border-gray-200" style={{ height: `${chartHeight}px` }}>
                   {yAxisLabels.map((_, idx) => (
@@ -200,11 +208,11 @@ const ChartRenderer = ({
                   ))}
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className={`flex items-start ${gapClass}`}>
                   {expensesData.map((item, index) => {
                     const barHeight = maxValue > 0 ? (item.amount / maxValue) * chartHeight : 0;
                     return (
-                      <div key={`${item.label}-${index}`} className="flex flex-col items-center flex-1 min-w-[32px]">
+                      <div key={`${item.label}-${index}`} className={`flex flex-col items-center flex-1 ${itemMinWidth}`}>
                         <div className="relative w-full flex justify-center items-end" style={{ height: `${chartHeight}px` }}>
                           <div
                             className="w-full rounded-t-lg transition-all duration-300 hover:opacity-80 cursor-pointer group"
@@ -247,6 +255,10 @@ const ChartRenderer = ({
     const yAxisLabels = getLoanYAxisLabels();
     const chartHeight = 200;
     const maxValue = maxLoanAmount;
+    const isHighDensity = loanData.length > 15;
+    const itemMultiplier = isHighDensity ? 30 : 40;
+    const gapClass = isHighDensity ? "gap-1.5" : "gap-3";
+    const itemMinWidth = isHighDensity ? "min-w-[20px]" : "min-w-[32px]";
 
     return (
       <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -280,7 +292,7 @@ const ChartRenderer = ({
             <div className="flex-1 overflow-x-auto">
               <div
                 className="relative"
-                style={{ minWidth: `${Math.max(loanData.length * 40, 500)}px` }}
+                style={{ minWidth: `${Math.max(loanData.length * itemMultiplier, 500)}px` }}
               >
                 <div className="absolute top-0 left-0 right-0 flex flex-col justify-between pointer-events-none border-b border-gray-200" style={{ height: `${chartHeight}px` }}>
                   {yAxisLabels.map((_, idx) => (
@@ -288,11 +300,11 @@ const ChartRenderer = ({
                   ))}
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className={`flex items-start ${gapClass}`}>
                   {loanData.map((item, index) => {
                     const barHeight = maxValue > 0 ? (item.amount / maxValue) * chartHeight : 0;
                     return (
-                      <div key={`${item.label}-${index}`} className="flex flex-col items-center flex-1 min-w-[32px]">
+                      <div key={`${item.label}-${index}`} className={`flex flex-col items-center flex-1 ${itemMinWidth}`}>
                         <div className="relative w-full flex justify-center items-end" style={{ height: `${chartHeight}px` }}>
                           <div
                             className="w-full rounded-t-lg transition-all duration-300 hover:opacity-80 cursor-pointer group"
@@ -335,7 +347,7 @@ const ChartRenderer = ({
     // Determine which cycle to show based on selected month
     let cycles = [];
     let currentCycleLabel = "";
-    
+
     if (selectedMonth) {
       const monthNum = Number(selectedMonth);
       if (monthNum >= 1 && monthNum <= 6) {
@@ -355,7 +367,7 @@ const ChartRenderer = ({
     };
 
     // Get data for display
-    const leadershipValue = cycles.length === 1 
+    const leadershipValue = cycles.length === 1
       ? Number(appraisalData.leadership?.[cycles[0]] || 0)
       : null;
     const businessValue = cycles.length === 1
@@ -431,7 +443,7 @@ const ChartRenderer = ({
           <span className="text-sm text-gray-500">/ 9</span>
         </div>
         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
-          <div 
+          <div
             className="rounded-full h-1.5 transition-all duration-500"
             style={{ width: `${(value / 9) * 100}%, backgroundColor: color` }}
           />
@@ -445,14 +457,14 @@ const ChartRenderer = ({
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     );
-    
+
     const BusinessIcon = () => (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     );
 
-    const hasData = cycles.some(cycle => 
+    const hasData = cycles.some(cycle =>
       (appraisalData.leadership?.[cycle] > 0) || (appraisalData.business?.[cycle] > 0)
     );
 
@@ -486,30 +498,30 @@ const ChartRenderer = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="flex justify-center gap-8">
-              <RadialGauge 
-                value={leadershipRating} 
-                label="Leadership" 
-                color={leadershipColor} 
+              <RadialGauge
+                value={leadershipRating}
+                label="Leadership"
+                color={leadershipColor}
                 size={140}
               />
-              <RadialGauge 
-                value={businessRating} 
-                label="Business" 
-                color={businessColor} 
+              <RadialGauge
+                value={businessRating}
+                label="Business"
+                color={businessColor}
                 size={140}
               />
             </div>
-            
+
             <div className="space-y-4">
-              <MetricCard 
-                title="Leadership Rating" 
-                value={leadershipRating} 
+              <MetricCard
+                title="Leadership Rating"
+                value={leadershipRating}
                 color={leadershipColor}
                 icon={LeadershipIcon}
               />
-              <MetricCard 
-                title="Business Rating" 
-                value={businessRating} 
+              <MetricCard
+                title="Business Rating"
+                value={businessRating}
                 color={businessColor}
                 icon={BusinessIcon}
               />
@@ -541,15 +553,15 @@ const ChartRenderer = ({
             <h4 className="text-sm font-semibold text-gray-700">January - June Cycle</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <MetricCard 
-              title="Leadership Rating" 
-              value={cycle1Leadership} 
+            <MetricCard
+              title="Leadership Rating"
+              value={cycle1Leadership}
               color={leadershipColor}
               icon={LeadershipIcon}
             />
-            <MetricCard 
-              title="Business Rating" 
-              value={cycle1Business} 
+            <MetricCard
+              title="Business Rating"
+              value={cycle1Business}
               color={businessColor}
               icon={BusinessIcon}
             />
@@ -563,15 +575,15 @@ const ChartRenderer = ({
             <h4 className="text-sm font-semibold text-gray-700">July - December Cycle</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <MetricCard 
-              title="Leadership Rating" 
-              value={cycle2Leadership} 
+            <MetricCard
+              title="Leadership Rating"
+              value={cycle2Leadership}
               color={leadershipColor}
               icon={LeadershipIcon}
             />
-            <MetricCard 
-              title="Business Rating" 
-              value={cycle2Business} 
+            <MetricCard
+              title="Business Rating"
+              value={cycle2Business}
               color={businessColor}
               icon={BusinessIcon}
             />
