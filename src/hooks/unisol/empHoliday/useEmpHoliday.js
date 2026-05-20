@@ -4,15 +4,15 @@ import conf from "../../../config/index";
 import useFetch from "../../useFetch";
 import {
   allHolidayDetailAtom,
-  createHolidayAtom,
 } from "./../../../state/empHoliday/useEmpHolidayState";
 import { toast } from "react-toastify";
+import { confirmAlert } from "../../../utils/alertToast";
+import Swal from "sweetalert2";
 
 const useEmpHoliday = () => {
   const [fetchData] = useFetch();
   const [loading, setLoading] = useState(false);
   const [allHoliday, setAllHoliday] = useRecoilState(allHolidayDetailAtom);
-  const [holiday, setHoliday] = useRecoilState(createHolidayAtom);
 
   const allHolidayDetails = async (year) => {
     setLoading(true);
@@ -63,7 +63,37 @@ const useEmpHoliday = () => {
     }
   };
 
-  return { allHolidayDetails, createNewHoliday, allHoliday,loading };
+  const deleteHoliday = async (id) => {
+    const confirm = await confirmAlert("Are you sure you want to delete this holiday?");
+    if (!confirm) return;
+    setLoading(true);
+    if (confirm.isConfirmed) {
+      try {
+        const res = await fetchData({
+          method: "DELETE",
+          url: `${conf.apiBaseUrl}holiday/deleteHoliday/${id}`,
+        })
+        if (res) {
+          Swal.fire({
+            title: "Deleted!",
+            text: res?.message,
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          setLoading(false);
+          return true;
+        }
+      } catch (error) {
+        console.error(
+          "Fetching error during getting all Holiday Details :",
+          error
+        );
+        setLoading(false);
+      }
+    }
+  }
+
+  return { allHolidayDetails, createNewHoliday, allHoliday, loading, deleteHoliday };
 };
 
 export default useEmpHoliday;

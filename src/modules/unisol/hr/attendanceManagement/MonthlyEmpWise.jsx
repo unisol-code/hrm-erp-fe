@@ -69,7 +69,6 @@ const MonthlyEmpWise = () => {
         ];
         const employeeId = monthlyAttendanceOfEmployee.data.employeeId || "N/A";
 
-
         const fileMonth =
             !isNaN(month) && month >= 1 && month <= 12
                 ? monthNames[month - 1]
@@ -77,7 +76,6 @@ const MonthlyEmpWise = () => {
 
         const fileYear = year;
 
-        // Title
         pdf.setFontSize(14);
         pdf.text("Monthly Attendance Report", marginX, 10);
 
@@ -99,7 +97,6 @@ const MonthlyEmpWise = () => {
             marginX,
             30
         );
-
 
         const tableColumn = [
             "Sr No",
@@ -156,9 +153,6 @@ const MonthlyEmpWise = () => {
         );
     };
 
-
-
-
     const handlePrint = () => {
         window.print();
     }
@@ -198,7 +192,7 @@ const MonthlyEmpWise = () => {
         <div className="w-full min-h-screen">
             <BreadCrumb
                 linkText={[
-                    { text: "Dashboard", href: "/dashboard" },
+                    { text: "Dashboard", href: "/hrDashboard" },
                     { text: "Attendance", href: "/employeeAttendence" },
                     { text: "Employee Details", href: `/employeeAttendence/employeeAttendenceDetails/${id}` },
                     { text: "Monthly Attendance" }

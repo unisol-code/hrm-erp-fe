@@ -3,9 +3,11 @@ import useEmpHoliday from "../../../../hooks/unisol/empHoliday/useEmpHoliday";
 import { useTheme } from "../../../../hooks/theme/useTheme";
 import LoaderSpinner from "../../../../components/LoaderSpinner";
 import { date } from "yup";
-import  Select  from 'react-select'
+import Select from 'react-select'
+import { MdDelete } from "react-icons/md";
+
 const HolidayList = () => {
-  const { allHolidayDetails, allHoliday, loading } = useEmpHoliday();
+  const { allHolidayDetails, allHoliday, loading, deleteHoliday } = useEmpHoliday();
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
   const yearOptions = years.map((year) => ({
@@ -15,12 +17,12 @@ const HolidayList = () => {
   const [year, setYear] = useState(currentYear)
 
   useEffect(() => {
-    if(year){
-    allHolidayDetails(year);
+    if (year) {
+      allHolidayDetails(year);
     }
   }, [year]);
 
-  let serialNo = 1; // Initialize Serial Number
+  let serialNo = 1;
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -49,11 +51,11 @@ const HolidayList = () => {
     )
   }
   return (
-    <div className="bg-white rounded-2xl flex flex-col w-full pb-6 h-[513px]">
+    <div className="bg-white rounded-2xl flex flex-col w-full pb-4 h-[513px]">
       {/* Header */}
       <div
         style={{ backgroundColor: theme.secondaryColor }}
-        className="w-full h-[75px] rounded-t-2xl flex justify-between gap-3 items-center px-6 text-[21px] text-black">
+        className="w-full h-[75px] rounded-t-2xl flex justify-between gap-1 items-center px-6 text-[21px] text-black">
 
         <h2>{`Company Holiday List for ${year}`}</h2>
         <Select
@@ -75,7 +77,7 @@ const HolidayList = () => {
       </div>
 
       {/* Holiday Table */}
-      <div className="px-10 pt-6 h-[438px] overflow-y-scroll scrollbar-hide">
+      <div className="px-10 pt-4 h-[438px] overflow-y-scroll scrollbar-hide">
         <table className="w-full border-collapse border border-gray-300">
           {/* Table Header */}
           <thead>
@@ -84,6 +86,7 @@ const HolidayList = () => {
               <th className="px-4 py-2">Date</th>
               <th className="px-4 py-2">Day</th>
               <th className="px-4 py-2">Occasion</th>
+              <th className="px-4 py-2 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -105,12 +108,28 @@ const HolidayList = () => {
                     <td className="border border-gray-300 px-4 py-2">
                       {holiday?.holidayTitle}
                     </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <div className="flex justify-center items-center">
+                        <button 
+                          onClick={async () => {
+                            const isDeleted = await deleteHoliday(holiday?._id);
+                            if (isDeleted) {
+                              allHolidayDetails(year);
+                            }
+                          }}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                          title="Delete Holiday"
+                        >
+                          <MdDelete size={22} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 )) || []
               )
             ) : (
               <tr>
-                <td colSpan="4" className="text-center py-4 text-lg font-medium">
+                <td colSpan="5" className="text-center py-4 text-lg font-medium">
                   No holidays available.
                 </td>
               </tr>
