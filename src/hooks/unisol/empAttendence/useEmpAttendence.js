@@ -11,6 +11,7 @@ import {
   getweeklyAttendanceAtom,
   allMonthsAllEmpAttendanceAtom,
   monthlyAttendanceOfEmployeeAtom,
+  employeeAttendanceMontlyDetailsAtom,
 } from "../../../state/empAttendence/useAttendenceState";
 import { m } from "framer-motion";
 
@@ -34,6 +35,8 @@ const useEmpAttendence = () => {
 
   const [allMonthsAllEmpAttendance, setAllMonthsAllEmpAttendance] = useRecoilState(allMonthsAllEmpAttendanceAtom);
   const [monthlyAttendanceOfEmployee, setMonthlyAttendanceOfEmployee] = useRecoilState(monthlyAttendanceOfEmployeeAtom);
+
+  const [employeeAttendanceMontlyDetails, setEmployeeAttendanceMontlyDetails] = useRecoilState(employeeAttendanceMontlyDetailsAtom);
 
   const markAttendence = async (data) => {
     setAttendence(null);
@@ -223,6 +226,32 @@ const useEmpAttendence = () => {
     }
   };
 
+  const fetchEmployeeAttendanceMontlyDetails = async (year, month, page, limit) => {
+    setEmployeeAttendanceMontlyDetails([]);
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (page) params.append('page', page);
+      if (limit) params.append('limit', limit);
+      if (year) params.append('year', year);
+      if (month) params.append('month', month);
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}employeeAttendance/monthly?${params}`,
+      });
+      if (res) {
+        setEmployeeAttendanceMontlyDetails(res);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error while fetching monthly attendance of employee:", error);
+      setLoading(false);
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     markAttendence,
@@ -241,9 +270,11 @@ const useEmpAttendence = () => {
     resetTwoMonthAttendance,
     resetWeeklyAttendance,
     fetchAllMonthsAllEmpAttendance,
-    allMonthsAllEmpAttendance, 
-    fetchMonthlyAttendanceOfEmployee, 
+    allMonthsAllEmpAttendance,
+    fetchMonthlyAttendanceOfEmployee,
     monthlyAttendanceOfEmployee,
+    fetchEmployeeAttendanceMontlyDetails,
+    employeeAttendanceMontlyDetails,
   };
 };
 export default useEmpAttendence;

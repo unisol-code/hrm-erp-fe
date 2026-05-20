@@ -1,5 +1,6 @@
 import useEmpAttendence from "../../../hooks/unisol/empAttendence/useEmpAttendence";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import employeeRunningLogo from "../../../assets/images/employeeRunning.png";
 import Breadcrumb from "../../../components/BreadCrumb";
 import Select from "react-select";
@@ -20,6 +21,7 @@ import { useTheme } from "../../../hooks/theme/useTheme";
 import LoaderSpinner from "../../../components/LoaderSpinner";
 
 const AttendanceHistory = () => {
+  const navigate = useNavigate();
   const [localLoading, setLocalLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [todayDate, setTodayDate] = useState(new Date());
@@ -89,6 +91,11 @@ const AttendanceHistory = () => {
   console.log("Two Month Attendece: ", twoMonthAttendence);
   console.log("Weekly Attendence: ", weeklyAttendence);
   console.log("Get Emp By Id: ", empById);
+
+  const onRowClick = (month) => {
+    const monthName = month?.split(" ")[0] || month;
+    navigate(`/EmployeeDashboard/emp/attendanceHistory/monthlyAttendance/${selectedYear}/${monthName}`);
+  };
 
   return (
     <div className="min-h-screen flex flex-col w-full pt-0 px-0 sm:pt-0 sm:px-0">
@@ -274,10 +281,13 @@ const AttendanceHistory = () => {
                         <div style={{ maxHeight: 160, overflowY: "auto" }}>
                           <table className="w-full text-center table-fixed">
                             <tbody>
-                              {twoMonthAttendence?.map((data) => (
+                              {twoMonthAttendence?.map((data) =>
+                              (
                                 <tr
                                   key={data?._id}
                                   className="h-[50px] hover:bg-gray-50 transition-colors"
+                                  onClick={() => onRowClick(data?.month)}
+                                  title="Click to view monthly attendance"
                                 >
                                   <td className="px-4 w-1/4 font-medium">
                                     {data?.month}

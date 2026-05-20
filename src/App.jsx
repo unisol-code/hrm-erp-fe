@@ -168,6 +168,7 @@ import EmpsLeadershipAppraisal from "./modules/unisol/hr/employeeAchievement/emp
 import AddEditLeadershipGoal from "./modules/unisol/hr/employeeAchievement/empAppraisal/setAppraisal/leadershipAppraisal/Addeditleadershipgoal";
 import ViewEmpLeadershipAppraisal from "./modules/unisol/hr/employeeAchievement/empAppraisal/setAppraisal/leadershipAppraisal/ViewEmpLeadershipAppraisal";
 import FinalRating from "./modules/unisol/employee/appraisal/FinalRating";
+import MonthlyEmpAttendance from "./modules/unisol/employee/dashboard/MonthlyEmpAttendance";
 
 
 function App() {
@@ -642,6 +643,16 @@ function App() {
               </EmployeeLayout>
             }
           />
+
+          <Route
+            path="/EmployeeDashboard/emp/attendanceHistory/monthlyAttendance/:year/:month"
+            element={
+              <EmployeeLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+                <MonthlyEmpAttendance></MonthlyEmpAttendance>
+              </EmployeeLayout>
+            }
+          />
+
           <Route
             path="/emp/educationalDetails"
             element={

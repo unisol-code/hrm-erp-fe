@@ -6,19 +6,12 @@ import useEmpAttendence from '../../../../hooks/unisol/empAttendence/useEmpAtten
 import { useNavigate, useParams } from 'react-router-dom';
 import LoaderSpinner from '../../../../components/LoaderSpinner';
 import Pagination from '../../../../components/Pagination';
-import html2canvas from 'html2canvas';
-
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import {
     FaCalendarAlt,
     FaUserCircle,
-    FaArrowLeft,
-    FaDownload,
-    FaPrint,
-    FaFilter,
-    FaSearch,
     FaCalendarCheck,
     FaCalendarTimes,
     FaUmbrellaBeach,
@@ -26,11 +19,12 @@ import {
     FaHome,
     FaUserAlt
 } from 'react-icons/fa';
-import { MdEmail, MdPhone, MdLocationOn, MdWork } from 'react-icons/md';
+import { cleanDigitSectionValue } from '@mui/x-date-pickers/internals/hooks/useField/useField.utils';
+// import { MdEmail, MdPhone, MdLocationOn, MdWork } from 'react-icons/md';
 
-const MonthlyEmpWise = () => {
-    const { loading, fetchMonthlyAttendanceOfEmployee, monthlyAttendanceOfEmployee } = useEmpAttendence();
-    const { id, year, month } = useParams();
+const MonthlyEmpAttendance = () => {
+    const { loading, fetchEmployeeAttendanceMontlyDetails, employeeAttendanceMontlyDetails } = useEmpAttendence();
+    const { year, month } = useParams();
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
@@ -39,7 +33,7 @@ const MonthlyEmpWise = () => {
     const pdfTableRef = useRef(null);
 
     useEffect(() => {
-        if (id && month && year) {
+        if (month && year) {
             let monthParam = month;
             const monthNumber = parseInt(month);
             const monthNames = [
@@ -51,12 +45,14 @@ const MonthlyEmpWise = () => {
                 monthParam = monthNames[monthNumber - 1];
             }
 
-            fetchMonthlyAttendanceOfEmployee(id, year, monthParam, page, limit);
+            fetchEmployeeAttendanceMontlyDetails(year, monthParam, page, limit);
         }
-    }, [id, year, month, page, limit]);
+    }, [year, month, page, limit]);
+
+    console.log("employeeAttendanceMontlyDetails", employeeAttendanceMontlyDetails)
 
     const downloadAsPDF = () => {
-        if (!monthlyAttendanceOfEmployee?.data) return;
+        if (!employeeAttendanceMontlyDetails?.data) return;
 
         const pdf = new jsPDF("p", "mm", "a4");
 
@@ -67,8 +63,7 @@ const MonthlyEmpWise = () => {
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-        const employeeId = monthlyAttendanceOfEmployee.data.employeeId || "N/A";
-
+        const employeeId = employeeAttendanceMontlyDetails.data.employeeId || "N/A";
 
         const fileMonth =
             !isNaN(month) && month >= 1 && month <= 12
@@ -83,7 +78,7 @@ const MonthlyEmpWise = () => {
 
         pdf.setFontSize(10);
         pdf.text(
-            `Employee: ${monthlyAttendanceOfEmployee.data.employeeName}`,
+            `Employee: ${employeeAttendanceMontlyDetails.data.employeeName}`,
             marginX,
             18
         );
@@ -112,7 +107,7 @@ const MonthlyEmpWise = () => {
 
         const tableRows = [];
 
-        monthlyAttendanceOfEmployee.data.dailyAttendance.forEach((day, index) => {
+        employeeAttendanceMontlyDetails.data.dailyAttendance.forEach((day, index) => {
             tableRows.push([
                 index + 1,
                 day.Date,
@@ -152,12 +147,9 @@ const MonthlyEmpWise = () => {
         });
 
         pdf.save(
-            `Employee_Attendance_${monthlyAttendanceOfEmployee.data.employeeName}_${fileMonth}_${fileYear}.pdf`
+            `Employee_Attendance_${employeeAttendanceMontlyDetails.data.employeeName}_${fileMonth}_${fileYear}.pdf`
         );
     };
-
-
-
 
     const handlePrint = () => {
         window.print();
@@ -198,9 +190,8 @@ const MonthlyEmpWise = () => {
         <div className="w-full min-h-screen">
             <BreadCrumb
                 linkText={[
-                    { text: "Dashboard", href: "/dashboard" },
-                    { text: "Attendance", href: "/employeeAttendence" },
-                    { text: "Employee Details", href: `/employeeAttendence/employeeAttendenceDetails/${id}` },
+                    { text: "Dashboard", href: "/EmployeeDashboard" },
+                    { text: "Attendance History", href: "/EmployeeDashboard/emp/attendanceHistory" },
                     { text: "Monthly Attendance" }
                 ]}
                 className="bg-white p-3 rounded-lg shadow-sm"
@@ -214,9 +205,9 @@ const MonthlyEmpWise = () => {
                         <div className="md:w-1/4 p-6 flex flex-col items-center justify-center"
                             style={{ backgroundColor: theme.primaryColor }}
                         >
-                            {monthlyAttendanceOfEmployee?.data?.photo ? (
+                            {employeeAttendanceMontlyDetails?.data?.photo ? (
                                 <img
-                                    src={monthlyAttendanceOfEmployee.data.photo}
+                                    src={employeeAttendanceMontlyDetails.data.photo}
                                     alt="Employee"
                                     className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover mb-4"
                                 />
@@ -224,9 +215,9 @@ const MonthlyEmpWise = () => {
                                 <FaUserCircle className="w-32 h-32 text-white opacity-90 mb-4" />
                             )}
                             <h3 className="text-white text-xl font-bold text-center">
-                                {monthlyAttendanceOfEmployee?.data?.employeeName || 'Employee Name'}
+                                {employeeAttendanceMontlyDetails?.data?.employeeName || 'Employee Name'}
                             </h3>
-                            <p className="text-blue-100 text-sm mt-1">Employee ID: {monthlyAttendanceOfEmployee?.data?.employeeId}</p>
+                            <p className="text-blue-100 text-sm mt-1">Employee ID: {employeeAttendanceMontlyDetails?.data?.employeeId}</p>
                         </div>
 
                         {/* Profile Details Section */}
@@ -234,7 +225,7 @@ const MonthlyEmpWise = () => {
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                                 <div>
                                     <h1 className="text-2xl font-bold text-gray-800">
-                                        {monthlyAttendanceOfEmployee?.data?.month} {monthlyAttendanceOfEmployee?.data?.year} Attendance
+                                        {employeeAttendanceMontlyDetails?.data?.month} {employeeAttendanceMontlyDetails?.data?.year} Attendance
                                     </h1>
                                     <p className="text-gray-600 mt-1 flex items-center gap-2">
                                         <FaCalendarAlt className="text-blue-500" />
@@ -244,7 +235,7 @@ const MonthlyEmpWise = () => {
                                 <div className="mt-4 md:mt-0 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
                                     <span className="text-sm text-blue-600 font-medium">Report Period: </span>
                                     <span className="text-blue-800 font-semibold">
-                                        {monthlyAttendanceOfEmployee?.data?.month} 1 - {monthlyAttendanceOfEmployee?.data?.month} {monthlyAttendanceOfEmployee?.data?.totalDaysInMonth}, {monthlyAttendanceOfEmployee?.data?.year}
+                                        {employeeAttendanceMontlyDetails?.data?.month} 1 - {employeeAttendanceMontlyDetails?.data?.month} {employeeAttendanceMontlyDetails?.data?.totalDaysInMonth}, {employeeAttendanceMontlyDetails?.data?.year}
                                     </span>
                                 </div>
                                 <Button
@@ -262,7 +253,7 @@ const MonthlyEmpWise = () => {
                                         <div>
                                             <p className="text-sm text-green-600 font-medium">Present</p>
                                             <p className="text-2xl font-bold text-green-700 mt-1">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.present || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.present || 0}
                                             </p>
                                         </div>
                                         <div className="p-2 bg-green-100 rounded-lg">
@@ -273,7 +264,7 @@ const MonthlyEmpWise = () => {
                                         <div
                                             className="h-full bg-green-500 rounded-full"
                                             style={{
-                                                width: `${((monthlyAttendanceOfEmployee?.data?.summary?.present || 0) / (monthlyAttendanceOfEmployee?.data?.workingDays || 1)) * 100}%`
+                                                width: `${((employeeAttendanceMontlyDetails?.data?.summary?.present || 0) / (employeeAttendanceMontlyDetails?.data?.workingDays || 1)) * 100}%`
                                             }}
                                         ></div>
                                     </div>
@@ -284,7 +275,7 @@ const MonthlyEmpWise = () => {
                                         <div>
                                             <p className="text-sm text-red-600 font-medium">Absent</p>
                                             <p className="text-2xl font-bold text-red-700 mt-1">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.absent || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.absent || 0}
                                             </p>
                                         </div>
                                         <div className="p-2 bg-red-100 rounded-lg">
@@ -298,7 +289,7 @@ const MonthlyEmpWise = () => {
                                         <div>
                                             <p className="text-sm text-blue-600 font-medium">Leaves</p>
                                             <p className="text-2xl font-bold text-blue-700 mt-1">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.leaves || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.leaves || 0}
                                             </p>
                                         </div>
                                         <div className="p-2 bg-blue-100 rounded-lg">
@@ -312,7 +303,7 @@ const MonthlyEmpWise = () => {
                                         <div>
                                             <p className="text-sm text-purple-600 font-medium">Holidays</p>
                                             <p className="text-2xl font-bold text-purple-700 mt-1">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.holidays || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.holidays || 0}
                                             </p>
                                         </div>
                                         <div className="p-2 bg-purple-100 rounded-lg">
@@ -326,7 +317,7 @@ const MonthlyEmpWise = () => {
                                         <div>
                                             <p className="text-sm text-orange-600 font-medium">Sundays</p>
                                             <p className="text-2xl font-bold text-orange-700 mt-1">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.sundays || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.sundays || 0}
                                             </p>
                                         </div>
                                         <div className="p-2 bg-orange-100 rounded-lg">
@@ -343,22 +334,22 @@ const MonthlyEmpWise = () => {
                                         <div className="text-center">
                                             <p className="text-sm text-gray-600">Working Days</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.workingDays || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.workingDays || 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>
                                         <div className="text-center">
                                             <p className="text-sm text-gray-600">Total Days</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {monthlyAttendanceOfEmployee?.data?.totalDaysInMonth || 0}
+                                                {employeeAttendanceMontlyDetails?.data?.totalDaysInMonth || 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>
                                         <div className="text-center">
                                             <p className="text-sm text-gray-600">Attendance %</p>
                                             <p className="text-lg font-bold text-green-600">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.present && monthlyAttendanceOfEmployee?.data?.summary?.workingDays
-                                                    ? `${Math.round((monthlyAttendanceOfEmployee.data.summary.present / monthlyAttendanceOfEmployee.data.summary.workingDays) * 100)}%`
+                                                {employeeAttendanceMontlyDetails?.data?.summary?.present && employeeAttendanceMontlyDetails?.data?.summary?.workingDays
+                                                    ? `${Math.round((employeeAttendanceMontlyDetails.data.summary.present / employeeAttendanceMontlyDetails.data.summary.workingDays) * 100)}%`
                                                     : '0%'
                                                 }
                                             </p>
@@ -429,8 +420,8 @@ const MonthlyEmpWise = () => {
                                             </div>
                                         </td>
                                     </tr>
-                                ) : monthlyAttendanceOfEmployee?.data?.dailyAttendance?.length > 0 ? (
-                                    monthlyAttendanceOfEmployee.data.dailyAttendance.map((det, index) => (
+                                ) : employeeAttendanceMontlyDetails?.data?.dailyAttendance?.length > 0 ? (
+                                    employeeAttendanceMontlyDetails.data.dailyAttendance.map((det, index) => (
                                         <tr
                                             key={index}
                                             className="hover:bg-gray-50 transition-colors duration-150"
@@ -518,13 +509,13 @@ const MonthlyEmpWise = () => {
                         </table>
                     </div>
                     {/* Pagination */}
-                    {!loading && monthlyAttendanceOfEmployee?.data?.dailyAttendance?.length > 0 && (
+                    {!loading && employeeAttendanceMontlyDetails?.data?.dailyAttendance?.length > 0 && (
                         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
                             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                                 <Pagination
-                                    currentPage={monthlyAttendanceOfEmployee.data.pagination.currentPage}
-                                    totalPages={monthlyAttendanceOfEmployee.data.pagination.totalPages}
-                                    totalItems={monthlyAttendanceOfEmployee.data.pagination.totalCount}
+                                    currentPage={employeeAttendanceMontlyDetails.data.pagination.currentPage}
+                                    totalPages={employeeAttendanceMontlyDetails.data.pagination.totalPages}
+                                    totalItems={employeeAttendanceMontlyDetails.data.pagination.totalCount}
                                     itemsPerPage={limit}
                                     onPageChange={onPageChange}
                                     onItemsPerPageChange={onItemsPerPageChange}
@@ -565,4 +556,4 @@ const MonthlyEmpWise = () => {
     )
 }
 
-export default MonthlyEmpWise
+export default MonthlyEmpAttendance

@@ -1,52 +1,20 @@
 import { atom } from "recoil";
-import { recoilPersist } from "recoil-persist";
+import { createPersistedAtom } from "../recoilConfig";
 
-const { persistAtom } = recoilPersist();
+export const markAttendenceAtom = atom(createPersistedAtom("markAttendence", null));
 
-export const markAttendenceAtom = atom({
-  key: "markAttendence",
-  default: null,
-  effects_UNSTABLE: [persistAtom],
-});
+export const getAttendanceSummaryAtom = atom(createPersistedAtom("attendanceSummary", null));
 
-export const getAttendanceSummaryAtom = atom({
-  key: "attendanceSummary",
-  default: null,
-  effects_UNSTABLE: [persistAtom],
-});
+export const getTwoMonthAttendanceAtom = atom(createPersistedAtom("twoMonthAttendance", []));
 
-export const getTwoMonthAttendanceAtom = atom({
-  key: "twoMonthAttendance",
-  default: [],
-  effects_UNSTABLE: [persistAtom],
-});
+export const allMonthsAllEmpAttendanceAtom = atom(createPersistedAtom("allMonthsAllEmpAttendanceKey", []));
 
-export const allMonthsAllEmpAttendanceAtom = atom({
-  key: "allMonthsAllEmpAttendanceKey",
-  default: [],
-  effects_UNSTABLE: [persistAtom],
-});
+export const monthlyAttendanceOfEmployeeAtom = atom(createPersistedAtom("monthlyAttendanceOfEmployeeKey", []));
 
-export const monthlyAttendanceOfEmployeeAtom = atom({
-  key: "monthlyAttendanceOfEmployeeKey",
-  default: [],
-  effects_UNSTABLE: [persistAtom],
-});
+export const getweeklyAttendanceAtom = atom(createPersistedAtom("weeklyAttendance", []));
 
-export const getweeklyAttendanceAtom = atom({
-  key: "weeklyAttendance",
-  default: [],
-  effects_UNSTABLE: [persistAtom],
-});
+export const empByIdAtom = atom(createPersistedAtom("empById", null));
 
-export const empByIdAtom = atom({
-  key: "empById",
-  default: null,
-  effects_UNSTABLE: [persistAtom],
-});
+export const empByIdForDashboardAtom = atom(createPersistedAtom("empByIdForDashboardAttendence", null));
 
-export const empByIdForDashboardAtom = atom({
-  key: "empByIdForDashboardAttendence",
-  default: null,
-  effects_UNSTABLE: [persistAtom],
-});
+export const employeeAttendanceMontlyDetailsAtom = atom(createPersistedAtom("employeeAttendanceMontlyDetailsKey", null));
