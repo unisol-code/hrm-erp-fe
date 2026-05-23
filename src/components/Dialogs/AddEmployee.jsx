@@ -33,24 +33,15 @@ const validationSchema = Yup.object().shape({
     ),
     otherwise: (schema) => schema.notRequired(),
   }),
-  city: Yup.string()
-    .notOneOf(["Select", ""], "Please select City")
-    .required("City is required"),
-  zipCode: Yup.number()
-    .typeError("Zip code must be a number")
-    .integer("Zip code must be an integer")
-    .min(10000, "Zip code must be at least 5 digits")
-    .max(99999, "Zip code cannot be more than 5 digits")
-    .required("Zip code is required"),
+  city: Yup.string().required("City is required"),
+  zipCode: Yup.string()
+    .required("Zip code is required")
+    .matches(/^\d{6}$/, "Pincode must be exactly 6 digits"),
   qualification: Yup.array()
     .min(1, "At least one qualification must be selected")
     .required("This field is required"),
-  country: Yup.string()
-    .notOneOf(["Select", ""], "Please select Country")
-    .required("Country is required"),
-  state: Yup.string()
-    .notOneOf(["Select", ""], "Please select State")
-    .required("State is required"),
+  country: Yup.string().required("Country is required"),
+  state: Yup.string().required("State is required"),
   phoneNumber: Yup.string()
     .matches(/^[0-9]+$/, "Phone number must be numeric")
     .min(10, "Phone number must be at least 10 digits")
@@ -102,36 +93,14 @@ const AddEmployee = ({ onClose }) => {
     departmentDrop,
     fetchEmployeeTypes,
     employeeTypeDrop,
+    fetchCityStateCountry,
   } = useEmployee();
   const { fetchCompaniesData, companyData } = useDashboard();
-  const {
-    fetchStateLocation,
-    stateLocation,
-    fetchCityLocation,
-    cityLocation,
-    fetchCountryLocation,
-    countryLocation,
-  } = useEmpLocation();
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-
-  useEffect(() => {
-    if (selectedCountry) {
-      fetchStateLocation(selectedCountry);
-    }
-  }, [selectedCountry]);
-
-  useEffect(() => {
-    if (selectedCountry && selectedState) {
-      fetchCityLocation(selectedCountry, selectedState);
-    }
-  }, [selectedCountry, selectedState]);
 
   useEffect(() => {
     fetchDepartments();
     fetchEmployeeTypes();
     fetchCompaniesData();
-    fetchCountryLocation();
   }, []);
 
   const formik = useFormik({
@@ -192,18 +161,44 @@ const AddEmployee = ({ onClose }) => {
 console.log("formik values:",formik.values);
 console.log("formik  errors:",formik.errors);
 
-  // Handle country change
-  const handleCountryChange = (event) => {
-    const countryCode = event.target.value;
-    formik.setFieldValue("country", countryCode);
-    setSelectedCountry(countryCode);
-    setSelectedState("");
-  };
+  const handleZipcodeChange = async (e) => {
+    const zipcodeData = e.target.value.trim();
 
-  const handleStateChange = (event) => {
-    const stateCode = event.target.value;
-    formik.setFieldValue("state", stateCode);
-    setSelectedState(stateCode);
+    formik.setFieldValue("zipCode", zipcodeData);
+    formik.setFieldTouched("zipCode", true);
+
+    if (!zipcodeData) {
+      formik.setFieldValue("city", "");
+      formik.setFieldValue("state", "");
+      formik.setFieldValue("country", "");
+      return;
+    }
+
+    if (zipcodeData.length !== 6 || !/^\d{6}$/.test(zipcodeData)) {
+      formik.setFieldValue("city", "");
+      formik.setFieldValue("state", "");
+      formik.setFieldValue("country", "");
+      return;
+    }
+
+    try {
+      const zipcodeDetails = await fetchCityStateCountry(zipcodeData);
+      if (zipcodeDetails?.city && zipcodeDetails?.state && zipcodeDetails?.country) {
+        formik.setFieldValue("city", zipcodeDetails.city, false);
+        formik.setFieldValue("state", zipcodeDetails.state, false);
+        formik.setFieldValue("country", zipcodeDetails.country, false);
+      } else {
+        formik.setFieldError("zipCode", "No location found for this pincode.");
+        formik.setFieldValue("city", "");
+        formik.setFieldValue("state", "");
+        formik.setFieldValue("country", "");
+      }
+    } catch (error) {
+      formik.setFieldError("zipCode", "Error fetching location.");
+      formik.setFieldValue("city", "");
+      formik.setFieldValue("state", "");
+      formik.setFieldValue("country", "");
+    }
   };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 h-screen w-screen">
@@ -364,21 +359,14 @@ console.log("formik  errors:",formik.errors);
                   <div className="flex items-center justify-between">
                     <label className="font-semibold text-black">Country:</label>
                     <div className="flex-col">
-                      <select
-                        as="select"
+                      <input
+                        type="text"
                         name="country"
-                        className="rounded-lg px-3 py-2 w-[306px] border-2 border-gray-300"
+                        className="rounded-lg px-3 py-2 w-[306px] border-2 border-gray-300 bg-gray-100"
                         value={formik.values.country}
-                        onChange={handleCountryChange}
-                        onBlur={formik.handleBlur}
-                      >
-                        <option value="" label="Select Country" />
-                        {countryLocation?.map((country, index) => (
-                          <option key={index} value={country.isoCode}>
-                            {country?.name}
-                          </option>
-                        ))}
-                      </select>
+                        readOnly
+                        placeholder="Country"
+                      />
                       {formik.touched.country && formik.errors.country ? (
                         <div className="text-red-500">
                           {formik.errors.country}
@@ -389,22 +377,14 @@ console.log("formik  errors:",formik.errors);
                   <div className="col-span-2 flex items-center justify-between">
                     <label className="font-semibold">State:</label>
                     <div className="flex-col">
-                      <select
-                        as="select"
+                      <input
+                        type="text"
                         name="state"
-                        className="rounded-lg px-3 py-2 w-[306px] border-2 border-gray-300"
+                        className="rounded-lg px-3 py-2 w-[306px] border-2 border-gray-300 bg-gray-100"
                         value={formik.values.state}
-                        onChange={handleStateChange}
-                        onBlur={formik.handleBlur}
-                        disabled={!selectedCountry}
-                      >
-                        <option value="" label="Select State" />
-                        {stateLocation?.map((state, index) => (
-                          <option key={index} value={state.isoCode}>
-                            {state?.name}
-                          </option>
-                        ))}
-                      </select>
+                        readOnly
+                        placeholder="State"
+                      />
                       {formik.touched.state && formik.errors.state ? (
                         <div className="text-red-500">
                           {formik.errors.state}
@@ -415,23 +395,14 @@ console.log("formik  errors:",formik.errors);
                   <div className="flex items-center justify-between">
                     <label className="font-semibold text-black">City:</label>
                     <div className="flex-col">
-                      <select
-                        className="w-[306px] h-[47px] text-base rounded-lg border border-gray-300 px-3 py-2"
+                      <input
+                        type="text"
+                        className="w-[306px] h-[47px] text-base rounded-lg border border-gray-300 px-3 py-2 bg-gray-100"
                         name="city"
                         value={formik.values.city}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        disabled={!selectedState}
-                      >
-                        <option value="" disabled selected>
-                          Select City
-                        </option>
-                        {cityLocation?.map((city, index) => (
-                          <option key={index} value={city?.name}>
-                            {city?.name}
-                          </option>
-                        ))}
-                      </select>
+                        readOnly
+                        placeholder="City"
+                      />
                       {formik.touched.city && formik.errors.city ? (
                         <div className="text-red-500">{formik.errors.city}</div>
                       ) : null}
@@ -723,8 +694,9 @@ console.log("formik  errors:",formik.errors);
                         className=" w-[306px] h-[47px] text-base rounded-lg border border-gray-300 px-3 py-2"
                         name="zipCode"
                         value={formik.values.zipCode}
-                        onChange={formik.handleChange}
+                        onChange={handleZipcodeChange}
                         onBlur={formik.handleBlur}
+                        maxLength={6}
                       />
                       {formik.touched.zipCode && formik.errors.zipCode ? (
                         <div className="text-red-500">

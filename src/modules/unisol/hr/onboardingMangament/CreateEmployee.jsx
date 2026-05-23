@@ -73,12 +73,7 @@ const validationSchema = Yup.object().shape({
   }),
   currentPincode: Yup.string()
     .required("Current pincode is required")
-    .matches(/^\d{6}$/, "Pincode must be exactly 6 digits")
-    .test("location-exists", "No location found for this pincode.", function (value) {
-      const { currentCity, currentState, currentCountry } = this.parent;
-      if (!value) return false;
-      return Boolean(currentCity &&  currentState &&  currentCountry);
-    }),
+    .matches(/^\d{6}$/, "Pincode must be exactly 6 digits"),
   currentCountry: Yup.string().required("country is required"),
   currentState: Yup.string().required("State is required"),
   currentCity: Yup.string().required("City is required"),
@@ -111,12 +106,7 @@ const validationSchema = Yup.object().shape({
     ),
   permanentPincode: Yup.string()
     .required("Permanent pincode is required")
-    .matches(/^\d{6}$/, "Pincode must be exactly 6 digits")
-    .test("location-exists", "No location found for this pincode.", function (value) {
-      const { permanentCity, permanentState, permanentCountry } = this.parent;
-      if (!value) return false;
-      return Boolean(permanentCity && permanentState && permanentCountry);
-    }),
+    .matches(/^\d{6}$/, "Pincode must be exactly 6 digits"),
 
   permanentAddress1: Yup.string()
     .required("Permanent Address Line 1 is required")
@@ -509,18 +499,17 @@ const CreateEmployee = () => {
     formik.setFieldTouched("currentPincode", true);
     formik.setFieldError("currentPincode", "");
 
-    if (!zipcodeData) return;
-
-    if (zipcodeData.length !== 6) {
-      formik.setFieldError("currentPincode", "Pincode must be 6 digits");
+    if (!zipcodeData) {
       formik.setFieldValue("currentCity", "", false);
       formik.setFieldValue("currentState", "", false);
       formik.setFieldValue("currentCountry", "", false);
       return;
     }
 
-    if (!/^\d{6}$/.test(zipcodeData)) {
-      formik.setFieldError("currentPincode", "Only numbers are allowed");
+    if (zipcodeData.length !== 6 || !/^\d{6}$/.test(zipcodeData)) {
+      formik.setFieldValue("currentCity", "", false);
+      formik.setFieldValue("currentState", "", false);
+      formik.setFieldValue("currentCountry", "", false);
       return;
     }
 
@@ -553,19 +542,17 @@ const CreateEmployee = () => {
     formik.setFieldTouched("permanentPincode", true);
     formik.setFieldError("permanentPincode", "");
 
-    formik.setFieldValue("permanentCity", "", false);
-    formik.setFieldValue("permanentState", "", false);
-    formik.setFieldValue("permanentCountry", "", false);
-
-    if (!pincode) return;
-
-    if (pincode.length !== 6) {
-      formik.setFieldError("permanentPincode", "Pincode must be 6 digits");
+    if (!pincode) {
+      formik.setFieldValue("permanentCity", "", false);
+      formik.setFieldValue("permanentState", "", false);
+      formik.setFieldValue("permanentCountry", "", false);
       return;
     }
 
-    if (!/^\d{6}$/.test(pincode)) {
-      formik.setFieldError("permanentPincode", "Only numbers are allowed");
+    if (pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
+      formik.setFieldValue("permanentCity", "", false);
+      formik.setFieldValue("permanentState", "", false);
+      formik.setFieldValue("permanentCountry", "", false);
       return;
     }
 
