@@ -470,7 +470,7 @@ const EmployeeDashboard = () => {
                       >
                         <div className="relative">
                           <img
-                            src={event?.image || defaultEventAvatar}
+                            src={event?.photo || defaultEventAvatar}
                             alt={event?.name}
                             className="h-12 w-12 rounded-full object-cover border-2 border-orange-200"
                           />
@@ -522,7 +522,7 @@ const EmployeeDashboard = () => {
                       >
                         <div className="relative">
                           <img
-                            src={event?.image || defaultEventAvatar}
+                            src={event?.photo || defaultEventAvatar}
                             alt={event?.name}
                             className="h-12 w-12 rounded-full object-cover border-2 border-orange-200"
                           />
