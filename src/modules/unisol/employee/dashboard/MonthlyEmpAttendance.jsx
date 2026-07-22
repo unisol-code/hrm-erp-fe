@@ -515,7 +515,7 @@ const MonthlyEmpAttendance = () => {
                                 <Pagination
                                     currentPage={employeeAttendanceMontlyDetails.data.pagination.currentPage}
                                     totalPages={employeeAttendanceMontlyDetails.data.pagination.totalPages}
-                                    totalItems={employeeAttendanceMontlyDetails.data.pagination.totalCount}
+                                    totalItems={employeeAttendanceMontlyDetails.data.pagination.totalItems}
                                     itemsPerPage={limit}
                                     onPageChange={onPageChange}
                                     onItemsPerPageChange={onItemsPerPageChange}
