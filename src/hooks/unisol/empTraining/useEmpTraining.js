@@ -18,11 +18,12 @@ const useEmpTraining = () => {
         url: `${conf.apiBaseUrl}training/getTraining`,
       });
       if (res) {
-        setTrainingList(res?.data?.media);
-        setLoading(false);
+        setTrainingList(res?.data);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,7 +37,6 @@ const useEmpTraining = () => {
       });
       if (res) {
         toast.success(res?.message);
-        setLoading(false);
       }
       return res;
     } catch (error) {

@@ -58,15 +58,13 @@ const Training = () => {
   });
 
   useEffect(() => {
-    if (trainingList?.length) {
-      setCards(
-        trainingList.map((item) => ({
-          id: item._id,
-          title: item.title,
-          file: item.imageOrVideo, // URL from API
-        }))
-      );
-    }
+    setCards(
+      trainingList?.media?.map((item) => ({
+        id: item._id,
+        title: item.title,
+        file: item.imageOrVideo, // URL from API
+      })) || []
+    );
   }, [trainingList]);
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -80,7 +78,7 @@ const Training = () => {
     const formData = new FormData();
     formData.append("deleteMedia", deleteMedia);
     await editTraining(formData);
-    fetchTrainingList();
+    await fetchTrainingList();
   };
 
   // Drag and drop handlers
@@ -103,7 +101,7 @@ const Training = () => {
       formik.setFieldValue("imageOrVideo", e.dataTransfer.files[0]);
     }
   };
-  if (loading || !trainingList) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-white">
         <LoaderSpinner />
@@ -136,12 +134,12 @@ const Training = () => {
 
           {/* Cards Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4 w-full justify-items-stretch">
-            {cards.length === 0 && (
+            {cards?.length === 0 && (
               <div className="col-span-full text-center text-gray-500 text-lg py-8">
                 No Project documents uploaded yet.
               </div>
             )}
-            {cards.map((card) => (
+            {cards?.map((card) => (
               <div
                 key={card.id}
                 className="bg-white rounded-2xl shadow-xl p-4 flex flex-col items-stretch w-full max-w-[350px] h-[250px] transition-all duration-200 cursor-pointer group hover:scale-105 hover:shadow-2xl"
