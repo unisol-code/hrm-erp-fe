@@ -515,34 +515,39 @@ const useEmployee = () => {
     }
   };
 
-  const checkEmail = async (email) => {
-    if (!email) {
-      return null;
-    }
-    setLoading(true);
-    try {
-      const res = await fetchData({
-        method: "GET",
-        url: `${conf.apiBaseUrl}employees/check-email?email=${encodeURIComponent(
-          email,
-        )}`,
-      });
-      if (res) {
-        if (!res?.success || res?.exists) {
-          toast.error(res?.message || "Official Email already exists.");
-        }
-        return res;
-      }
-      return null;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error checking email:", error);
-      toast.error(error?.response?.data?.message || "Error checking email");
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+   const checkEmail = async (email) => {
+     if (!email) {
+       return null;
+     }
+     setLoading(true);
+     try {
+       const res = await fetchData({
+         method: "GET",
+         url: `${conf.apiBaseUrl}employees/check-email?email=${encodeURIComponent(
+           email,
+         )}`,
+       });
+       if (res) {
+         if (!res?.success || res?.exists) {
+           toast.error(res?.message || "Official Email already exists.");
+         }
+         return res;
+       }
+       return null;
+     } catch (error) {
+       const errData = error?.response?.data;
+       if (errData) {
+         toast.error(errData?.message || "Official Email already exists.");
+         return errData;
+       }
+       // eslint-disable-next-line no-console
+       console.error("Error checking email:", error);
+       toast.error("Error checking email");
+       return null;
+     } finally {
+       setLoading(false);
+     }
+   };
 
   const resetEmployee = () => {
     setEmployeeDetails({});

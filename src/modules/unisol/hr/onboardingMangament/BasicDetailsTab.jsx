@@ -32,7 +32,7 @@ const BasicDetailsTab = ({
       ? getOnboardingManager?.map((item) => ({ label: item, value: item }))
       : [];
 
-  const generateOfficialEmail = (fullName, companyName) => {
+  const generateOfficialEmail = (fullName, companyName, suffix = "") => {
     if (!fullName || !companyName) return "";
     const nameParts = fullName.trim().toLowerCase().split(" ");
     let emailName = "";
@@ -45,17 +45,15 @@ const BasicDetailsTab = ({
     }
     emailName = emailName.replace(/[^a-z]/g, "");
     const domain = companyName.trim().toLowerCase().replace(/\s+/g, "");
-    return `${emailName}@${domain}.in`;
+    return `${emailName}${suffix}@${domain}.in`;
   };
 
   useEffect(() => {
-    if (!(formik.values.fullName && formik.values.companyName)) {
+    const { fullName, companyName } = formik.values;
+    if (!(fullName && companyName)) {
       return;
     }
-    const officialEmail = generateOfficialEmail(
-      formik.values.fullName,
-      formik.values.companyName
-    );
+    const officialEmail = generateOfficialEmail(fullName, companyName);
     formik.setFieldValue("officialEmail", officialEmail);
 
     if (!officialEmail || !checkEmail) {
@@ -63,22 +61,27 @@ const BasicDetailsTab = ({
     }
 
     const timer = setTimeout(() => {
-      checkEmail(officialEmail).then((res) => {
-        if (res?.exists) {
-          formik.setFieldError(
-            "officialEmail",
-            res?.message || "Official Email already exists."
-          );
-          formik.setFieldTouched("officialEmail", true);
-        } else {
-          formik.setFieldError("officialEmail", undefined);
-        }
-      });
+      let currentEmail = officialEmail;
+      const verifyUntilAvailable = (attempts) => {
+        checkEmail(currentEmail).then((res) => {
+          if (res?.exists && attempts > 0) {
+            const suffix = Math.floor(10 + Math.random() * 90);
+            currentEmail = generateOfficialEmail(fullName, companyName, suffix);
+            formik.setFieldValue("officialEmail", currentEmail);
+            verifyUntilAvailable(attempts - 1);
+          } else {
+            formik.setFieldValue("officialEmail", currentEmail);
+            formik.setFieldError("officialEmail", undefined);
+          }
+        });
+      };
+      verifyUntilAvailable(5);
     }, 500);
 
     return () => clearTimeout(timer);
   }, [formik.values.fullName, formik.values.companyName]);
 
+  console.log ("generateOfficialEmail", generateOfficialEmail(formik.values.fullName, formik.values.companyName));
   // const reportingManagerDrop = [
   //   {
   //     id: 1,
