@@ -102,3 +102,23 @@ export const perCityAtom = atom({
   default: null,
   effects_UNSTABLE: [persistAtom],
 });
+
+export const regionAtom = atom({
+  key: "region",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const perRegionAtom = atom({
+  key: "perRegion",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const perDepartmentAtom = atom({
+  key: "perDepartment",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});
+
+

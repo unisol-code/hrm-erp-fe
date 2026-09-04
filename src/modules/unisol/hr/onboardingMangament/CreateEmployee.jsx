@@ -230,9 +230,14 @@ const CreateEmployee = () => {
     perCountry,
     employeeTypeDrop,
     fetchCityStateCountry,
-    fetchPayrollGrade,
-    payRollGrade,
-  } = useEmployee();
+     fetchPayrollGrade,
+     payRollGrade,
+     fetchReportingManager,
+     perDepartment,
+     region,
+     perRegion,
+     checkEmail,
+   } = useEmployee();
 
   const {
     fetchStateLocation,
@@ -302,11 +307,13 @@ const CreateEmployee = () => {
       currentCity: "",
       currentState: "",
       currentCountry: "",
+      currentRegion: "",
       currentAddress1: "",
       currentAddress2: "",
       currentLandMark: "",
       permanentPincode: "",
       permanentCountry: "",
+      permanentRegion: "",
       permanentState: "",
       permanentCity: "",
       permanentAddress1: "",
@@ -415,6 +422,11 @@ const CreateEmployee = () => {
     }
   }, [selectedDepartment]);
   useEffect(() => {
+    if (selectedDepartment) {
+      fetchReportingManager(selectedDepartment);
+    }
+  }, [selectedDepartment]);
+  useEffect(() => {
     if (formik.values.designation) {
       fetchPayrollGrade(
         selectDesignation,
@@ -436,6 +448,7 @@ const CreateEmployee = () => {
         permanentCountry: formik.values.currentCountry,
         permanentState: formik.values.currentState,
         permanentCity: formik.values.currentCity,
+        permanentRegion: formik.values.currentRegion,
         permanentAddress1: formik.values.currentAddress1,
         permanentAddress2: formik.values.currentAddress2,
         permanentLandMark: formik.values.currentLandMark,
@@ -448,38 +461,52 @@ const CreateEmployee = () => {
         permanentCountry: "",
         permanentState: "",
         permanentCity: "",
+        permanentRegion: "",
         permanentAddress1: "",
         permanentAddress2: "",
         permanentLandMark: "",
       });
     }
-  }, [
-    formik.values.currentPincode,
-    formik.values.currentCountry,
-    formik.values.currentState,
-    formik.values.currentCity,
-    formik.values.currentAddress1,
-    formik.values.currentAddress2,
-    formik.values.currentLandMark,
-    samePermemnantAddressChecked
-  ]);
+    }, [
+      formik.values.currentPincode,
+      formik.values.currentCountry,
+      formik.values.currentState,
+      formik.values.currentCity,
+      formik.values.currentRegion,
+      formik.values.currentAddress1,
+      formik.values.currentAddress2,
+      formik.values.currentLandMark,
+      samePermemnantAddressChecked
+    ]);
 
 
-  useEffect(() => {
-    if (city && state && country) {
-      formik.setFieldValue("currentCity", city);
-      formik.setFieldValue("currentState", state);
-      formik.setFieldValue("currentCountry", country);
-    }
-  }, [city, state, country]);
+   useEffect(() => {
+     if (city && state && country) {
+       formik.setFieldValue("currentCity", city);
+       formik.setFieldValue("currentState", state);
+       formik.setFieldValue("currentCountry", country);
+     }
+   }, [city, state, country]);
 
-  useEffect(() => {
-    if (perCity && perState && perCountry) {
-      formik.setFieldValue("permanentCity", perCity);
-      formik.setFieldValue("permanentState", perState);
-      formik.setFieldValue("permanentCountry", perCountry);
-    }
-  }, [perCity, perState, perCountry]);
+   useEffect(() => {
+     if (region) {
+       formik.setFieldValue("currentRegion", region);
+     }
+   }, [region]);
+
+   useEffect(() => {
+     if (perCity && perState && perCountry) {
+       formik.setFieldValue("permanentCity", perCity);
+       formik.setFieldValue("permanentState", perState);
+       formik.setFieldValue("permanentCountry", perCountry);
+     }
+   }, [perCity, perState, perCountry]);
+
+   useEffect(() => {
+     if (perRegion) {
+       formik.setFieldValue("permanentRegion", perRegion);
+     }
+   }, [perRegion]);
 
   useEffect(() => {
     if (permanentPincodeDetails) {
@@ -503,6 +530,7 @@ const CreateEmployee = () => {
       formik.setFieldValue("currentCity", "", false);
       formik.setFieldValue("currentState", "", false);
       formik.setFieldValue("currentCountry", "", false);
+      formik.setFieldValue("currentRegion", "", false);
       return;
     }
 
@@ -510,11 +538,16 @@ const CreateEmployee = () => {
       formik.setFieldValue("currentCity", "", false);
       formik.setFieldValue("currentState", "", false);
       formik.setFieldValue("currentCountry", "", false);
+      formik.setFieldValue("currentRegion", "", false);
       return;
     }
 
     try {
       const zipcodeDetails = await fetchCityStateCountry(zipcodeData);
+
+      if (zipcodeDetails?.region) {
+        formik.setFieldValue("currentRegion", zipcodeDetails.region, false);
+      }
 
       if (zipcodeDetails?.city && zipcodeDetails?.state && zipcodeDetails?.country) {
         formik.setFieldValue("currentCity", zipcodeDetails.city, false);
@@ -525,12 +558,14 @@ const CreateEmployee = () => {
         formik.setFieldValue("currentCity", "", false);
         formik.setFieldValue("currentState", "", false);
         formik.setFieldValue("currentCountry", "", false);
+        formik.setFieldValue("currentRegion", "", false);
       }
     } catch (error) {
       formik.setFieldError("currentPincode", "No location found for this pincode.");
       formik.setFieldValue("currentCity", "", false);
       formik.setFieldValue("currentState", "", false);
       formik.setFieldValue("currentCountry", "", false);
+      formik.setFieldValue("currentRegion", "", false);
     }
   };
   const handlePermanentPincodeChange = async (e) => {
@@ -546,6 +581,7 @@ const CreateEmployee = () => {
       formik.setFieldValue("permanentCity", "", false);
       formik.setFieldValue("permanentState", "", false);
       formik.setFieldValue("permanentCountry", "", false);
+      formik.setFieldValue("permanentRegion", "", false);
       return;
     }
 
@@ -553,11 +589,16 @@ const CreateEmployee = () => {
       formik.setFieldValue("permanentCity", "", false);
       formik.setFieldValue("permanentState", "", false);
       formik.setFieldValue("permanentCountry", "", false);
+      formik.setFieldValue("permanentRegion", "", false);
       return;
     }
 
     try {
       const permanentLocation = await fetchPermanentCityStateCountry(pincode);
+
+      if (permanentLocation?.region) {
+        formik.setFieldValue("permanentRegion", permanentLocation.region, false);
+      }
 
       if (permanentLocation?.city && permanentLocation?.state && permanentLocation?.country) {
         formik.setFieldValue("permanentCity", permanentLocation.city, false);
@@ -566,9 +607,11 @@ const CreateEmployee = () => {
         formik.setFieldError("permanentPincode", "");
       } else {
         formik.setFieldError("permanentPincode", "No location found for this pincode.");
+        formik.setFieldValue("permanentRegion", "", false);
       }
     } catch (error) {
       formik.setFieldError("permanentPincode", "No location found for this pincode.");
+      formik.setFieldValue("permanentRegion", "", false);
     }
   };
 
@@ -779,6 +822,8 @@ const handleNext = async () => {
               employeeTypeDrop={employeeTypeDrop}
               maritalDrop={maritalDrop}
               getOnboardingManager={getOnboardingManager}
+              reportingManager={perDepartment}
+              checkEmail={checkEmail}
               handleSelectChange={handleSelectChange}
               handleDepartmentChange={handleDepartmentChange}
               handleDesignationChange={handleDesignationChange}

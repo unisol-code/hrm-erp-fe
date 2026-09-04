@@ -19,13 +19,16 @@ import {
   employeeByQueryAtom,
   employeeTypeDropAtom,
   onboardingManagerAtom,
-  perCityAtom,
-  perCountryAtom,
-  perStateAtom,
+   perCityAtom,
+   perCountryAtom,
+   perRegionAtom,
+   perStateAtom,
   positionApplyDropAtom,
-  stateAtom,
-  updateEmployeeTaskAtom,
-  payRollGradeAtom,
+   stateAtom,
+   updateEmployeeTaskAtom,
+   payRollGradeAtom,
+   perDepartmentAtom,
+   regionAtom,
 } from "../../../state/onBoarding/employeeState";
 import useFetch from "../../useFetch";
 import { useNavigate } from "react-router-dom";
@@ -64,10 +67,14 @@ const useEmployee = () => {
   const [perCity, setPerCity] = useRecoilState(perCityAtom);
   const [perState, setPerState] = useRecoilState(perStateAtom);
   const [perCountry, setPerCountry] = useRecoilState(perCountryAtom);
+  const [perRegion, setPerRegion] = useRecoilState(perRegionAtom);
+  const [region, setRegion] = useRecoilState(regionAtom);
   const [getOnboardingManager, setOnboardingManager] = useRecoilState(
     onboardingManagerAtom,
   );
   const [payRollGrade, setPayRollGrade] = useRecoilState(payRollGradeAtom);
+  const [perDepartment, setPerDepartment] =
+    useRecoilState(perDepartmentAtom);
 
   const createNewEmployee = async (data) => {
     setLoading(true);
@@ -107,10 +114,12 @@ const useEmployee = () => {
         setCity(res?.data?.city);
         setState(res?.data?.state);
         setCountry(res?.data?.country);
+        setRegion(res?.data?.region);
         return {
           city: res?.data?.city,
           state: res?.data?.state,
           country: res?.data?.country,
+          region: res?.data?.region,
         };
       }
       // const response = await fetch(
@@ -149,10 +158,12 @@ const useEmployee = () => {
         setPerCity(res?.data?.city);
         setPerState(res?.data?.state);
         setPerCountry(res?.data?.country);
+        setPerRegion(res?.data?.region);
         return {
           city: res?.data?.city,
           state: res?.data?.state,
           country: res?.data?.country,
+          region: res?.data?.region,
         };
       }
       // const response = await fetch(
@@ -480,6 +491,59 @@ const useEmployee = () => {
     }
   };
 
+  const fetchReportingManager = async (department) => {
+    setPerDepartment(null);
+    setLoading(true);
+    try {
+      if (!department) {
+        throw new Error("No department provided");
+      }
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}employees/showReportingManager?department=${encodeURIComponent(
+          department,
+        )}`,
+      });
+      if (res) {
+        setPerDepartment(res?.data);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching reporting manager:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkEmail = async (email) => {
+    if (!email) {
+      return null;
+    }
+    setLoading(true);
+    try {
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}employees/check-email?email=${encodeURIComponent(
+          email,
+        )}`,
+      });
+      if (res) {
+        if (!res?.success || res?.exists) {
+          toast.error(res?.message || "Official Email already exists.");
+        }
+        return res;
+      }
+      return null;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error checking email:", error);
+      toast.error(error?.response?.data?.message || "Error checking email");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resetEmployee = () => {
     setEmployeeDetails({});
   };
@@ -511,22 +575,27 @@ const useEmployee = () => {
     fetchPositionApplied,
     positionApplyDrop,
     employeeTypeDrop,
-    fetchPermanentCityStateCountry,
-    perCity,
-    perState,
-    perCountry,
-    fetchEmployeeTypes,
-    fetchOnboardingManager,
-    getOnboardingManager,
-    updateEmployeeDoc,
-    fetchCityStateCountry,
-    city,
-    state,
-    country,
-    fetchPayrollGrade,
-    payRollGrade,
-    resetEmployeeByQuery,
-  };
+     fetchPermanentCityStateCountry,
+     perCity,
+     perState,
+     perCountry,
+     perRegion,
+     fetchEmployeeTypes,
+     fetchOnboardingManager,
+     getOnboardingManager,
+     updateEmployeeDoc,
+     fetchCityStateCountry,
+     city,
+     state,
+     country,
+     region,
+     fetchPayrollGrade,
+     payRollGrade,
+      fetchReportingManager,
+      perDepartment,
+      checkEmail,
+      resetEmployeeByQuery,
+   };
 };
 
 export default useEmployee;
