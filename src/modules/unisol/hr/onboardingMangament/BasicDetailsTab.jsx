@@ -13,6 +13,8 @@ const BasicDetailsTab = ({
   employeeTypeDrop,
   maritalDrop,
   getOnboardingManager,
+  reportingManager,
+  checkEmail,
   handleSelectChange,
   handleDepartmentChange,
   handleDesignationChange,
@@ -30,7 +32,7 @@ const BasicDetailsTab = ({
       ? getOnboardingManager?.map((item) => ({ label: item, value: item }))
       : [];
 
-  const generateOfficialEmail = (fullName, companyName) => {
+  const generateOfficialEmail = (fullName, companyName, suffix = "") => {
     if (!fullName || !companyName) return "";
     const nameParts = fullName.trim().toLowerCase().split(" ");
     let emailName = "";
@@ -43,18 +45,63 @@ const BasicDetailsTab = ({
     }
     emailName = emailName.replace(/[^a-z]/g, "");
     const domain = companyName.trim().toLowerCase().replace(/\s+/g, "");
-    return `${emailName}@${domain}.in`;
+    return `${emailName}${suffix}@${domain}.in`;
   };
 
   useEffect(() => {
-    if (formik.values.fullName && formik.values.companyName) {
-      const officialEmail = generateOfficialEmail(
-        formik.values.fullName,
-        formik.values.companyName
-      );
-      formik.setFieldValue("officialEmail", officialEmail);
+    const { fullName, companyName } = formik.values;
+    if (!(fullName && companyName)) {
+      return;
     }
+    const officialEmail = generateOfficialEmail(fullName, companyName);
+    formik.setFieldValue("officialEmail", officialEmail);
+
+    if (!officialEmail || !checkEmail) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      let currentEmail = officialEmail;
+      const verifyUntilAvailable = (attempts) => {
+        checkEmail(currentEmail).then((res) => {
+          if (res?.exists && attempts > 0) {
+            const suffix = Math.floor(10 + Math.random() * 90);
+            currentEmail = generateOfficialEmail(fullName, companyName, suffix);
+            formik.setFieldValue("officialEmail", currentEmail);
+            verifyUntilAvailable(attempts - 1);
+          } else {
+            formik.setFieldValue("officialEmail", currentEmail);
+            formik.setFieldError("officialEmail", undefined);
+          }
+        });
+      };
+      verifyUntilAvailable(5);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [formik.values.fullName, formik.values.companyName]);
+
+  console.log ("generateOfficialEmail", generateOfficialEmail(formik.values.fullName, formik.values.companyName));
+  // const reportingManagerDrop = [
+  //   {
+  //     id: 1,
+  //     name: "Rahul Sharma",
+  //     designation: "Senior Manager",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Amit Patil",
+  //     designation: "Project Manager",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Priya Singh",
+  //     designation: "HR Manager",
+  //   },
+  // ];
+
+  const reportingManagerList =
+    reportingManager?.length ? reportingManager : []  ;
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -224,6 +271,41 @@ const BasicDetailsTab = ({
               {formik.touched.employmentType && formik.errors.employmentType ? (
                 <div className="text-red-500">
                   {formik.errors.employmentType}
+                </div>
+              ) : null}
+            </div>
+          </div>
+          {/* Reporting Manager */}
+          <div className="grid grid-cols-3">
+            <div className="w-full col-span-1">
+              <label>Reporting Manager: </label>
+            </div>
+
+            <div className="col-span-2">
+              <select
+                className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
+                name="reportingManager"
+                value={formik.values.reportingManager}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              >
+                <option value="">Select Reporting Manager</option>
+
+                {reportingManagerList?.map((manager) => (
+                  <option
+                    key={manager?._id ?? manager?.id ?? manager}
+                    value={manager?._id ?? manager?.id ?? manager}
+                  >
+                    {manager?.fullName ?? manager?.name ?? manager} -{" "}
+                    {manager?.designation ?? ""}
+                  </option>
+                ))}
+              </select>
+
+              {formik.touched.reportingManager &&
+                formik.errors.reportingManager ? (
+                <div className="text-red-500">
+                  {formik.errors.reportingManager}
                 </div>
               ) : null}
             </div>
@@ -444,6 +526,21 @@ const BasicDetailsTab = ({
             </div>
 
             <div className="grid grid-cols-3 mb-6">
+              <div className="w-full col-span-1 ">
+                <label>Region: </label>
+              </div>
+              <div className=" col-span-2">
+                <input
+                  className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
+                  name="currentRegion"
+                  value={formik.values.currentRegion}
+                  placeholder="Enter Region"
+                  readOnly
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 mb-6">
               <div className="w-full col-span-1">
                 <label>State: </label>
               </div>
@@ -584,7 +681,7 @@ const BasicDetailsTab = ({
               <div className="w-full col-span-1">
                 <label>Country:</label>
               </div>
-              <div className="col-span-2">
+              <div className=" col-span-2">
                 <input
                   className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
                   name="permanentCountry"
@@ -598,9 +695,25 @@ const BasicDetailsTab = ({
 
             <div className="grid grid-cols-3 mb-6">
               <div className="w-full col-span-1">
+                <label>Region:</label>
+              </div>
+              <div className=" col-span-2">
+                <input
+                  className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
+                  name="permanentRegion"
+                  defaultValue=""
+                  value={formik.values.permanentRegion}
+                  placeholder="Enter region"
+                  readOnly
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 mb-6">
+              <div className="w-full col-span-1">
                 <label>State:</label>
               </div>
-              <div className="col-span-2">
+              <div className=" col-span-2">
                 <input
                   className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
                   placeholder="Enter state"
@@ -751,8 +864,8 @@ const BasicDetailsTab = ({
                 name="officialEmail"
                 value={formik.values.officialEmail}
                 readOnly
-                // onChange={formik.handleChange}
-                // onBlur={formik.handleBlur}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
               />
               {formik.touched.officialEmail && formik.errors.officialEmail ? (
                 <div className="text-red-500">
