@@ -4,7 +4,70 @@ import useExpenseApproval from "../../../../../hooks/unisol/expense/useExpenseAp
 import Breadcrumb from "../../../../../components/BreadCrumb";
 import { useTheme } from "../../../../../hooks/theme/useTheme";
 import { useRoles } from "../../../../../hooks/auth/useRoles";
-import LoaderSpinner from "../../../../../components/LoaderSpinner"; 
+import LoaderSpinner from "../../../../../components/LoaderSpinner";
+
+const ReceiptPreviewModal = ({ receipt, index, onClose, onDownload }) => {
+  if (!receipt) return null;
+
+  const isPdf =
+    receipt.toLowerCase().includes(".pdf") ||
+    receipt.startsWith("data:application/pdf");
+
+  const handleDownload = () => {
+    onDownload(receipt, index);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-5xl max-h-[90vh] w-full bg-white rounded-xl shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="text-lg font-semibold text-gray-800">
+            Receipt Preview
+          </h3>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              <i className="pi pi-download" />
+              Download
+            </button>
+
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-800 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div className="p-4 bg-gray-100 flex items-center justify-center max-h-[calc(90vh-80px)] overflow-auto min-h-[400px]">
+          {isPdf ? (
+            <iframe
+              src={receipt}
+              title="Receipt Preview"
+              className="w-full h-[70vh] rounded-lg bg-white"
+            />
+          ) : (
+            <img
+              src={receipt}
+              alt="Receipt Preview"
+              className="max-w-full max-h-[70vh] object-contain rounded-lg"
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}; 
 
 const getStatusStyles = (status, theme = { primaryColor: "#318bb1" }) => {
   if (!status)
@@ -42,6 +105,7 @@ const ViewExpenseDetails = () => {
   const navigate = useNavigate();
   const [remarkError, setRemarkError] = useState(false);
   const [remarkErrorMsg, setRemarkErrorMsg] = useState("");
+  const [previewReceipt, setPreviewReceipt] = useState(null);
   const { isSuperAdmin, isHR } = useRoles();
   const role = isSuperAdmin ? "superAdmin" : "hr";
 
@@ -82,6 +146,45 @@ const ViewExpenseDetails = () => {
   const handleCancle = () => {
     navigate(-1);
     resetApprvalEmployee();
+  };
+
+  const handlePreview = (receipt) => {
+    setPreviewReceipt(receipt);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewReceipt(null);
+  };
+
+  const handleDownload = async (receipt, index) => {
+    try {
+      const response = await fetch(receipt);
+
+      if (!response.ok) {
+        throw new Error("Failed to download receipt");
+      }
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const extension =
+        blob.type === "application/pdf" ? "pdf" :
+          blob.type.split("/")[1] || "jpg";
+
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = `receipt_${index + 1}.${extension}`;
+
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
   };
 
   return (
@@ -223,27 +326,48 @@ const ViewExpenseDetails = () => {
 
                 {/* Attach Receipt Field */}
                 <div className="flex flex-col md:col-span-2">
-                  <label className="text-gray-600 text-sm font-medium mb-1">Attached Receipts</label>
-                  <div className="flex flex-wrap gap-3 mt-2">
+                  <label className="text-gray-600 text-sm font-medium mb-3">
+                    Attached Receipts
+                  </label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
                     {expenseDetails?.data?.receipts?.length > 0 ? (
                       expenseDetails.data.receipts.map((receipt, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={receipt}
-                            alt="Receipt Preview"
-                            className="w-24 h-24 object-cover cursor-pointer rounded-lg border border-gray-200 shadow-sm transition-transform group-hover:scale-105"
-                            onClick={() => window.open(receipt, "_blank")}
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded-lg flex items-center justify-center">
-                            <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-medium">View</span>
+                        <div
+                          key={index}
+                          className="flex items-center justify-between gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                              <i className="pi pi-file text-blue-600 text-xl" />
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-gray-800">
+                                Receipt {index + 1}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Attached Document
+                              </p>
+                            </div>
                           </div>
+
+                          <button
+                            onClick={() => handlePreview(receipt)}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors shrink-0"
+                          >
+                            <i className="pi pi-eye" />
+                            View
+                          </button>
                         </div>
                       ))
                     ) : (
-                      <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm text-gray-500">
+                      <div className="p-4 bg-white rounded-lg border text-gray-500">
                         No receipts attached
                       </div>
                     )}
+
                   </div>
                 </div>
               </div>
@@ -589,6 +713,14 @@ const ViewExpenseDetails = () => {
           </div>
         </div>
       )}
+
+      {/* Receipt Preview Modal */}
+      <ReceiptPreviewModal
+        receipt={previewReceipt}
+        index={previewReceipt ? expenseDetails?.data?.receipts?.indexOf(previewReceipt) : -1}
+        onClose={handleClosePreview}
+        onDownload={handleDownload}
+      />
     </div>
   );
 };

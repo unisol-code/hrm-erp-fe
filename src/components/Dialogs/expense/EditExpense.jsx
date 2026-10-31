@@ -581,6 +581,24 @@ const EditExpense = ({ onClose, openDialog, expense = {}, onUpdated}) => {
                                         icon={HiOutlineGift}
                                     />
                                 )}
+
+                                {/* Limit Exceeded Explanation - Read Only Display */}
+                                {expenseDetails?.data?.limitExceed?.explanation && (
+                                    <div className="bg-orange-50 rounded-xl border border-orange-200 p-4">
+                                        <div className="flex items-start gap-3">
+                                            <HiOutlineExclamationCircle className="text-orange-500 text-lg mt-0.5 flex-shrink-0" />
+                                            <div className="flex-1">
+                                                <h4 className="font-medium text-orange-800 mb-1">Limit Exceeded Explanation</h4>
+                                                <p className="text-orange-700">{expenseDetails.data.limitExceed.explanation}</p>
+                                                {expenseDetails.data.limitExceed.amount > 0 && (
+                                                    <p className="text-sm text-orange-600 mt-1">
+                                                        Excess Amount: ₹{expenseDetails.data.limitExceed.amount}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Financial Details */}

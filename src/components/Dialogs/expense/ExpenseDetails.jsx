@@ -221,6 +221,36 @@ const ExpenseDetails = ({ onClose, openDialog, expense = {} }) => {
                   </>
                 )}
 
+                {/* Daily Allowance Description */}
+                {expenseDetails?.data?.expenseCategory === "Daily Allowance" && expenseDetails?.data?.description && (
+                  <div className="grid grid-cols-2 gap-4 py-3">
+                    <div className="text-gray-600 font-semibold">Description</div>
+                    <div className="text-gray-900">
+                      {expenseDetails?.data?.description || "N/A"}
+                    </div>
+                  </div>
+                )}
+
+                {/* Limit Exceeded Explanation */}
+                {expenseDetails?.data?.limitExceed?.explanation && (
+                  <div className="grid grid-cols-2 gap-4 py-3">
+                    <div className="text-gray-600 font-semibold">Limit Exceeded Explanation</div>
+                    <div className="text-gray-900">
+                      {expenseDetails?.data?.limitExceed.explanation}
+                    </div>
+                  </div>
+                )}
+
+                {/* Limit Exceeded Amount */}
+                {expenseDetails?.data?.limitExceed?.amount > 0 && (
+                  <div className="grid grid-cols-2 gap-4 py-3">
+                    <div className="text-gray-600 font-semibold">Excess Amount</div>
+                    <div className="text-gray-900">
+                      ₹{expenseDetails?.data?.limitExceed.amount}
+                    </div>
+                  </div>
+                )}
+
                 {/* Bill Number */}
                 <div className="grid grid-cols-2 gap-4 py-3">
                   <div className="text-gray-600 font-semibold">Bill Number</div>
