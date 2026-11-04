@@ -842,27 +842,33 @@ const UploadedRequiredDocuments = () => {
             }}
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="flex items-center gap-2">
-                <MdPerson className="text-[#709EB1] text-xl" />
-                <span className="text-gray-600 font-medium">Employee:</span>
-                <span className="font-semibold text-gray-800">
-                  {docsByEmpID?.fullName || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <HiIdentification className="text-[#709EB1] text-xl" />
-                <span className="text-gray-600 font-medium">ID:</span>
-                <span className="font-semibold text-gray-800">
-                  {docsByEmpID?.employeeId || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MdApartment className="text-[#709EB1] text-xl" />
-                <span className="text-gray-600 font-medium">Department:</span>
-                <span className="font-semibold text-gray-800">
-                  {docsByEmpID?.department || "N/A"}
-                </span>
-              </div>
+              {docsByEmpID?.fullName && (
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
+                  <MdPerson className="text-[#709EB1] text-xl flex-shrink-0" />
+                  <span className="text-gray-600 font-medium whitespace-nowrap">Employee:</span>
+                  <span className="font-semibold text-gray-800">
+                    {docsByEmpID?.fullName || "N/A"}
+                  </span>
+                </div>
+              )}
+              {docsByEmpID?.employeeId && (
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
+                  <HiIdentification className="text-[#709EB1] text-xl flex-shrink-0" />
+                  <span className="text-gray-600 font-medium whitespace-nowrap">ID:</span>
+                  <span className="font-semibold text-gray-800">
+                    {docsByEmpID?.employeeId || "N/A"}
+                  </span>
+                </div>
+              )}
+              {docsByEmpID?.department && (
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
+                  <MdApartment className="text-[#709EB1] text-xl flex-shrink-0" />
+                  <span className="text-gray-600 font-medium whitespace-nowrap">Department:</span>
+                  <span className="font-semibold text-gray-800">
+                    {docsByEmpID?.department || "N/A"}
+                  </span>
+                </div>
+              )}
             </div>
             <p className="text-gray-600 text-sm">
               Please upload all the required documents for your employee

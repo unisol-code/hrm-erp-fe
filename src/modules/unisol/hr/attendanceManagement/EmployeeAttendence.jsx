@@ -113,7 +113,7 @@ const EmployeeAttendence = () => {
         ]}
       />
       {/* Card Container */}
-      <div className="w-full bg-white rounded-2xl overflow-hidden">
+      <div className="w-full bg-white rounded-2xl overflow-x-auto">
         {/* Search & Filter Bar */}
         <div
           className="flex flex-wrap items-center justify-between gap-4 py-4 px-8 rounded-t-xl"
@@ -123,7 +123,7 @@ const EmployeeAttendence = () => {
             Employee List
           </h1>
 
-          <div className="flex justify-end items-center gap-2">
+          <div className="flex justify-end items-center gap-2 min-w-0 overflow-hidden">
 
             <Button
               variant={1}
@@ -150,6 +150,7 @@ const EmployeeAttendence = () => {
               placeholder="Select Department"
               isClearable
               classNamePrefix="react-select"
+              className="min-w-0"
               menuPortalTarget={document.body}
               styles={{
                 control: (provided, state) => ({
@@ -173,7 +174,7 @@ const EmployeeAttendence = () => {
 
             {/* Date Picker */}
             <input
-              className="text-base px-4 py-2 rounded-md text-black border"
+              className="text-base px-4 py-2 rounded-md text-black border min-w-0 w-full sm:w-auto"
               type="date"
               onChange={(e) => handleFilterChange("date", e.target.value)}
               value={filters.date}
@@ -183,7 +184,7 @@ const EmployeeAttendence = () => {
 
         {/* Table & Pagination */}
         <div>
-          <div className="max-h-[480px] overflow-y-scroll">
+          <div className="max-h-[480px] overflow-x-auto overflow-y-scroll">
             <table className="min-w-[650px] w-full text-left">
               <thead className="bg-gray-100">
                 <tr>

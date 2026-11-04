@@ -239,25 +239,27 @@ const HrDashboard = () => {
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-start gap-4">
         <div className="flex flex-col justify-end gap-1">
           <h2 className="font-bold">Dashboard</h2>
           <p className="font-medium">Hi, Welcome !</p>
         </div>
         <div>
           <h1 className="text-xs ">Company</h1>
-          <Select
-            name="companyList"
-            id="companyList"
-            className="react-select-container w-[200px]"
-            classNamePrefix="react-select"
-            options={companyOptions}
-            value={
-              companyOptions.find((opt) => opt.value === companyId) || null
-            }
-            onChange={(selected) => handleCompanySelect(selected)}
-            placeholder="Select a company"
-          />
+          <div className="min-w-0 w-full max-w-[260px]">
+            <Select
+              name="companyList"
+              id="companyList"
+              className="react-select-container w-full min-w-0"
+              classNamePrefix="react-select"
+              options={companyOptions}
+              value={
+                companyOptions.find((opt) => opt.value === companyId) || null
+              }
+              onChange={(selected) => handleCompanySelect(selected)}
+              placeholder="Select a company"
+            />
+          </div>
         </div>
       </div>
 

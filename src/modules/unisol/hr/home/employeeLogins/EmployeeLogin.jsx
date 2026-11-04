@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useEmployeeLogin from "../../../../../hooks/unisol/homeDashboard/useEmployeeLogin";
-import { useEffect } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleIcon from "@mui/icons-material/People";
 import BreadCrumb from "../../../../../components/BreadCrumb";
@@ -38,8 +37,6 @@ const EmployeeLogin = () => {
     fetchIgniteSphereEmployeeLogin();
     fetchEnviroSolutionEmployeeLogin();
   }, []);
-
-  console.log(unisolEmployeeLogin);
 
   const handleNavigate = () => {
     navigate("/employeeLogins/unisolEdit");
@@ -91,62 +88,61 @@ const EmployeeLogin = () => {
       seeAll: igniteSphereEmployeeLogin?.company,
     },
   ];
-  console.log(companies);
+
   const filteredCompanies = companies.filter(
     (company) =>
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.employees.some(
+      (company.employees || []).some(
         (emp) =>
-          emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          emp.username.toLowerCase().includes(searchTerm.toLowerCase())
+          emp?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          emp?.username?.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
-  console.log(filteredCompanies);
 
   const handleAddEmployee = () => {
     showToast("Employee Added", "New employee has been successfully added.");
     setIsAddModalOpen(false);
   };
-  // console.log(company.employees);
 
   return (
     <>
-      <BreadCrumb
-        linkText={[{ text: "Employee Login", href: "/employeeLogins" }]}
-      />
+      <BreadCrumb linkText={[{ text: "Employee Login", href: "/employeeLogins" }]} />
       <div className="min-h-screen">
-        {/* Search and Add */}
-        <div className="flex flex-col bg-slate-200 rounded-2xl px-6 py-4 md:flex-row justify-between items-start md:items-center mb-4 gap-4"
-        style={{ backgroundColor: theme.secondaryColor }}
+        {/* Page header */}
+        <div
+          className="flex flex-col rounded-2xl px-4 sm:px-6 py-3 sm:py-4 mb-4"
+          style={{ backgroundColor: theme.secondaryColor }}
         >
           <div>
-            <p className="text-2xl font-semibold">Employee Logins</p>
-            <p className="text-sm font-light">
+            <p className="text-xl sm:text-2xl font-semibold">Employee Logins</p>
+            <p className="text-xs sm:text-sm font-light">
               Multi-Company Employee Login Management
             </p>
           </div>
         </div>
 
         {/* Companies */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          {filteredCompanies ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          {filteredCompanies.length > 0 ? (
             filteredCompanies.map((company, index) => (
               <div
                 key={company.id + index}
-                className="bg-white rounded-2xl shadow-md flex flex-col"
+                className="bg-white rounded-2xl shadow-md flex flex-col overflow-hidden"
               >
-                {/* Header */}
+                {/* Card Header */}
                 <div
-                  className="flex justify-between items-center text-white px-4 py-3 rounded-t-2xl"
+                  className="flex flex-wrap justify-between items-center text-white px-3 sm:px-4 py-3 rounded-t-2xl gap-2"
                   style={{
                     backgroundImage: `linear-gradient(to right, ${company.color})`,
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    <BusinessIcon />
-                    <h2 className="text-lg font-semibold">{company.name}</h2>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <BusinessIcon className="shrink-0" />
+                    <h2 className="text-base sm:text-lg font-semibold truncate">
+                      {company.name}
+                    </h2>
                   </div>
-                  <div className="flex items-center gap-1 text-sm">
+                  <div className="flex items-center gap-1 text-xs sm:text-sm shrink-0">
                     <PeopleIcon fontSize="small" />
                     {company?.employees?.length || 0} employees
                   </div>
@@ -154,70 +150,73 @@ const EmployeeLogin = () => {
 
                 {/* Content */}
                 <div className="flex flex-col flex-grow">
-                  {/* Header Row */}
-                  <div className="px-2 py-2 bg-gray-100 text-sm font-semibold grid grid-cols-4 text-center">
-                    <div className="break-words whitespace-normal text-left px-4">
-                      Employee ID
-                    </div>
-                    <div className="break-words whitespace-normal text-left px-4">
-                      Employee Name
-                    </div>
-                    <div className="break-words whitespace-normal text-left px-4">
-                      Username
-                    </div>
-                    <div className="break-words whitespace-normal text-left px-4">
-                      Password
+                  {/* Scrollable table area — header + rows move together */}
+                  <div className="overflow-x-auto">
+                    <div className="min-w-[520px]">
+                      {/* Header Row */}
+                      <div className="px-1 sm:px-2 py-2 bg-gray-100 text-xs sm:text-sm font-semibold grid grid-cols-4 text-center">
+                        <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                          Employee ID
+                        </div>
+                        <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                          Employee Name
+                        </div>
+                        <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                          Username
+                        </div>
+                        <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                          Password
+                        </div>
+                      </div>
+
+                      {/* Body */}
+                      <div className={company.tableColor}>
+                        <div className="divide-y text-center">
+                          {company?.employees?.length > 0 ? (
+                            company.employees.map((emp) => (
+                              <div
+                                key={emp.employeeId}
+                                className="grid grid-cols-4 items-start px-1 sm:px-2 py-2 text-xs sm:text-sm text-center"
+                              >
+                                <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                                  {emp.employeeId}
+                                </div>
+                                <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                                  {emp.fullName}
+                                </div>
+                                <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                                  {emp.officialEmail}
+                                </div>
+                                <div className="break-words whitespace-normal text-left px-2 sm:px-4">
+                                  {emp.password || "**********"}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-4 py-3 text-sm">No Employees Found.</div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Body */}
+                  {/* Footer — outside the scroll area so it stays full width */}
                   <div
-                    className={`flex flex-col justify-between flex-grow ${company.tableColor} rounded-b-2xl `}
+                    className={`text-center flex justify-center items-center px-4 py-2 text-xs sm:text-sm text-black hover:text-blue-800 hover:bg-blue-100 transition hover:underline duration-200 cursor-pointer mt-auto rounded-b-2xl ${company.seeColor}`}
+                    onClick={() => {
+                      fetchPerCompanyEmployeeLogin(company.seeAll, 1, 10);
+                      handleNavigate();
+                    }}
                   >
-                    <div className="divide-y text-center">
-                      {company?.employees?.length > 0 ? (
-                        company.employees.map((emp) => (
-                          <div
-                            key={emp.employeeId}
-                            className="grid grid-cols-4 items-start px-4 py-2 text-sm text-center"
-                          >
-                            <div className="break-words whitespace-normal text-left px-4">
-                              {emp.employeeId}
-                            </div>
-                            <div className="break-words whitespace-normal text-left px-4">
-                              {emp.fullName}
-                            </div>
-                            <div className="break-words whitespace-normal text-left px-4">
-                              {emp.officialEmail}
-                            </div>
-                            <div className="break-words whitespace-normal text-left px-4">
-                              {emp.password || "**********"}
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="px-4 py-2 col-span-4">
-                          No Employees Found.
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Footer */}
-                    <div
-                      className={`text-center flex justify-center items-center rounded-b-2xl px-4 py-2 text-xs text-black hover:text-blue-800 hover:bg-blue-100 transition hover:underline duration-200 cursor-pointer ${company.seeColor}`}
-                      onClick={() => {
-                        fetchPerCompanyEmployeeLogin(company.seeAll, 1, 10);
-                        handleNavigate();
-                      }}
-                    >
-                      See all
-                    </div>
+                    See all
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div>No Data found</div>
+            <div className="bg-white rounded-2xl shadow-md p-6 text-center text-slate-500 col-span-full">
+              No Data found
+            </div>
           )}
         </div>
       </div>

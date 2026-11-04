@@ -109,17 +109,19 @@ const EducationalOverview = () => {
           </span>
         </div>
         <section className="bg-white px-6 py-6 rounded-2xl w-full shadow-lg">
-          <div className="flex w-full justify-between items-center mb-6">
+          <div className="flex flex-wrap w-full justify-between items-center gap-4 mb-6">
             <h1 className="text-xl font-bold flex items-center gap-2">
               <FaBook className="text-[#709EB1]" /> View Professional Details
             </h1>
 
-            <Button
-              type="button"
-              icon={<EditIcon />}
-              text="Professional Details"
-              onClick={() => navigate("/emp/educationalOverview/add")}
-            ></Button>
+            <div className="shrink-0">
+              <Button
+                type="button"
+                icon={<EditIcon />}
+                text="Professional Details"
+                onClick={() => navigate("/emp/educationalOverview/add")}
+              ></Button>
+            </div>
           </div>
           <div className="flex flex-col gap-6">
             {/* Experience Card */}

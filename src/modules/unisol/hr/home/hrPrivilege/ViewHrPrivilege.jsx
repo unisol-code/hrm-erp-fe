@@ -18,23 +18,16 @@ function ViewHRPrivilege() {
   const [modulePrivileges, setModulePrivileges] = useState({});
 
   useEffect(() => {
-    if (id) {
-      fetchPrivilegeById(id);
-    }
+    if (id) fetchPrivilegeById(id);
     return () => resetPrivilegeById();
   }, [id]);
 
-  console.log("id", id, "privilegeDetails", privilegeDetails);
-
   useEffect(() => {
     if (privilegeDetails) {
-      const companyAccess = privilegeDetails.companyAccess.reduce(
-        (acc, company) => {
-          acc[company.name] = true;
-          return acc;
-        },
-        {}
-      );
+      const companyAccess = privilegeDetails.companyAccess.reduce((acc, company) => {
+        acc[company.name] = true;
+        return acc;
+      }, {});
       setCompanyPrivileges(companyAccess);
 
       const modulesAccess = privilegeDetails.modules.reduce((acc, module) => {
@@ -61,30 +54,31 @@ function ViewHRPrivilege() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
       <Breadcrumb
         linkText={[
           { text: "HR Privilege", href: "/home/hrPrivilege" },
           { text: "View HR Privilege" },
         ]}
       />
+
       {/* Header Section */}
-      <div className="py-4 px-8 flex flex-col md:flex-row md:items-center rounded-2xl bg-white shadow-lg gap-3 mb-4 w-full">
-        <div className="flex items-center gap-3 flex-1">
+      <div className="py-4 px-4 sm:px-8 flex flex-col md:flex-row md:items-center rounded-2xl bg-white shadow-lg gap-3 mb-4 w-full">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <FaGraduationCap
             style={{ color: theme.primaryColor, fontSize: 32 }}
+            className="shrink-0"
           />
-          <span className="text-2xl font-bold">View {privilegeDetails?.employee_id?.fullName}'s Privileges</span>
+          <span className="text-lg sm:text-xl md:text-2xl font-bold break-words min-w-0">
+            View {privilegeDetails?.employee_id?.fullName}'s Privileges
+          </span>
         </div>
       </div>
 
-      {/* Main content container */}
-      <main className="flex-grow  bg-white mx-auto rounded-xl sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-grow bg-white mx-auto rounded-xl px-3 sm:px-6 lg:px-8 py-6 sm:py-8 w-full">
         <section className="mb-8 p-4 shadow-sm border rounded-2xl space-y-4 text-gray-800">
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Left Side - Photo */}
             <div className="flex justify-center md:justify-start">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-gray-200 shrink-0">
                 <img
                   src={privilegeDetails?.employee_id?.photo || Profile}
                   alt="Employee Photo"
@@ -97,152 +91,130 @@ function ViewHRPrivilege() {
               </div>
             </div>
 
-            {/* Right Side - Details */}
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                <span className="font-semibold w-36">Company:</span>
-                <span>
-                  {privilegeDetails?.employee_id?.companyName || "Loading..."}
-                </span>
+                <span className="font-semibold sm:w-36 text-slate-600">Company:</span>
+                <span className="break-words">{privilegeDetails?.employee_id?.companyName || "—"}</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                <span className="font-semibold w-36">Department:</span>
-                <span>
-                  {privilegeDetails?.employee_id?.department || "Loading..."}
-                </span>
+                <span className="font-semibold sm:w-36 text-slate-600">Department:</span>
+                <span className="break-words">{privilegeDetails?.employee_id?.department || "—"}</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                <span className="font-semibold w-36">Designation:</span>
-                <span>
-                  {privilegeDetails?.employee_id?.designation || "Loading..."}
-                </span>
+                <span className="font-semibold sm:w-36 text-slate-600">Designation:</span>
+                <span className="break-words">{privilegeDetails?.employee_id?.designation || "—"}</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                <span className="font-semibold w-36">HR Full Name:</span>
-                <span>
-                  {privilegeDetails?.employee_id?.fullName || "Loading..."}
-                </span>
+                <span className="font-semibold sm:w-36 text-slate-600">HR Full Name:</span>
+                <span className="break-words">{privilegeDetails?.employee_id?.fullName || "—"}</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                <span className="font-semibold w-36">Email ID:</span>
-                <span>
-                  {privilegeDetails?.employee_id?.officialEmail || "Loading..."}
-                </span>
+                <span className="font-semibold sm:w-36 text-slate-600">Email ID:</span>
+                <span className="break-all">{privilegeDetails?.employee_id?.officialEmail || "—"}</span>
               </div>
             </div>
           </div>
         </section>
 
         {/* Privileges Table */}
-        <section className="bg-white font-bold overflow-x-auto h-full w-full p-6 shadow-sm border rounded-2xl">
-          <p className="text-[20px] text-black-400">Choose Privileges</p>
-          <br />
+        <section className="bg-white font-bold w-full p-3 sm:p-6 shadow-sm border rounded-2xl">
+          <p className="text-base sm:text-lg md:text-[20px] text-black-400 mb-4">Choose Privileges</p>
 
-          {/* Company Selection Header */}
-          <table className="table-fixed w-full">
-            <thead className="bg-[#E9EBF7] text-gray-500 text-md font-semibold text-center">
-              <tr>
-                <th className="border-t border-l border-r border-black border-b-0 min-w-[300px] px-6 py-3 text-left">
-                  Select Company
-                </th>
-                {privilegeDetails?.companyAccess?.map((company) => (
-                  <th
-                    key={company._id}
-                    className="border border-black min-w-[650px] px-4 py-3 text-center"
-                  >
-                    {company.name}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                <td className="border-t-0 border-l border-r border-b border-black min-w-[300px] px-6 py-2"></td>
-                {privilegeDetails?.companyAccess?.map((company) => (
-                  <td
-                    key={`${company._id}-toggle`}
-                    className="border border-black min-w-[650px] px-4 py-2 text-center"
-                  >
-                    <label
-                      htmlFor={`company-toggle-${company._id}`}
-                      className="inline-flex relative items-center cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        id={`company-toggle-${company._id}`}
-                        className="sr-only peer"
-                        checked={companyPrivileges[company.name] || false}
-                        readOnly
-                      />
-                      <div className="w-9 h-5 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500 peer-checked:bg-indigo-600 transition-colors"></div>
-                      <div className="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full shadow transform peer-checked:translate-x-4 transition-transform" />
-                    </label>
-                  </td>
-                ))}
-              </tr>
-            </thead>
-          </table>
+          {/* Single scroll container so both tables scroll together on mobile */}
+          <div className="overflow-x-auto">
+            <div className="min-w-[720px]">
+              {/* Company Selection Header */}
+              <table className="w-full border-collapse">
+                <thead className="bg-[#E9EBF7] text-gray-500 text-sm sm:text-md font-semibold text-center">
+                  <tr>
+                    <th className="border border-black px-4 py-3 text-left whitespace-nowrap">
+                      Select Company
+                    </th>
+                    {privilegeDetails?.companyAccess?.map((company) => (
+                      <th
+                        key={company._id}
+                        className="border border-black px-4 py-3 text-center whitespace-nowrap"
+                      >
+                        {company.name}
+                      </th>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="border border-black px-4 py-2"></td>
+                    {privilegeDetails?.companyAccess?.map((company) => (
+                      <td
+                        key={`${company._id}-toggle`}
+                        className="border border-black px-4 py-2 text-center"
+                      >
+                        <label
+                          htmlFor={`company-toggle-${company._id}`}
+                          className="inline-flex relative items-center cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            id={`company-toggle-${company._id}`}
+                            className="sr-only peer"
+                            checked={companyPrivileges[company.name] || false}
+                            readOnly
+                          />
+                          <div className="w-9 h-5 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500 peer-checked:bg-indigo-600 transition-colors" />
+                          <div className="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full shadow transform peer-checked:translate-x-4 transition-transform" />
+                        </label>
+                      </td>
+                    ))}
+                  </tr>
+                </thead>
+              </table>
 
-          {/* Modules + Privileges */}
-          <table className="min-w-full mt-2">
-            <tbody className="text-md text-gray-500 font-semibold text-center">
-              {/* Header Row */}
-              <tr className="bg-[#EBFBFF] font-semibold">
-                <th className="border border-black w-[125px] h-[60px]">
-                  Modules
-                </th>
-                <th className="border border-black w-[100px] h-[60px]">
-                  Access
-                </th>
-                <th className="border border-black w-[100px] h-[60px]">
-                  Create
-                </th>
-                <th className="border border-black w-[100px] h-[60px]">Read</th>
-                <th className="border border-black w-[100px] h-[60px]">
-                  Update
-                </th>
-                <th className="border border-black w-[100px] h-[60px]">
-                  Delete
-                </th>
-              </tr>
+              {/* Modules + Privileges */}
+              <table className="w-full border-collapse mt-2">
+                <tbody className="text-sm sm:text-md text-gray-500 font-semibold text-center">
+                  <tr className="bg-[#EBFBFF] font-semibold">
+                    <th className="border border-black px-3 py-3 whitespace-nowrap">Modules</th>
+                    <th className="border border-black px-3 py-3 whitespace-nowrap">Access</th>
+                    <th className="border border-black px-3 py-3 whitespace-nowrap">Create</th>
+                    <th className="border border-black px-3 py-3 whitespace-nowrap">Read</th>
+                    <th className="border border-black px-3 py-3 whitespace-nowrap">Update</th>
+                    <th className="border border-black px-3 py-3 whitespace-nowrap">Delete</th>
+                  </tr>
 
-              {privilegeDetails?.modules?.map((module) => (
-                <tr key={module._id} className="even:bg-white odd:bg-gray-50">
-                  <td className="border border-black w-[50px] h-[60px] pl-4 text-left">
-                    {module.moduleName}
-                  </td>
-                  <td className="border border-black w-[100px] h-[60px]">
-                    <input
-                      type="checkbox"
-                      checked={true}
-                      readOnly
-                      className="appearance-none w-6 h-6 border border-black rounded-sm checked:bg-black checked:border-black flex items-center justify-center text-sm font-bold checked:before:content-['✓'] checked:before:text-white checked:before:text-sm checked:before:leading-5 mx-auto"
-                    />
-                  </td>
-                  {["create", "read", "update", "delete"].map((perm) => (
-                    <td
-                      className="border border-black w-[100px] h-[60px]"
-                      key={`${module._id}-${perm}`}
-                    >
-                      <ToggleSwitch
-                        id={`${module._id}-${perm}`}
-                        checked={module.accessTypes.includes(perm)}
-                        readOnly
-                        label={`${perm} ${module.moduleName}`}
-                      />
-                    </td>
+                  {privilegeDetails?.modules?.map((module) => (
+                    <tr key={module._id} className="even:bg-white odd:bg-gray-50">
+                      <td className="border border-black px-3 py-2 pl-4 text-left whitespace-nowrap">
+                        {module.moduleName}
+                      </td>
+                      <td className="border border-black px-3 py-2">
+                        <input
+                          type="checkbox"
+                          checked={true}
+                          readOnly
+                          className="appearance-none w-6 h-6 border border-black rounded-sm checked:bg-black checked:border-black flex items-center justify-center text-sm font-bold checked:before:content-['✓'] checked:before:text-white checked:before:text-sm checked:before:leading-5 mx-auto"
+                        />
+                      </td>
+                      {["create", "read", "update", "delete"].map((perm) => (
+                        <td className="border border-black px-3 py-2" key={`${module._id}-${perm}`}>
+                          <ToggleSwitch
+                            id={`${module._id}-${perm}`}
+                            checked={module.accessTypes.includes(perm)}
+                            readOnly
+                            label={`${perm} ${module.moduleName}`}
+                          />
+                        </td>
+                      ))}
+                    </tr>
                   ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="text-center">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="text-center mt-5">
             <button
               type="button"
               style={{ backgroundColor: theme.primaryColor }}
-              className="inline-flex items-center mt-5 gap-2 transition text-white px-2 py-3 rounded-md shadow-md font-semibold min-w-[215px] justify-center"
+              className="inline-flex items-center gap-2 transition text-white px-4 py-3 rounded-md shadow-md font-semibold w-full sm:w-auto sm:min-w-[215px] justify-center"
               aria-label="Edit HR Privilege"
-              onClick={() =>
-                navigate(`/home/hrPrivilege/edit/${privilegeDetails?._id}`)
-              }
+              onClick={() => navigate(`/home/hrPrivilege/edit/${privilegeDetails?._id}`)}
             >
               Edit
             </button>
@@ -253,13 +225,11 @@ function ViewHRPrivilege() {
   );
 }
 
-// Reusable toggle switch component with Tailwind CSS and proper accessibility
 function ToggleSwitch({ id, checked, onChange, label, readOnly = false }) {
   return (
     <label
       htmlFor={id}
-      className={`inline-flex relative items-center ${readOnly ? "cursor-default" : "cursor-pointer"
-        }`}
+      className={`inline-flex relative items-center ${readOnly ? "cursor-default" : "cursor-pointer"}`}
       title={label}
     >
       <input
@@ -271,13 +241,12 @@ function ToggleSwitch({ id, checked, onChange, label, readOnly = false }) {
         readOnly={readOnly}
       />
       <div
-        className={`w-9 h-5 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500 peer-checked:bg-indigo-600 transition-colors ${readOnly ? "opacity-50" : ""
-          }`}
-      ></div>
+        className={`w-9 h-5 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500 peer-checked:bg-indigo-600 transition-colors ${readOnly ? "opacity-50" : ""}`}
+      />
       <div
-        className="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full shadow transform peer-checked:translate-x-4 transition-transform"
+        className={`absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full shadow transform peer-checked:translate-x-4 transition-transform ${readOnly ? "opacity-70" : ""}`}
         aria-hidden="true"
-      ></div>
+      />
     </label>
   );
 }

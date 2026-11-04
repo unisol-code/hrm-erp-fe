@@ -14,11 +14,11 @@ const EmployeeLayout = ({ children, setActiveTab }) => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full min-w-0 min-h-0">
         <EmployeeHeader />
         <div
           style={{ backgroundColor: theme?.backgroundColor }}
-          className="flex-1 overflow-y-auto px-4 py-4"
+          className="flex-1 overflow-auto px-4 py-4 min-w-0"
         >
           {children}
         </div>

@@ -111,24 +111,24 @@ const Resignation = () => {
           <table className="w-full text-sm text-left text-slate-700 table-fixed">
             <thead className="bg-slate-100 sticky top-0 z-10">
               <tr>
-                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider text-center">
+                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider min-w-0 whitespace-normal break-words text-center">
                   SR. NO.
                 </th>
-                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider text-center">
+                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider min-w-0 whitespace-normal break-words text-center">
                   Applied Date
                 </th>
-                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider text-start">
+                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider min-w-0 whitespace-normal break-words text-start">
                   Resignation Reason
                 </th>
-                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider text-center">
+                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider min-w-0 whitespace-normal break-words text-center">
                   Status
                 </th>
-                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider text-center">
+                <th className="w-[20%] px-4 py-3 font-semibold tracking-wider min-w-0 whitespace-normal break-words text-center">
                   ACTION
                 </th>
               </tr>
             </thead>
-            <tbody className="w-full">
+            <tbody>
               {loading ? (
                 <tr>
                   <td colSpan={8} className="py-8 text-center">
@@ -143,23 +143,23 @@ const Resignation = () => {
                     key={item._id + index}
                     className="border-b border-slate-200 hover:bg-slate-50"
                   >
-                    <td className="w-[8%] px-4 py-4 font-medium text-center">
+                    <td className="w-[20%] px-4 py-4 font-medium text-center min-w-0 whitespace-normal break-words">
                       {(page - 1) * limit + index + 1}
                     </td>
-                    <td className="w-[13%] px-4 py-4 font-medium text-center">
+                    <td className="w-[20%] px-4 py-4 font-medium text-center min-w-0 whitespace-normal break-words">
                       {formatDate(item.resignationDate)}
                     </td>
 
-                    <td className="w-[10%] px-4 py-4 font-medium">
+                    <td className="w-[20%] px-4 py-4 font-medium min-w-0 whitespace-normal break-words">
                       {item.resignationReason}
                     </td>
 
-                    <td className="w-[10%] px-4 py-4 font-medium text-center">
+                    <td className="w-[20%] px-4 py-4 font-medium text-center min-w-0 whitespace-normal break-words">
                       <span className={getStatusColor(item.status)}>
                         {item.status}
                       </span>
                     </td>
-                    <td className="w-[10%] px-4 py-4 font-medium text-center">
+                    <td className="w-[20%] px-4 py-4 font-medium text-center min-w-0 whitespace-normal break-words">
                       <div className="flex justify-center gap-1">
                         {/* VIEW (always enabled) */}
                         <IconButton

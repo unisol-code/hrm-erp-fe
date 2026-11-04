@@ -79,12 +79,12 @@ const Pagination = ({
 
   return (
     <div
-      className="flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-3 gap-3 w-full bg-white border-t-4"
+      className="flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-3 gap-3 w-full bg-white border-t-4 min-w-0 overflow-x-auto"
       style={{ borderColor: theme.highlightColor }}
     >
       {/* Left Section */}
       <div className="flex items-center gap-4">
-        <p className="text-gray-700 font-medium">
+        <p className="text-gray-700 font-medium text-xs sm:text-base truncate max-w-[140px] sm:max-w-none">
           Showing {(currentPage - 1) * itemsPerPageState + 1} to{" "}
           {Math.min(currentPage * itemsPerPageState, totalItems)} of {totalItems} Entries
         </p>
@@ -112,7 +112,7 @@ const Pagination = ({
       <div className="flex items-center gap-2">
         {/* Previous Button */}
         <button
-          className={`text-base px-4 py-2 rounded-md border ${
+          className={`text-xs sm:text-base px-2 sm:px-4 py-1 sm:py-2 rounded-md border ${
             currentPage === 1 ? "cursor-not-allowed opacity-70" : ""
           }`}
           style={{
@@ -135,7 +135,7 @@ const Pagination = ({
             }
           }}
         >
-          Previous
+          Prev
         </button>
 
         {/* Page Numbers */}
@@ -166,7 +166,7 @@ const Pagination = ({
 
         {/* Next Button */}
         <button
-          className={`text-base px-4 py-2 rounded-md border ${
+          className={`text-xs sm:text-base px-2 sm:px-4 py-1 sm:py-2 rounded-md border ${
             currentPage === totalPages || totalPages === 0
               ? "cursor-not-allowed opacity-70"
               : ""

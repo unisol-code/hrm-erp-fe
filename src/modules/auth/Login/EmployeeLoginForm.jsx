@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { AiOutlineLoading3Quarters, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import validator from "validator";
 
 const EmployeeLoginForm = ({ loading, onSubmit, initialValues }) => {
+  const [showPassword, setShowPassword] = useState(false);
   const validationSchema = Yup.object({
     officialEmailId: Yup.string()
       .email("Invalid email address")
@@ -40,15 +41,29 @@ const EmployeeLoginForm = ({ loading, onSubmit, initialValues }) => {
         {formik.touched.officialEmailId && formik.errors.officialEmailId ? (
           <div className="text-red-500">{formik.errors.officialEmailId}</div>
         ) : null}
-        <input
-          type="password"
-          className="rounded-[41px] placeholder:text-black placeholder:font-medium text-center bg-[#E1D4CB] text-xl py-2 w-full"
-          placeholder="Password"
-          name="empPassword"
-          value={formik.values.empPassword}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        />
+        <div className="relative w-full">
+          <input
+            type={showPassword ? "text" : "password"}
+            className="rounded-[41px] placeholder:text-black placeholder:font-medium text-center bg-[#E1D4CB] text-xl py-2 w-full pr-12"
+            placeholder="Password"
+            name="empPassword"
+            value={formik.values.empPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-black focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <AiOutlineEyeInvisible className="text-xl" />
+            ) : (
+              <AiOutlineEye className="text-xl" />
+            )}
+          </button>
+        </div>
         {formik.touched.empPassword && formik.errors.empPassword ? (
           <div className="text-red-500">{formik.errors.empPassword}</div>
         ) : null}
