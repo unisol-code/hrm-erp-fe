@@ -302,7 +302,7 @@ const LoanRequest = () => {
                         value={search}
                         onChange={handleSearchChange}
                         placeholder="Search"
-                        className="border rounded-md px-3 py-2 transition-colors duration-200 focus:outline-none focus:ring-1"
+                        className="w-full sm:w-72 min-w-0 border rounded-md px-3 py-2 transition-colors duration-200 focus:outline-none focus:ring-1"
                         style={{
                             borderColor: theme.primaryColor,
                             borderWidth: '1px',

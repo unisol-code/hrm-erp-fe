@@ -61,9 +61,9 @@ const EmployeeHeader = () => {
   }, [isProfileMenuOpen]);
 
   return (
-    <div className="bg-gradient-to-r from-white to-blue-50 h-[60px] px-6 flex justify-end items-center sticky top-0 z-50 shadow-lg border-b border-gray-100">
+    <div className="bg-gradient-to-r from-white to-blue-50 h-[60px] px-6 flex justify-end items-center sticky top-0 z-50 shadow-lg border-b border-gray-100 min-w-0 overflow-x-auto">
       {/* Right Side: Icons and Profile */}
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-6 min-w-0">
         {/* Notification Bell with Badge */}
         <div className="relative">
           <button

@@ -85,14 +85,14 @@ const totalPages = Math.ceil(totalItems / limit);
         </div>
 
         {/* Table */}
-        <div className="w-full p-4">
-          <table className="w-full text-center">
+        <div className="w-full p-4 overflow-x-auto">
+          <table className="w-full text-center min-w-0">
             <thead>
               <tr className="font-semibold text-gray-600 h-[50px] border-b-2 border-gray-300">
-                <th className="px-4">SR. NO.</th>
-                <th className="px-4">Policy Name</th>
-                <th className="px-4">Date</th>
-                <th className="px-4">Action</th>
+                <th className="px-4 min-w-0">SR. NO.</th>
+                <th className="px-4 min-w-0">Policy Name</th>
+                <th className="px-4 min-w-0">Date</th>
+                <th className="px-4 min-w-0">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -114,12 +114,12 @@ const totalPages = Math.ceil(totalItems / limit);
                     <td className="px-4 font-semibold text-slate-700">
                       {item.policyModuleTitle}
                     </td>
-                    <td className="px-4">
+                    <td className="px-4 min-w-0">
                       <span className=" text-gray-700 px-3 py-1 text-md font-medium">
                         {formatDate(item.createdAt)}
                       </span>
                     </td>
-                    <td className="px-4">
+                    <td className="px-4 min-w-0">
                       <button
                         aria-label={`View ${item.category}`}
                         title={`View ${item.category}`}

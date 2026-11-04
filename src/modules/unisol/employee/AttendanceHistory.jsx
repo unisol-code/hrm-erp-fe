@@ -266,53 +266,72 @@ const AttendanceHistory = () => {
                 </div>
                 {!isSummaryCollapsed && (
                   <div className="px-4 py-4">
-                    <div className="w-full">
-                      <div className="relative">
-                        <table className="w-full text-center table-fixed">
-                          <thead className="bg-white sticky top-0 z-10">
-                            <tr className="font-semibold text-gray-600 h-[40px] border-b-2 border-gray-300">
-                              <th className="px-4 w-1/4">Month</th>
-                              <th className="px-4 w-1/4">Present Days</th>
-                              <th className="px-4 w-1/4">Absent Days</th>
-                              <th className="px-4 w-1/4">Leave Taken</th>
-                            </tr>
-                          </thead>
-                        </table>
-                        <div style={{ maxHeight: 160, overflowY: "auto" }}>
-                          <table className="w-full text-center table-fixed">
-                            <tbody>
-                              {twoMonthAttendence?.map((data) =>
-                              (
-                                <tr
-                                  key={data?._id}
-                                  className="h-[50px] hover:bg-gray-50 transition-colors"
-                                  onClick={() => onRowClick(data?.month)}
-                                  title="Click to view monthly attendance"
-                                >
-                                  <td className="px-4 w-1/4 font-medium">
-                                    {data?.month}
-                                  </td>
-                                  <td className="px-4 w-1/4">
+                    <div className="w-full overflow-x-auto rounded-lg border border-gray-200">
+                      <table className="w-full text-center">
+                        <thead className="hidden md:table-header-group bg-gray-100 border-b-2 border-gray-300">
+                          <tr className="font-semibold text-gray-600 h-[40px]">
+                            <th className="px-4 whitespace-normal">Month</th>
+                            <th className="px-4 whitespace-normal">Present Days</th>
+                            <th className="px-4 whitespace-normal">Absent Days</th>
+                            <th className="px-4 whitespace-normal">Leave Taken</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {twoMonthAttendence?.map((data) => (
+                            <>
+                              <tr
+                                key={data?._id}
+                                className="h-[50px] hover:bg-gray-50 transition-colors md:table-row border-b border-gray-200"
+                                onClick={() => onRowClick(data?.month)}
+                                title="Click to view monthly attendance"
+                              >
+                                <td className="px-4 whitespace-normal">{data?.month}</td>
+                                <td className="px-4 whitespace-normal">
+                                  <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    {data?.totalPresent}
+                                  </span>
+                                </td>
+                                <td className="px-4 whitespace-normal">
+                                  <span className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    {data?.totalAbsent}
+                                  </span>
+                                </td>
+                                <td className="px-4 whitespace-normal">
+                                  <span className="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    {data?.totalLeavesTaken}
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr key={`${data?._id}-card`} className="md:hidden table-row">
+                                <td className="px-4 py-3 border-b border-gray-100">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="font-semibold text-sm">Month</span>
+                                    <span className="font-medium">{data?.month}</span>
+                                  </div>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="font-semibold text-sm">Present Days</span>
                                     <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
                                       {data?.totalPresent}
                                     </span>
-                                  </td>
-                                  <td className="px-4 w-1/4">
+                                  </div>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="font-semibold text-sm">Absent Days</span>
                                     <span className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
                                       {data?.totalAbsent}
                                     </span>
-                                  </td>
-                                  <td className="px-4 w-1/4">
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-semibold text-sm">Leave Taken</span>
                                     <span className="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
                                       {data?.totalLeavesTaken}
                                     </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 )}
@@ -340,66 +359,97 @@ const AttendanceHistory = () => {
                 </div>
                 {!isWeeklyCollapsed && (
                   <div className="px-4 py-4">
-                    <div className="w-full">
-                      <div className="relative">
-                        <table className="w-full text-center table-fixed">
-                          <thead className="bg-white sticky top-0 z-10">
-                            <tr className="font-semibold text-gray-600 h-[40px] border-b-2 border-gray-300">
-                              <th className="px-4 w-1/4">Date</th>
-                              <th className="pr-2 w-1/4">Day</th>
-                              <th className="px-4 w-1/4">Status</th>
-                              <th className="px-4 w-1/4">Leave Type</th>
-                            </tr>
-                          </thead>
-                        </table>
-                        <div style={{ maxHeight: 320, overflowY: "auto" }}>
-                          <table className="w-full text-center table-fixed">
-                            <tbody>
-                              {weeklyAttendence?.map((data) => (
-                                <tr
-                                  key={data?._id}
-                                  className="h-[60px] border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                                >
-                                  <td className="px-4 w-1/4 font-medium">
-                                    {formatDate(data?.date)}
-                                  </td>
-                                  <td className="px-4 w-1/4 text-gray-500">
-                                    {data?.day}
-                                  </td>
-                                  <td className="px-4 w-1/4">
-                                    {data?.status === "Present" ? (
-                                      <div className="flex items-center justify-center gap-2">
-                                        <FaCheckCircle className="text-green-500" />
-                                        <span className="text-green-700 px-4 py-2 rounded-lg font-medium">
-                                          Present
-                                        </span>
-                                      </div>
-                                    ) : data?.status === "Holiday" ? (
-                                      <div className="flex items-center justify-center gap-2">
-                                        <FaRegCalendarAlt className="text-blue-500" />
-                                        <span className="text-blue-700 px-4 py-2 rounded-lg font-medium">
-                                          Holiday
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      <div className="flex items-center justify-center gap-2">
-                                        <FaTimesCircle className="text-red-500" />
-                                        <span className="text-red-700 px-4 py-2 rounded-lg font-medium">
-                                          Absent
-                                        </span>
-                                      </div>
-                                    )}
-                                  </td>
+                    <div className="w-full overflow-x-auto rounded-lg border border-gray-200">
+                      <table className="w-full text-center">
+                        <thead className="hidden md:table-header-group bg-gray-100 border-b-2 border-gray-300">
+                          <tr className="font-semibold text-gray-600 h-[40px]">
+                            <th className="px-4 whitespace-normal">Date</th>
+                            <th className="px-2 whitespace-normal">Day</th>
+                            <th className="px-4 whitespace-normal">Status</th>
+                            <th className="px-4 whitespace-normal">Leave Type</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {weeklyAttendence?.map((data) => (
+                            <>
+                              <tr
+                                key={data?._id}
+                                className="h-[60px] border-b border-gray-200 hover:bg-gray-50 transition-colors md:table-row"
+                              >
+                                <td className="px-4 whitespace-normal">{formatDate(data?.date)}</td>
+                                <td className="px-4 whitespace-normal text-gray-500">
+                                  {data?.day}
+                                </td>
+                                <td className="px-4 whitespace-normal">
+                                  {data?.status === "Present" ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                      <FaCheckCircle className="text-green-500" />
+                                      <span className="text-green-700 px-4 py-2 rounded-lg font-medium">
+                                        Present
+                                      </span>
+                                    </div>
+                                  ) : data?.status === "Holiday" ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                      <FaRegCalendarAlt className="text-blue-500" />
+                                      <span className="text-blue-700 px-4 py-2 rounded-lg font-medium">
+                                        Holiday
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center justify-center gap-2">
+                                      <FaTimesCircle className="text-red-500" />
+                                      <span className="text-red-700 px-4 py-2 rounded-lg font-medium">
+                                        Absent
+                                      </span>
+                                    </div>
+                                  )}
+                                </td>
 
-                                  <td className="px-4 w-1/4 text-gray-500">
-                                    {data?.leaveType || "N/A"}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                                <td className="px-4 whitespace-normal text-gray-500">
+                                  {data?.leaveType || "N/A"}
+                                </td>
+                              </tr>
+                              <tr key={`${data?._id}-card`} className="md:hidden table-row">
+                                <td className="px-4 py-3 border-b border-gray-100">
+                                  <div className="flex flex-col gap-3">
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-semibold text-sm">Date</span>
+                                      <span className="font-medium">{formatDate(data?.date)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-semibold text-sm">Day</span>
+                                      <span className="text-gray-500">{data?.day}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-semibold text-sm">Status</span>
+                                      {data?.status === "Present" ? (
+                                        <div className="flex items-center gap-2">
+                                          <FaCheckCircle className="text-green-500" />
+                                          <span className="text-green-700 px-3 py-1 rounded-lg font-medium">Present</span>
+                                        </div>
+                                      ) : data?.status === "Holiday" ? (
+                                        <div className="flex items-center gap-2">
+                                          <FaRegCalendarAlt className="text-blue-500" />
+                                          <span className="text-blue-700 px-3 py-1 rounded-lg font-medium">Holiday</span>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-2">
+                                          <FaTimesCircle className="text-red-500" />
+                                          <span className="text-red-700 px-3 py-1 rounded-lg font-medium">Absent</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-semibold text-sm">Leave Type</span>
+                                      <span className="text-gray-500">{data?.leaveType || "N/A"}</span>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 )}
