@@ -10,13 +10,13 @@ import AddEmployee from "../../../../components/Dialogs/AddEmployee";
 import EmployeeDetail from "../../../../components/Dialogs/EmployeeDetail";
 import SearchEmp from "../../../../components/Dialogs/SearchEmp";
 import AddEvent from "../../../../components/Dialogs/AddEvent";
+import EventsCarousel from "../../../../components/EventsCarousel";
 import { Tree, TreeNode } from "react-organizational-chart";
 import { LiaExpandArrowsAltSolid } from "react-icons/lia";
 import OrganizationalHierarchy from "../../../../components/Dialogs/OrganizationalHierarchy";
 import useCoreHR from "../../../../hooks/unisol/coreHr/useCoreHR";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { CiEdit } from "react-icons/ci";
 import useCoreHRAttendance from "../../../../hooks/unisol/coreHr/useCoreHRAttendance";
 import useCoreHREvent from "../../../../hooks/unisol/coreHr/useCoreHREvent";
 import Pagination from "../../../../components/Pagination";
@@ -101,7 +101,6 @@ const CoreHR = () => {
   const [addEvent, setAddEvent] = useState(false);
   const [empDetails, setEmpDetails] = useState(false);
   const [isSearchEmpDialogOpen, setIsSearchEmpDialogOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const [piedata, setPiedata] = useState([]);
   const [editing, setEditing] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -191,28 +190,17 @@ const CoreHR = () => {
     setEmpDetails(true);
   };
 
-  const handleEditClick = async (eventId) => {
-    const eventData = await fetchEventById(eventId);
-    setSelectedEvent(eventData);
-    setEditing(true);
-    setAddEvent(true);
-  };
-  const handleDepartmentChange = (event) => {
-    const departmentCode = event.target.value;
-    formik.setFieldValue("department", departmentCode);
-    console.log(departmentCode);
-    setSelectedDepartment(departmentCode);
-  };
-  const handleDesignationChange = (event) => {
-    const designationCode = event.target.value;
-    formik.setFieldValue("designation", designationCode);
-    console.log(designationCode);
-    setSelectDesignation(designationCode);
-  };
-
-  const handleEditEvent = (id) => {
+  const handleEditEvent = async (id) => {
     setSelectedId(id);
     setEditing(true);
+    resetEventById();
+    await fetchEventById(id);
+  };
+
+  const closeEditEvent = () => {
+    setSelectedId(null);
+    setEditing(false);
+    resetEventById();
   };
 
   const onPageChange = (data) => {
@@ -682,9 +670,9 @@ const CoreHR = () => {
           </div>
 
           {/* Events Section */}
-          <div className="w-full md:flex-1 rounded-lg h-[300px] shadow-md">
+          <div className="flex w-full flex-col rounded-lg h-[300px] shadow-md overflow-hidden md:flex-1">
             <div
-              className="flex justify-between items-center py-4 rounded-t-lg px-4 md:px-7"
+              className="flex shrink-0 justify-between items-center py-4 rounded-t-lg px-4 md:px-7"
               style={{ backgroundColor: theme.secondaryColor }}
             >
               <div className="flex items-center space-x-1">
@@ -705,45 +693,25 @@ const CoreHR = () => {
               </div>
               {addEvent && <AddEvent onClose={() => setAddEvent(false)} />}
             </div>
-
-            <div className="bg-[#F6F6F6] h-[203px] rounded-b-2xl overflow-auto scrollbar-hide">
-              <ul className="p-4 md:p-7 space-y-4 md:space-y-6">
-                {getEventList.length > 0 ? (
-                  getEventList?.map((data, index) => (
-                    <li
-                      key={index}
-                      className="flex flex-wrap items-center justify-between space-x-2 md:space-x-4"
-                    >
-                      <h1 className="text-start tracking-widest font-semibold text-[10px] md:text-[12px] w-full md:w-[200px]">
-                        {data?.eventTitle}
-                      </h1>
-                      <h1 className="font-semibold text-[10px] md:text-[12px]">
-                        {data?.startTime}
-                      </h1>
-                      <button
-                        onClick={() => handleEditEvent(data._id)}
-                        className="flex-shrink-0"
-                      >
-                        <CiEdit size={20} />
-                      </button>
-                      {editing && selectedId === data._id && (
-                        <AddEvent
-                          data={data}
-                          editing
-                          onClose={() => {
-                            setSelectedId(null);
-                            setEditing(false);
-                          }}
-                        />
-                      )}
-                    </li>
-                  ))
-                ) : (
-                  <div className="flex justify-center"> No events found.</div>
-                )}
-              </ul>
+            <div className="min-h-0 flex-1 bg-[#F6F6F6]">
+              <EventsCarousel
+                events={Array.isArray(getEventList) ? getEventList : []}
+                onEdit={handleEditEvent}
+                onAdd={() => {
+                  setAddEvent(true);
+                  resetEventById();
+                }}
+              />
             </div>
           </div>
+
+          {editing && selectedId && (
+            <AddEvent
+              data={getEventById?._id === selectedId ? getEventById : null}
+              editing
+              onClose={closeEditEvent}
+            />
+          )}
         </div>
 
         {/*Table Employee List */}

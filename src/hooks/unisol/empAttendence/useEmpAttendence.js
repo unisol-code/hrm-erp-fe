@@ -12,6 +12,8 @@ import {
   allMonthsAllEmpAttendanceAtom,
   monthlyAttendanceOfEmployeeAtom,
   employeeAttendanceMontlyDetailsAtom,
+  employeeYearlyAttendanceDetailsAtom,
+  employeeYearlyAttendanceOfEmployeeAtom,
 } from "../../../state/empAttendence/useAttendenceState";
 import { m } from "framer-motion";
 
@@ -37,6 +39,8 @@ const useEmpAttendence = () => {
   const [monthlyAttendanceOfEmployee, setMonthlyAttendanceOfEmployee] = useRecoilState(monthlyAttendanceOfEmployeeAtom);
 
   const [employeeAttendanceMontlyDetails, setEmployeeAttendanceMontlyDetails] = useRecoilState(employeeAttendanceMontlyDetailsAtom);
+  const [employeeYearlyAttendanceDetails, setEmployeeYearlyAttendanceDetails] = useRecoilState(employeeYearlyAttendanceDetailsAtom);
+  const [employeeYearlyAttendanceOfEmployee, setEmployeeYearlyAttendanceOfEmployee] = useRecoilState(employeeYearlyAttendanceOfEmployeeAtom);
 
   const markAttendence = async (data) => {
     setAttendence(null);
@@ -252,6 +256,51 @@ const useEmpAttendence = () => {
     }
   };
 
+  const fetchYearlyAttendanceSummary = async (id, year) => {
+    setEmployeeYearlyAttendanceDetails(null);
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (year) params.append("year", year);
+      const query = params.toString();
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}attendance/getYearlyAttendanceSummary/${id}${query ? `?${query}` : ""}`,
+      });
+
+      if (res) {
+        console.log("fetchYearlyAttendanceSummary : ", res);
+        setEmployeeYearlyAttendanceDetails(res);
+      }
+    } catch (error) {
+      console.error("Error while fetching yearly attendance summary:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchYearlyAttendanceOfEmployee = async (id, year) => {
+    setEmployeeYearlyAttendanceOfEmployee(null);
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (year) params.append("year", year);
+      const query = params.toString();
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}attendance/getYearlyAttendanceOfEmployee/${id}${query ? `?${query}` : ""}`,
+      });
+      if (res) {
+        console.log("fetchYearlyAttendanceOfEmployee : ", res);
+        setEmployeeYearlyAttendanceOfEmployee(res);
+      }
+    } catch (error) {
+      console.error("Error while fetching yearly attendance of employee:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     markAttendence,
@@ -275,6 +324,10 @@ const useEmpAttendence = () => {
     monthlyAttendanceOfEmployee,
     fetchEmployeeAttendanceMontlyDetails,
     employeeAttendanceMontlyDetails,
+    fetchYearlyAttendanceSummary,
+    employeeYearlyAttendanceDetails,
+    fetchYearlyAttendanceOfEmployee,
+    employeeYearlyAttendanceOfEmployee,
   };
 };
 export default useEmpAttendence;

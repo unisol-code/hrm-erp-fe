@@ -1,90 +1,104 @@
-import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import ABSTRACT from "../../assets/images/blue-bg-abstract-2442270127.png";
 import useCoreHREvent from "../../hooks/unisol/coreHr/useCoreHREvent";
 import { useTheme } from "../../hooks/theme/useTheme";
 import Button from "../Button";
 
-const AddEvent = ({ onClose, editing, data }) => {
-  console.log("AddEvent", data);
-  const { createEvent, updateEvent, fetchEventById, getEventById, addEvent } =
-    useCoreHREvent();
+const parseTimeTo24Hour = (time) => {
+  if (!time) return "";
+  if (/^\d{2}:\d{2}$/.test(time)) return time;
+  const match = String(time).match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return "";
+  let h = parseInt(match[1], 10);
+  const minutes = match[2];
+  const suffix = match[3].toUpperCase();
+  if (suffix === "PM" && h !== 12) h += 12;
+  if (suffix === "AM" && h === 12) h = 0;
+  return `${String(h).padStart(2, "0")}:${minutes}`;
+};
 
-  const formatDate = (date) => {
-    return date ? new Date(date).toISOString().split("T")[0] : "";
-  };
+const convertTo12Hour = (time) => {
+  if (!time) return "";
+  const [hour, minute] = String(time).split(":");
+  let h = parseInt(hour, 10);
+  if (Number.isNaN(h) || minute == null) return time;
+  const suffix = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${minute} ${suffix}`;
+};
+
+const formatDate = (date) => {
+  return date ? new Date(date).toISOString().split("T")[0] : "";
+};
+
+const AddEvent = ({ onClose, editing, data }) => {
+  const { createEvent, updateEvent } = useCoreHREvent();
+  const { theme } = useTheme();
 
   const validationSchema = Yup.object().shape({
     eventTitle: Yup.string().required("Event title is required"),
-    eventDescription: Yup.string().required("Event description is required"),
+    eventType: Yup.string().required("Event type is required"),
+    eventNote: Yup.string().required("Event note is required"),
     eventDate: Yup.date()
       .min(
         new Date().toISOString().split("T")[0],
         "Event date cannot be in the past"
       )
       .required("Event date is required"),
-    startTime: Yup.string().required("Start time is required"),
-    location: Yup.string().required("Location is required"),
-    organizer: Yup.string().required("Organizer is required"),
-    category: Yup.string().required("Category is required"),
+    eventTime: Yup.string().required("Event time is required"),
+    Venue: Yup.string().required("Venue is required"),
+    dressCode: Yup.string().required("Dress code is required"),
   });
-
-  const { theme } = useTheme();
 
   const initialValues = {
     eventTitle: data?.eventTitle || "",
-    eventDescription: data?.eventDescription || "",
-    eventDate: formatDate(data?.eventDate) || "",
-    startTime: data?.startTime || "",
-    location: data?.location || "",
-    organizer: data?.organizer || "",
-    category: data?.category || "",
+    eventType: data?.eventType || "",
+    eventNote: data?.eventNote || data?.note || "",
+    eventDate: formatDate(data?.eventDate),
+    eventTime: parseTimeTo24Hour(data?.eventTime || data?.startTime),
+    Venue: data?.Venue || data?.venue || "",
+    dressCode: data?.dressCode || "",
   };
 
-  // 🔹 helper to convert HH:mm → h:mm AM/PM
-  const convertTo12Hour = (time) => {
-    if (!time) return "";
-    const [hour, minute] = time.split(":");
-    let h = parseInt(hour, 10);
-    const suffix = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${h}:${minute} ${suffix}`;
-  };
+  const handleSubmit = async (values, { setSubmitting }) => {
+    const payload = {
+      eventTitle: values.eventTitle,
+      eventType: values.eventType,
+      eventNote: values.eventNote,
+      eventDate: values.eventDate,
+      eventTime: convertTo12Hour(values.eventTime),
+      Venue: values.Venue,
+      dressCode: values.dressCode,
+    };
 
-  const handleSubmit = async (values) => {
     try {
-      // 🔹 Convert before save
-      const formattedValues = {
-        ...values,
-        startTime: convertTo12Hour(values.startTime),
-      };
-
-      if (!data?._id) {
-        await createEvent(formattedValues);
+      if (data?._id) {
+        await updateEvent(data._id, payload);
       } else {
-        await updateEvent(data?._id, formattedValues);
+        await createEvent(payload);
       }
+      onClose();
     } catch (error) {
       console.error("Error while adding/updating event:", error);
+    } finally {
+      setSubmitting(false);
     }
-    onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="flex justify-center items-center w-screen h-screen">
-        <div className="w-[507px] max-h-[90vh] bg-white shadow-lg overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+      <div className="flex h-screen w-screen items-center justify-center">
+        <div className="max-h-[90vh] w-[507px] overflow-y-auto bg-white shadow-lg">
           <div
-            className="w-full h-[61px] relative"
+            className="relative h-[61px] w-full"
             style={{ backgroundColor: theme.secondaryColor }}
           >
             <div className="flex justify-between p-5 px-10">
-              <h1 className="text-black text-lg font-semibold">
+              <h1 className="text-lg font-semibold text-black">
                 {editing ? "Edit Event" : "Add Event"}
               </h1>
-              <button onClick={onClose}>
+              <button type="button" onClick={onClose}>
                 <IoMdClose size={24} />
               </button>
             </div>
@@ -94,142 +108,135 @@ const AddEvent = ({ onClose, editing, data }) => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
+            enableReinitialize
           >
             {({ values }) => (
-              <Form className="w-full flex justify-center py-6 px-8">
-                <div className="flex flex-col items-start gap-4 w-full">
-                  {/* Event Title */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
+              <Form className="flex w-full justify-center px-8 py-6">
+                <div className="flex w-full flex-col items-start gap-4">
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
                       Event Title
                     </label>
                     <Field
                       type="text"
                       name="eventTitle"
                       placeholder="Enter Event Title"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     />
                     <ErrorMessage
                       name="eventTitle"
                       component="div"
-                      className="text-red-500 text-xs mt-1"
+                      className="mt-1 text-xs text-red-500"
                     />
                   </div>
 
-                  {/* Event Description */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
-                      Event Description
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
+                      Event Type
+                    </label>
+                    <Field
+                      type="text"
+                      name="eventType"
+                      placeholder="Enter Event Type"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
+                    <ErrorMessage
+                      name="eventType"
+                      component="div"
+                      className="mt-1 text-xs text-red-500"
+                    />
+                  </div>
+
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
+                      Event Note
                     </label>
                     <Field
                       as="textarea"
                       rows={3}
-                      name="eventDescription"
-                      placeholder="Enter Event Description"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                      name="eventNote"
+                      placeholder="Enter Event Note"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     />
                     <ErrorMessage
-                      name="eventDescription"
+                      name="eventNote"
                       component="div"
-                      className="text-red-500 text-xs mt-1"
+                      className="mt-1 text-xs text-red-500"
                     />
                   </div>
 
-                  {/* Event Date */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
                       Event Date
                     </label>
                     <Field
                       type="date"
                       name="eventDate"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     />
                     <ErrorMessage
                       name="eventDate"
                       component="div"
-                      className="text-red-500 text-xs mt-1"
+                      className="mt-1 text-xs text-red-500"
                     />
                   </div>
 
-                  {/* Start Time */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
-                      Start Time
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
+                      Event Time
                     </label>
                     <Field
                       type="time"
-                      name="startTime"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                      name="eventTime"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     />
-                    {values.startTime && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        Selected: {convertTo12Hour(values.startTime)}
+                    {values.eventTime && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        Selected: {convertTo12Hour(values.eventTime)}
                       </div>
                     )}
                     <ErrorMessage
-                      name="startTime"
+                      name="eventTime"
                       component="div"
-                      className="text-red-500 text-xs mt-1"
+                      className="mt-1 text-xs text-red-500"
                     />
                   </div>
 
-                  {/* Location */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
-                      Location
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
+                      Venue
                     </label>
                     <Field
                       type="text"
-                      name="location"
-                      placeholder="Enter Location"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                      name="Venue"
+                      placeholder="Enter Venue"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     />
                     <ErrorMessage
-                      name="location"
+                      name="Venue"
                       component="div"
-                      className="text-red-500 text-xs mt-1"
+                      className="mt-1 text-xs text-red-500"
                     />
                   </div>
 
-                  {/* Organizer */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
-                      Organizer
+                  <div className="flex w-full flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700">
+                      Dress Code
                     </label>
                     <Field
                       type="text"
-                      name="organizer"
-                      placeholder="Enter Organizer"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                      name="dressCode"
+                      placeholder="Enter Dress Code"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
                     />
                     <ErrorMessage
-                      name="organizer"
+                      name="dressCode"
                       component="div"
-                      className="text-red-500 text-xs mt-1"
+                      className="mt-1 text-xs text-red-500"
                     />
                   </div>
 
-                  {/* Category */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
-                      Category
-                    </label>
-                    <Field
-                      type="text"
-                      name="category"
-                      placeholder="Enter Category"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
-                    />
-                    <ErrorMessage
-                      name="category"
-                      component="div"
-                      className="text-red-500 text-xs mt-1"
-                    />
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="flex justify-center w-full mt-6">
+                  <div className="mt-6 flex w-full justify-center">
                     <Button
                       type="submit"
                       variant={1}

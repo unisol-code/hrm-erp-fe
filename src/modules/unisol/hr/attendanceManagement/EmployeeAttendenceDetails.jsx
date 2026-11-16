@@ -30,12 +30,13 @@ const EmployeeAttendenceDetails = () => {
     twoMonthAttendence,
     getWeeklyAttendance,
     weeklyAttendence,
-    loading,
+    loading,fetchYearlyAttendanceSummary, employeeYearlyAttendanceDetails
   } = useEmpAttendence();
 
   const { theme } = useTheme();
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isYearlyCollapsed, setIsYearlyCollapsed] = useState(false);
   const [isSummaryCollapsed, setIsSummaryCollapsed] = useState(false);
   const [isWeeklyCollapsed, setIsWeeklyCollapsed] = useState(false);
   const [todayDate, setTodayDate] = useState(new Date());
@@ -50,6 +51,7 @@ const EmployeeAttendenceDetails = () => {
   useEffect(() => {
     fetchEmpById(id);
     getWeeklyAttendance(id);
+    fetchYearlyAttendanceSummary(id);
   }, []);
   useEffect(() => {
     getTwoMonthAttendance(id, selectedYear);
@@ -194,6 +196,78 @@ const EmployeeAttendenceDetails = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Yearly Attendance Summary */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div
+                className="w-full h-[60px] flex items-center justify-between px-8"
+                style={{ backgroundColor: theme.secondaryColor }}
+              >
+                <div className="flex items-center gap-3">
+                  <FaChartBar className="text-blue-600 text-xl" />
+                  <h2 className="font-bold text-xl text-gray-700">
+                    Yearly Attendance Summary
+                    {employeeYearlyAttendanceDetails?.year
+                      ? ` (${employeeYearlyAttendanceDetails.year})`
+                      : ""}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setIsYearlyCollapsed(!isYearlyCollapsed)}
+                  className="focus:outline-none"
+                >
+                  {isYearlyCollapsed ? (
+                    <FaChevronDown className="text-gray-600" />
+                  ) : (
+                    <FaChevronUp className="text-gray-600" />
+                  )}
+                </button>
+              </div>
+              {!isYearlyCollapsed && (
+                <div className="px-6 py-6">
+                  {employeeYearlyAttendanceDetails ? (
+                    <div
+                      className="grid grid-cols-1 sm:grid-cols-3 gap-4 cursor-pointer"
+                      onClick={() =>
+                        navigate(
+                          `/employeeAttendence/employeeAttendenceDetails/${id}/${employeeYearlyAttendanceDetails.year}`
+                        )
+                      }
+                      title="Click to view yearly attendance details"
+                    >
+                      <div className="bg-green-50 rounded-xl p-4 text-center hover:shadow-md transition-shadow">
+                        <p className="text-sm font-medium text-gray-600">
+                          Total Present
+                        </p>
+                        <p className="text-2xl font-bold text-green-700 mt-1">
+                          {employeeYearlyAttendanceDetails.totalPresent ?? 0}
+                        </p>
+                      </div>
+                      <div className="bg-red-50 rounded-xl p-4 text-center hover:shadow-md transition-shadow">
+                        <p className="text-sm font-medium text-gray-600">
+                          Total Absent
+                        </p>
+                        <p className="text-2xl font-bold text-red-700 mt-1">
+                          {employeeYearlyAttendanceDetails.totalAbsent ?? 0}
+                        </p>
+                      </div>
+                      <div className="bg-yellow-50 rounded-xl p-4 text-center hover:shadow-md transition-shadow">
+                        <p className="text-sm font-medium text-gray-600">
+                          Total Leaves Taken
+                        </p>
+                        <p className="text-2xl font-bold text-yellow-700 mt-1">
+                          {employeeYearlyAttendanceDetails.totalLeavesTaken ?? 0}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-gray-500">
+                      No yearly attendance summary available
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Attendance Summary */}
