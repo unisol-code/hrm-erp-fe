@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose, IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { MdPending } from "react-icons/md";
 import useAttendence from "../../../../../hooks/unisol/attendence/useAttendence";
@@ -16,21 +16,15 @@ const StatusAndApproval = () => {
         loading,
     } = useAttendence();
 
-    console.log("loading :", loading);
+    const currentYear = new Date().getFullYear();
+    const [selectedYear, setSelectedYear] = useState(currentYear);
+    const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
 
     useEffect(() => {
-        getEmployeeLeaveStatusAndApproval(empId);
-        console.log("loading :", loading);
-    }, []);
-
-    console.log(
-        "employeeLeaveStatusAndApproval : ",
-        employeeLeaveStatusAndApproval
-    );
-
-    function createData(field, details) {
-        return { field, details };
-    }
+        if (empId) {
+            getEmployeeLeaveStatusAndApproval(empId, selectedYear);
+        }
+    }, [empId, selectedYear]);
 
 
 
@@ -42,15 +36,36 @@ const StatusAndApproval = () => {
                 </div>
             ) : (
                 <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden">
-                    {/* Header */}
-                    <div
-                        className="py-4 px-8"
-                        style={{ backgroundColor: theme.secondaryColor }}
-                    >
-                        <h1 className="text-black/80 text-lg font-semibold">
-                            Status & Approval
-                        </h1>
-                    </div>
+                    
+{/* Header */}
+<div
+    className="py-4 px-8 flex items-center justify-between gap-4"
+    style={{ backgroundColor: theme.secondaryColor }}
+>
+    <div className="flex flex-col">
+        <h1 className="text-black/80 text-lg font-semibold">
+            Status & Approval
+        </h1>
+
+        <p className="text-sm text-gray-600 font-medium mt-0.5">
+            Employee: {employeeLeaveStatusAndApproval?.[0]?.employeeName || "Employee"}
+        </p>
+    </div>
+
+    <select
+        value={selectedYear}
+        onChange={(e) => setSelectedYear(Number(e.target.value))}
+        className="border border-gray-300 rounded-md px-3 py-1.5 bg-white text-gray-700 text-sm font-medium focus:outline-none focus:ring-2"
+        style={{ "--tw-ring-color": theme.primaryColor }}
+    >
+        {years.map((year) => (
+            <option key={year} value={year}>
+                {year}
+            </option>
+        ))}
+    </select>
+</div>
+
 
                     {/* Table Section */}
                     <div className="flex-1 overflow-y-auto">

@@ -2,7 +2,7 @@
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { BarChart, Bar, YAxis, XAxis } from "recharts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useTheme } from "../../../../hooks/theme/useTheme";
 import useDashboard from "../../../../hooks/unisol/hrDashboard/useDashborad";
@@ -201,6 +201,10 @@ const HrDashboard = () => {
   const [specialTab, setSpecialTab] = useState("special"); // null = auto
   const { isHR } = useRoles();
 
+  // 👇 ref + highlight state for "Employee Status Overview"
+  const employeeStatusRef = useRef(null);
+  const [highlightStatus, setHighlightStatus] = useState(false);
+
   const {
     fetchWeeklyAttendance,
     weeklyAttendance,
@@ -340,6 +344,23 @@ const HrDashboard = () => {
     else navigate("/hrDashboard");
   };
 
+  // 👇 handler for clicking the "Total Employee" card
+  const handleTotalEmployeeClick = () => {
+    // Reset to first page & refetch so the table reflects fresh data
+    setPage(1);
+    // getEmployeeStatusOverViewList(1, limit);
+
+    // Scroll the section into view
+    employeeStatusRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    // Flash highlight for visual feedback
+    setHighlightStatus(true);
+    setTimeout(() => setHighlightStatus(false), 1500);
+  };
+
   if (locaLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
@@ -392,7 +413,16 @@ const HrDashboard = () => {
           {coreHRLoading ? (
             <p>loading</p>
           ) : (
-            <div className="flex h-[105px] w-full flex-col justify-evenly rounded-md bg-white px-6 py-4">
+            <div
+              onClick={handleTotalEmployeeClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") &&
+                handleTotalEmployeeClick()
+              }
+              className="flex h-[105px] w-full cursor-pointer flex-col justify-evenly rounded-md bg-white px-6 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
               <div className="flex flex-wrap">
                 <h2 className="font-bold">Total Employee</h2>
                 <span className="flex-1"></span>
@@ -913,7 +943,12 @@ const HrDashboard = () => {
         </div>
 
         {/* EMPLOYEE STATUS OVERVIEW */}
-        <div className="rounded-2xl bg-white">
+        <div
+          ref={employeeStatusRef}
+          className={`scroll-mt-4 rounded-2xl bg-white transition-all duration-300 ${
+            highlightStatus ? "ring-2 ring-indigo-400 ring-offset-2" : ""
+          }`}
+        >
           <div className="flex w-full items-center rounded-xl bg-opacity-50">
             <h1 className="px-4 py-2 text-lg font-semibold text-gray-800">
               Employee Status Overview

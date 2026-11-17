@@ -1034,68 +1034,6 @@ const EmployeeDetail = ({ onClose }) => {
                     </div>
                   </div>
 
-                  {/* Reporting Manager */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="w-full col-span-1 flex items-center">
-                      <label
-                        htmlFor="reportingManager"
-                        className="text-gray-700 font-medium"
-                      >
-                        Reporting Manager:
-                      </label>
-                    </div>
-                    <div className="col-span-2">
-                      <div className="min-h-[42px]">
-                        <Select
-                          inputId="reportingManager"
-                          name="reportingManager"
-                          isClearable
-                          options={reportingManagerSelectOptions}
-                          value={
-                            formik.values.reportingManager
-                              ? reportingManagerSelectOptions.find(
-                                  (opt) =>
-                                    opt.value ===
-                                    formik.values.reportingManager
-                                ) || null
-                              : null
-                          }
-                          onChange={(selected) => {
-                            const value = selected?.value || "";
-                            formik.setFieldValue("reportingManager", value);
-                          }}
-                          onBlur={() =>
-                            formik.setFieldTouched("reportingManager", true)
-                          }
-                          placeholder="Select Reporting Manager"
-                          // isDisabled={
-                          //   !isEditing || !formik.values.department
-                          // }
-                          classNamePrefix="react-select"
-                          styles={{
-                            control: (provided, state) => ({
-                              ...provided,
-                              minHeight: "42px",
-                              height: "42px",
-                              borderColor: state.isFocused
-                                ? theme.secondaryColor
-                                : "#d1d5db",
-                              boxShadow: state.isFocused
-                                ? `0 0 0 2px ${theme.secondaryColor}33`
-                                : "none",
-                              borderRadius: "0.5rem",
-                            }),
-                          }}
-                        />
-                      </div>
-                      {formik.touched.reportingManager &&
-                        formik.errors.reportingManager && (
-                          <div className="text-red-500 text-sm mt-1">
-                            {formik.errors.reportingManager}
-                          </div>
-                        )}
-                    </div>
-                  </div>
 
                   {/* Designation */}
                   <div className="grid grid-cols-3 gap-2">
@@ -1163,6 +1101,70 @@ const EmployeeDetail = ({ onClose }) => {
                         )}
                     </div>
                   </div>
+
+                                    {/* Reporting Manager */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="w-full col-span-1 flex items-center">
+                      <label
+                        htmlFor="reportingManager"
+                        className="text-gray-700 font-medium"
+                      >
+                        Reporting Manager:
+                      </label>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="min-h-[42px]">
+                        <Select
+                          inputId="reportingManager"
+                          name="reportingManager"
+                          isClearable
+                          options={reportingManagerSelectOptions}
+                          value={
+                            formik.values.reportingManager
+                              ? reportingManagerSelectOptions.find(
+                                  (opt) =>
+                                    opt.value ===
+                                    formik.values.reportingManager
+                                ) || null
+                              : null
+                          }
+                          onChange={(selected) => {
+                            const value = selected?.value || "";
+                            formik.setFieldValue("reportingManager", value);
+                          }}
+                          onBlur={() =>
+                            formik.setFieldTouched("reportingManager", true)
+                          }
+                          placeholder="Select Reporting Manager"
+                          // isDisabled={
+                          //   !isEditing || !formik.values.department
+                          // }
+                          classNamePrefix="react-select"
+                          styles={{
+                            control: (provided, state) => ({
+                              ...provided,
+                              minHeight: "42px",
+                              height: "42px",
+                              borderColor: state.isFocused
+                                ? theme.secondaryColor
+                                : "#d1d5db",
+                              boxShadow: state.isFocused
+                                ? `0 0 0 2px ${theme.secondaryColor}33`
+                                : "none",
+                              borderRadius: "0.5rem",
+                            }),
+                          }}
+                        />
+                      </div>
+                      {formik.touched.reportingManager &&
+                        formik.errors.reportingManager && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formik.errors.reportingManager}
+                          </div>
+                        )}
+                    </div>
+                  </div>
+
 
                   {/* Payroll Grade */}
                   {formik.values.designation && (

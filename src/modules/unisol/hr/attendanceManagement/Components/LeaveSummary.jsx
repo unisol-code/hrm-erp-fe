@@ -23,15 +23,23 @@ const LeaveSummary = () => {
 
   return (
     <div className="w-full rounded-2xl mt-4 h-[570px] bg-white shadow-lg border border-gray-200 overflow-y-auto">
-      {/* Header */}
-      <div
-        className="flex justify-between items-center w-full px-8 py-5 rounded-t-2xl"
-        style={{ backgroundColor: theme.secondaryColor }}
-      >
-        <h1 className="text-black text-xl font-semibold tracking-wide">
-          Leave Summary
-        </h1>
-      </div>
+   
+{/* Header */}
+<div
+  className="flex justify-between items-center w-full px-8 py-5 rounded-t-2xl"
+  style={{ backgroundColor: theme.secondaryColor }}
+>
+  <div className="flex flex-col gap-1">
+    <h1 className="text-black text-xl font-semibold tracking-wide">
+      Leave Summary
+    </h1>
+
+    <p className="text-sm text-gray-600 font-medium">
+      Employee: {employeeLeaveSummary?.employeeName || "Employee"}
+    </p>
+  </div>
+</div>
+
 
     {
       loading?(<div className="flex w-full h-full items-center justify-center"><LoaderSpinner/></div>):(  <div className="p-6 space-y-8">
@@ -66,14 +74,14 @@ const LeaveSummary = () => {
         </div>
 
         {/* Festival Leaves */}
-        {/* <div className="rounded-xl p-5 border border-gray-200 bg-gray-50">
-          <h2 className="text-gray-700 font-semibold mb-4">Festival Leaves</h2>
+        <div className="rounded-xl p-5 border border-gray-200 bg-gray-50">
+          <h2 className="text-gray-700 font-semibold mb-4">Vacation Leaves</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <StatCard label="Total Leaves" value="3" color="text-blue-600" />
-            <StatCard label="Leave Balance" value="1" color="text-green-600" />
-            <StatCard label="Leave Taken" value="2" color="text-red-500" />
+            <StatCard label="Total Leaves" value={employeeLeaveSummary?.LeaveSummary[2]?.VacationLeave?.TotalLeave ?? "N/A"} color="text-blue-600" />
+            <StatCard label="Leave Balance" value={employeeLeaveSummary?.LeaveSummary[2]?.VacationLeave?.PendingLeave ?? "N/A"} color="text-green-600" />
+            <StatCard label="Leave Taken" value={employeeLeaveSummary?.LeaveSummary[2]?.VacationLeave?.LeaveTaken ?? "N/A"} color="text-red-500" />
           </div>
-        </div> */}
+        </div>
       </div>)
     }
     </div>

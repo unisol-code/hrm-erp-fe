@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
 import { RiImageCircleLine } from "react-icons/ri";
 import { IoEyeOutline } from "react-icons/io5";
 import { IoIosArrowRoundForward } from "react-icons/io";
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import AddEmployee from "../../../../components/Dialogs/AddEmployee";
 import EmployeeDetail from "../../../../components/Dialogs/EmployeeDetail";
 import SearchEmp from "../../../../components/Dialogs/SearchEmp";
@@ -28,7 +35,7 @@ import Select from "react-select";
 import Button from "../../../../components/Button";
 import LoaderSpinner from "../../../../components/LoaderSpinner";
 import { Eye } from "lucide-react";
-import { IconButton } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import useHierarchy from "../../../../hooks/unisol/coreHr/useHierarchy";
 
 const colors = [
@@ -110,6 +117,13 @@ const CoreHR = () => {
   const { theme } = useTheme();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const navigate = useNavigate();
+
+  // 👇 ref + highlight state for "Employee List"
+  const employeeListRef = useRef(null);
+  const [highlightStatus, setHighlightStatus] = useState(false);
+
+  // 👇 pie chart modal state
+  const [pieModalOpen, setPieModalOpen] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -213,6 +227,18 @@ const CoreHR = () => {
     setLimit(data);
     fetchCoreHREmployeeList(page, data);
   };
+
+  // 👇 handler for clicking the "Total Employee" card
+  const handleTotalEmployeeClick = () => {
+    setPage(1);
+    employeeListRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+    setHighlightStatus(true);
+    setTimeout(() => setHighlightStatus(false), 1500);
+  };
+
   console.log("searchEmpCoreHr : ", searchEmpCoreHr);
   console.log("hierarchy : ", hierarchy);
   if (locaLoading) {
@@ -237,20 +263,30 @@ const CoreHR = () => {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6  md:grid-cols-2">
-          {/* Total Employee Section */}
-          <div className="w-full rounded-lg flex  flex-col bg-white py-4 px-6 justify-evenly">
+          {/* Total Employee Section — clickable */}
+          <div
+            onClick={handleTotalEmployeeClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) =>
+              (e.key === "Enter" || e.key === " ") &&
+              handleTotalEmployeeClick()
+            }
+            className="w-full rounded-lg flex flex-col bg-white py-4 px-6 justify-evenly cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
             <div className="flex">
               <h2 className="font-bold">Total Employee</h2>
               <span className="flex-1"></span>
               <div
                 className={`rounded-full w-[80px] h-[24px] px-1 bg-opacity-15 flex items-start justify-between
-        ${totalEmpAttendance && totalEmpAttendance?.percentageIncrease > 0
-                    ? "bg-[#23C10A] text-[#0BBA00]"
-                    : "bg-[#C10A0A26] text-[#C71026]"
-                  }`}
+        ${
+          totalEmpAttendance && totalEmpAttendance?.percentageIncrease > 0
+            ? "bg-[#23C10A] text-[#0BBA00]"
+            : "bg-[#C10A0A26] text-[#C71026]"
+        }`}
               >
                 {totalEmpAttendance &&
-                  totalEmpAttendance?.percentageIncrease > 0 ? (
+                totalEmpAttendance?.percentageIncrease > 0 ? (
                   <TrendingUpIcon />
                 ) : (
                   <TrendingDownIcon />
@@ -262,7 +298,6 @@ const CoreHR = () => {
             <h2 className="text-2xl font-bold">
               {totalEmpAttendance && totalEmpAttendance?.empCount}
             </h2>
-            {/* <h2 className="text-[#949494]">Employee</h2> */}
           </div>
 
           {/* New Employee Section */}
@@ -274,7 +309,6 @@ const CoreHR = () => {
             <h2 className="text-2xl font-bold">
               {newEmployeeCount && newEmployeeCount?.empCount}
             </h2>
-            {/* <h2 className="text-[#949494]">Viewers</h2> */}
           </div>
 
           {/* Today's Attendance Section */}
@@ -286,13 +320,14 @@ const CoreHR = () => {
               <span className="flex-1"></span>
               <div
                 className={`rounded-full w-[80px] h-[24px] px-1 bg-opacity-15 flex items-center justify-between
-        ${todaysEmpAttendance && todaysEmpAttendance?.presentPercentage > 0
-                    ? "bg-[#23C10A] text-[#0BBA00]"
-                    : "bg-[#C10A0A26] text-[#C71026]"
-                  }`}
+        ${
+          todaysEmpAttendance && todaysEmpAttendance?.presentPercentage > 0
+            ? "bg-[#23C10A] text-[#0BBA00]"
+            : "bg-[#C10A0A26] text-[#C71026]"
+        }`}
               >
                 {todaysEmpAttendance &&
-                  todaysEmpAttendance?.presentPercentage > 0 ? (
+                todaysEmpAttendance?.presentPercentage > 0 ? (
                   <TrendingUpIcon />
                 ) : (
                   <TrendingDownIcon />
@@ -304,7 +339,6 @@ const CoreHR = () => {
             <h2 className="text-2xl font-bold text-truncate">
               {todaysEmpAttendance && todaysEmpAttendance?.presentToday}
             </h2>
-            {/* <h2 className="text-[#949494] text-sm sm:text-base">Applicants</h2> */}
           </div>
         </div>
 
@@ -317,7 +351,6 @@ const CoreHR = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Department */}
             <div className="flex flex-col mt-5">
-              {/* <label className="mb-1 text-gray-700 font-medium">Department</label> */}
               <Select
                 name="department"
                 isLoading={employeeLoading}
@@ -328,9 +361,9 @@ const CoreHR = () => {
                 value={
                   formik.values.department
                     ? {
-                      label: formik.values.department,
-                      value: formik.values.department,
-                    }
+                        label: formik.values.department,
+                        value: formik.values.department,
+                      }
                     : null
                 }
                 onChange={(selected) => {
@@ -369,7 +402,6 @@ const CoreHR = () => {
 
             {/* Designation */}
             <div className="flex flex-col  mt-5">
-              {/* <label className="mb-1 text-gray-700 font-medium">Designation</label> */}
               <Select
                 name="designation"
                 isLoading={employeeLoading}
@@ -380,9 +412,9 @@ const CoreHR = () => {
                 value={
                   formik.values.designation
                     ? {
-                      label: formik.values.designation,
-                      value: formik.values.designation,
-                    }
+                        label: formik.values.designation,
+                        value: formik.values.designation,
+                      }
                     : null
                 }
                 isDisabled={!formik.values.department}
@@ -422,7 +454,6 @@ const CoreHR = () => {
 
             {/* Employee ID */}
             <div className="flex flex-col  mt-5">
-              {/* <label className="mb-1 text-gray-700 font-medium">Employee ID</label> */}
               <Select
                 name="empId"
                 isLoading={coreHRloading}
@@ -436,11 +467,11 @@ const CoreHR = () => {
                 value={
                   formik.values.empId
                     ? allEmployeeIdWithName?.employees
-                      ?.map((e) => ({
-                        label: e.fullName,
-                        value: e.employeeId,
-                      }))
-                      .find((opt) => opt.value === formik.values.empId) || null
+                        ?.map((e) => ({
+                          label: e.fullName,
+                          value: e.employeeId,
+                        }))
+                        .find((opt) => opt.value === formik.values.empId) || null
                     : null
                 }
                 onChange={(selected) => {
@@ -452,9 +483,8 @@ const CoreHR = () => {
                       (emp) => emp.employeeId === value
                     );
 
-                  setSelectedEmployeeId(selectedEmployee?.employeeId || ""); // store employee ID
+                  setSelectedEmployeeId(selectedEmployee?.employeeId || "");
                 }}
-
                 onBlur={() => formik.setFieldTouched("empId", true)}
                 placeholder="Select Employee Name"
                 isClearable
@@ -487,7 +517,6 @@ const CoreHR = () => {
             </div>
           </div>
           <div className="flex justify-center gap-6 items-center w-full mt-2">
-            {/* Employee Name */}
             {selectedEmployeeId && (
               <div className="flex gap-2 items-center">
                 <label className="mb-1 text-gray-700 text-md font-semibold">
@@ -501,16 +530,6 @@ const CoreHR = () => {
                 </span>
               </div>
             )}
-            {/* <input
-                type="text" 
-                style={{ borderColor: theme.secondaryColor }}
-                className="placeholder:font-medium rounded-xl md:w-auto  bg-white py-2 px-4 border-2 outline-none shadow-sm"
-                placeholder="Employee's Name"
-                name="employeeName"
-                value={selectedEmployeeName}
-                disabled
-                readOnly/> */}
-            {/* <Button type="submit" variant={2} text="Search" /> */}
           </div>
         </form>
 
@@ -520,7 +539,7 @@ const CoreHR = () => {
               resetSearchEmpCoreHr();
               setIsSearchEmpDialogOpen(false);
             }}
-            empdata={searchEmpCoreHr} 
+            empdata={searchEmpCoreHr}
           />
         )}
 
@@ -528,13 +547,10 @@ const CoreHR = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
           {/* Hierarchy Section */}
           <div className="w-full md:flex-[150px] bg-white rounded-lg h-[300px] p-3 shadow-md relative">
-
-            {/* Title */}
             <div className="absolute top-2 left-2">
               <h2 className="text-[#878684]">Organizational Hierarchy</h2>
             </div>
 
-            {/* Expand Button */}
             <div className="absolute top-2 right-2">
               <LiaExpandArrowsAltSolid
                 className="cursor-pointer"
@@ -543,7 +559,6 @@ const CoreHR = () => {
               />
             </div>
 
-            {/* Scrollable Tree Content */}
             <div className="overflow-auto h-full pt-10">
               {!hierarchy || !hierarchy?.admin ? (
                 <div className="flex justify-center items-center h-full">
@@ -584,7 +599,8 @@ const CoreHR = () => {
                             {mgr?.name || mgr?.department || ""}
                           </div>
                           <div className="text-[9px] text-gray-600">
-                            {mgr?.designation || (mgr?.department ? "Department" : "")}
+                            {mgr?.designation ||
+                              (mgr?.department ? "Department" : "")}
                           </div>
                         </div>
                       }
@@ -611,7 +627,6 @@ const CoreHR = () => {
               )}
             </div>
 
-            {/* Hierarchy Dialog Popup */}
             {hierarchyDialog && hierarchy && (
               <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
                 <OrganizationalHierarchy
@@ -621,52 +636,82 @@ const CoreHR = () => {
               </div>
             )}
           </div>
-          {/* Pie Chart Section */}
-          <div className="w-full md:flex-[150px] min-w-0 bg-white rounded-lg h-[300px] p-3 shadow-md overflow-hidden">
-            <h1 className="ml-3 text-xs text-[#222529AD] font-medium py-1">
-              % of Employee in different departments
-            </h1>
-            <hr />
-            <div className="flex flex-col md:flex-row flex-wrap h-full">
-              {/* Pie Chart Section */}
-              <div className="w-full md:w-2/3 flex items-center justify-center">
-                <PieChart width={420} height={200}>
-                  <Pie
-                    dataKey="value"
-                    isAnimationActive={false}
-                    data={piedata}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={110}
-                    fill="#8884d8"
-                  >
-                    {piedata.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={colors[index]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </div>
 
-              {/* Legend Section */}
-              <div className="w-full md:w-1/3 p-2 flex items-center justify-center py-3 overflow-y-auto max-h-full">
-                <div className="flex flex-col space-y-2">
+          {/* Pie Chart Section — responsive + expandable */}
+          <div className="w-full md:flex-[150px] min-w-0 bg-white rounded-lg h-[300px] p-3 shadow-md overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between shrink-0">
+              <h1 className="ml-1 text-xs text-[#222529AD] font-medium py-1 truncate pr-2">
+                % of Employee in different departments
+              </h1>
+              <button
+                type="button"
+                aria-label="Expand pie chart"
+                title="Expand"
+                onClick={() => setPieModalOpen(true)}
+                className="shrink-0 rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition"
+              >
+                <LiaExpandArrowsAltSolid size={16} />
+              </button>
+            </div>
+            <hr className="shrink-0" />
+
+            {piedata.length === 0 ? (
+              <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
+                No department data
+              </div>
+            ) : (
+              <div className="flex flex-col md:flex-row flex-1 min-h-0">
+                {/* chart */}
+                <div className="w-full md:w-3/5 h-40 md:h-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        dataKey="value"
+                        isAnimationActive={false}
+                        data={piedata}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius="85%"
+                        fill="#8884d8"
+                      >
+                        {piedata.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={colors[index % colors.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value, name) => [`${value}%`, name]}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* legend */}
+                <div className="w-full md:w-2/5 h-32 md:h-full overflow-y-auto py-1 px-2">
                   {piedata.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-2">
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 py-0.5"
+                    >
                       <span
-                        className="w-3 h-3 rounded-full"
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{
                           backgroundColor: colors[index % colors.length],
                         }}
                       />
-                      <span className="text-gray-700 text-sm font-medium ">
+                      <span className="text-gray-700 text-[11px] font-medium truncate">
                         {item.name}
+                      </span>
+                      <span className="ml-auto text-gray-500 text-[10px] shrink-0">
+                        {item.value}%
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Events Section */}
@@ -715,122 +760,220 @@ const CoreHR = () => {
         </div>
 
         {/*Table Employee List */}
-        <h1 className="px-4 pt-2 text-lg font-semibold text-gray-800">
-          Employee List
-        </h1>
+        <div
+          ref={employeeListRef}
+          className={`scroll-mt-4 rounded-2xl transition-all duration-300 ${
+            highlightStatus ? "ring-2 ring-indigo-400 ring-offset-2" : ""
+          }`}
+        >
+          <h1 className="px-4 pt-2 text-lg font-semibold text-gray-800">
+            Employee List
+          </h1>
 
-        <div className="w-full rounded-2xl bg-white shadow-lg overflow-hidden">
-          <div className="max-h-[500px] overflow-y-auto">
-            <table className="min-w-full text-sm text-gray-800">
-              <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
-                <tr>
-                  <th className="px-6 py-3 text-left font-semibold">Sr. No.</th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Employee Name
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Employee ID
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Phone No
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Joining Date
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Designation
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {coreHRloading ? (
+          <div className="w-full rounded-2xl bg-white shadow-lg overflow-hidden">
+            <div className="max-h-[500px] overflow-y-auto">
+              <table className="min-w-full text-sm text-gray-800">
+                <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
                   <tr>
-                    <td colSpan={7} className="py-10 text-center">
-                      <div className="flex justify-center items-center w-full">
-                        <LoaderSpinner />
-                      </div>
-                    </td>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Sr. No.
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Employee Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Employee ID
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Phone No
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Joining Date
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Designation
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Action
+                    </th>
                   </tr>
-                ) : coreHREmployeeList?.data?.employees?.length > 0 ? (
-                  coreHREmployeeList?.data?.employees?.map((row, index) => (
-                    <tr
-                      key={row._id}
-                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 text-center">
-                        {(page - 1) * limit + index + 1}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <img
-                            src={
-                              row.photo ||
-                              "https://cdn-icons-png.flaticon.com/512/8847/8847419.png"
-                            }
-                            alt="Employee"
-                            className="w-10 h-10 rounded-full object-cover border"
-                          />
-                          <span className="font-medium">
-                            {row.employeeName}
-                          </span>
+                </thead>
+                <tbody>
+                  {coreHRloading ? (
+                    <tr>
+                      <td colSpan={7} className="py-10 text-center">
+                        <div className="flex justify-center items-center w-full">
+                          <LoaderSpinner />
                         </div>
-                      </td>
-                      <td className="px-6 py-4">{row.empId}</td>
-                      <td className="px-6 py-4">{row.phoneNumber || "N/A"}</td>
-                      <td className="px-6 py-4">
-                        {row.joiningDate
-                          ? new Date(row.joiningDate).toLocaleDateString()
-                          : "N/A"}
-                      </td>
-                      <td className="px-6 py-4">{row.jobTitle || "N/A"}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
-                          <IconButton>
-                            <Eye
-                              style={{ color: theme.primaryColor }}
-                              onClick={() => {
-                                resetEmployeeDetails();
-                                handleEmployeeDetail(row);
-                              }}
-                            />
-                          </IconButton>
-                        </div>
-                        {empDetails && (
-                          <EmployeeDetail
-                            onClose={() => setEmpDetails(false)}
-                          />
-                        )}
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5}>
-                      <div className="py-4 text-center flex items-center text-lg font-semibold">
-                        No Data Found.
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : coreHREmployeeList?.data?.employees?.length > 0 ? (
+                    coreHREmployeeList?.data?.employees?.map((row, index) => (
+                      <tr
+                        key={row._id}
+                        className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-center">
+                          {(page - 1) * limit + index + 1}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={
+                                row.photo ||
+                                "https://cdn-icons-png.flaticon.com/512/8847/8847419.png"
+                              }
+                              alt="Employee"
+                              className="w-10 h-10 rounded-full object-cover border"
+                            />
+                            <span className="font-medium">
+                              {row.employeeName}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">{row.empId}</td>
+                        <td className="px-6 py-4">
+                          {row.phoneNumber || "N/A"}
+                        </td>
+                        <td className="px-6 py-4">
+                          {row.joiningDate
+                            ? new Date(row.joiningDate).toLocaleDateString()
+                            : "N/A"}
+                        </td>
+                        <td className="px-6 py-4">{row.jobTitle || "N/A"}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center space-x-2">
+                            <IconButton>
+                              <Eye
+                                style={{ color: theme.primaryColor }}
+                                onClick={() => {
+                                  resetEmployeeDetails();
+                                  handleEmployeeDetail(row);
+                                }}
+                              />
+                            </IconButton>
+                          </div>
+                          {empDetails && (
+                            <EmployeeDetail
+                              onClose={() => setEmpDetails(false)}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5}>
+                        <div className="py-4 text-center flex items-center text-lg font-semibold">
+                          No Data Found.
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
 
-          <div>
-            {!loading && coreHREmployeeList?.data?.employees?.length > 0 && (
-              <Pagination
-                currentPage={coreHREmployeeList?.data?.pagination?.currentPage}
-                totalPages={coreHREmployeeList?.data?.pagination?.totalPages}
-                totalItems={coreHREmployeeList?.data?.pagination?.totalCount}
-                itemsPerPage={limit}
-                onPageChange={onPageChange}
-                onItemsPerPageChange={onItemsPerPageChange}
-              />
-            )}
+            <div>
+              {!loading && coreHREmployeeList?.data?.employees?.length > 0 && (
+                <Pagination
+                  currentPage={
+                    coreHREmployeeList?.data?.pagination?.currentPage
+                  }
+                  totalPages={coreHREmployeeList?.data?.pagination?.totalPages}
+                  totalItems={coreHREmployeeList?.data?.pagination?.totalCount}
+                  itemsPerPage={limit}
+                  onPageChange={onPageChange}
+                  onItemsPerPageChange={onItemsPerPageChange}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Pie Chart Modal */}
+      <Dialog
+        open={pieModalOpen}
+        onClose={() => setPieModalOpen(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle
+          className="flex items-center justify-between px-4 py-2 text-base font-semibold text-gray-800"
+          style={{ backgroundColor: theme?.secondaryColor || "#f3f4f6" }}
+        >
+          <span>% of Employees in Different Departments</span>
+          <CloseIcon
+            className="cursor-pointer"
+            onClick={() => setPieModalOpen(false)}
+          />
+        </DialogTitle>
+
+        <DialogContent dividers className="p-0">
+          {piedata.length === 0 ? (
+            <div className="flex h-[300px] items-center justify-center text-sm text-gray-400">
+              No department data
+            </div>
+          ) : (
+            <div className="flex flex-col md:flex-row h-auto md:h-[60vh]">
+              {/* chart */}
+              <div className="w-full md:w-3/5 h-[300px] md:h-full p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      dataKey="value"
+                      isAnimationActive={false}
+                      data={piedata}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                      fill="#8884d8"
+                      label={({ value }) => `${value}%`}
+                    >
+                      {piedata.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={colors[index % colors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value, name) => [`${value}%`, name]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* legend list */}
+              <div className="w-full md:w-2/5 h-auto md:h-full overflow-y-auto p-4 border-t md:border-t-0 md:border-l border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                  Departments
+                </h3>
+                <div className="flex flex-col space-y-1.5">
+                  {piedata.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 p-1.5 rounded hover:bg-gray-50"
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full shrink-0"
+                        style={{
+                          backgroundColor: colors[index % colors.length],
+                        }}
+                      />
+                      <span className="text-gray-700 text-sm font-medium truncate flex-1">
+                        {item.name}
+                      </span>
+                      <span className="text-gray-600 text-sm font-semibold shrink-0">
+                        {item.value}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

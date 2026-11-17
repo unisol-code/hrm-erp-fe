@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  FaArrowLeft,
   FaCalendarAlt,
   FaCalendarCheck,
   FaCalendarTimes,
@@ -37,12 +36,20 @@ const YearlyEmpWise = () => {
 
   const data =
     employeeYearlyAttendanceOfEmployee?.data || employeeYearlyAttendanceOfEmployee;
+
   const summary = data?.summary || {};
   const months = data?.monthlyAttendance || [];
+  const leaveDetails = data?.leaveDetails || {};
 
   const workingDays = summary.workingDays || 0;
   const attendancePercent =
     workingDays > 0 ? Math.round(((summary.present || 0) / workingDays) * 100) : 0;
+
+  const leaveTypes = [
+    { key: "sickLeave", label: "Sick Leave" },
+    { key: "casualLeave", label: "Casual Leave" },
+    { key: "vacationLeave", label: "Vacation Leave" },
+  ];
 
   return (
     <div className="w-full min-h-screen">
@@ -60,12 +67,12 @@ const YearlyEmpWise = () => {
       />
 
       <div className="mt-4">
-        <Button
+        {/* <Button
           variant={2}
           text="Back"
           onClick={() => navigate(`/employeeAttendence/employeeAttendenceDetails/${id}`)}
           className="mb-4"
-        />
+        /> */}
 
         {loading ? (
           <div className="flex justify-center items-center min-h-[300px] bg-white rounded-xl shadow">
@@ -176,17 +183,90 @@ const YearlyEmpWise = () => {
                       <FaSun className="text-orange-600 text-xl" />
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border border-gray-200 shadow-sm">
+                  {/* <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border border-gray-200 shadow-sm">
                     <div>
                       <p className="text-sm text-gray-600 font-medium">Working Days</p>
                       <p className="text-2xl font-bold text-gray-700 mt-1">
                         {summary.workingDays ?? 0}
                       </p>
                     </div>
+                  </div> */}
+                </div>
+
+                <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
+
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Calendar Days</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {data.totalDaysInYear ?? 0}
+                        </p>
+                      </div>
+                      <div className="h-8 w-px bg-gray-300"></div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Net Working Days</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {data.daysConsideredInYear ?? 0}
+                        </p>
+                      </div>
+                       <div className="h-8 w-px bg-gray-300"></div>
+                                  <div className="text-center">
+                        <p className="text-sm text-gray-600">Elapsed Working Days</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {summary.workingDays ?? 0}
+                        </p>
+                      </div>
+                      <div className="h-8 w-px bg-gray-300"></div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Attendance %</p>
+                        <p className="text-lg font-bold text-green-600">
+                          {summary.present && summary.workingDays
+                            ? `${Math.round((summary.present / summary.workingDays) * 100)}%`
+                            : "0%"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {leaveTypes.some((type) => leaveDetails[type.key]) && (
+              <div className="border-t border-gray-200">
+                <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white">
+                  <h2 className="text-xl font-bold text-gray-800">Leave Details</h2>
+                </div>
+                <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {leaveTypes.map((type) => {
+                    const detail = leaveDetails[type.key];
+                    if (!detail) return null;
+                    return (
+                      <div
+                        key={type.key}
+                        className="bg-blue-50 rounded-xl p-4 border border-blue-100"
+                      >
+                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                          {type.label}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Taken:{" "}
+                          <span className="font-semibold text-blue-700">
+                            {detail.taken ?? 0}
+                          </span>
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Pending:{" "}
+                          <span className="font-semibold text-blue-700">
+                            {detail.pending ?? 0}
+                          </span>
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="border-t border-gray-200">
               <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white">
