@@ -1,40 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
-import { IoIosSettings } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useDashboard from "../../hooks/unisol/hrDashboard/useDashborad";
 import Profile from "../../assets/images/profile-image.png";
 import { useSetRecoilState } from "recoil";
 import { userAuthState } from "../../state/isAuthenticatedAtom";
+import { useSignIn } from "../../hooks/auth/useSignIn";
 
 const EmployeeHeader = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [notificationCount, setNotificationCount] = useState(3); // Example count
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 }); // ✅ added
+  const profileMenuRef = useRef(null);                                     // ✅ added
   const open = Boolean(anchorEl);
   const empId = sessionStorage.getItem("empId");
   const empName = sessionStorage.getItem("name");
   const photo = sessionStorage.getItem("profile");
-  const empRole = sessionStorage.getItem("role") || "Employee"; // Assuming role is stored
+  const empRole = sessionStorage.getItem("role") || "Employee";
   const grade = sessionStorage.getItem("payrollGrade");
   const setUserInfo = useSetRecoilState(userAuthState);
+  const { resetEmployee } = useSignIn();
 
   const handleNotificationClick = (event) => {
     navigate(`/emp/allNotification/${empId}`);
     setAnchorEl(event.currentTarget);
   };
 
+  // ✅ Same positioning logic as admin Header
   const handleProfileMenuToggle = (e) => {
     e.stopPropagation();
-    setIsProfileMenuOpen(!isProfileMenuOpen);
+    if (!isProfileMenuOpen && profileMenuRef.current) {
+      const rect = profileMenuRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 8,
+        right: Math.max(window.innerWidth - rect.right, 8),
+      });
+    }
+    setIsProfileMenuOpen((prev) => !prev);
   };
+
   const handleLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
     setUserInfo({ isAuthenticated: false });
+    resetEmployee();
+    setIsProfileMenuOpen(false);
     navigate("/");
   };
 
@@ -44,19 +58,20 @@ const EmployeeHeader = () => {
     if (empId) {
       fetchUserAllNotification(empId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empId]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isProfileMenuOpen && !event.target.closest('.employee-profile-menu')) {
+      if (isProfileMenuOpen && !event.target.closest(".employee-profile-menu")) {
         setIsProfileMenuOpen(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [isProfileMenuOpen]);
 
@@ -84,7 +99,7 @@ const EmployeeHeader = () => {
         <div className="w-[1px] h-8 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
 
         {/* Profile Section */}
-        <div className="relative employee-profile-menu">
+        <div ref={profileMenuRef} className="relative employee-profile-menu">
           <button
             onClick={handleProfileMenuToggle}
             className="flex items-center gap-3 p-1.5 rounded-2xl hover:bg-gray-50 transition-all duration-200 group"
@@ -112,16 +127,22 @@ const EmployeeHeader = () => {
             </div>
 
             <MdOutlineKeyboardArrowDown
-              className={`text-gray-400 text-xl transition-transform duration-200 ${isProfileMenuOpen ? "rotate-180" : ""
-                }`}
+              className={`text-gray-400 text-xl transition-transform duration-200 ${
+                isProfileMenuOpen ? "rotate-180" : ""
+              }`}
             />
           </button>
 
-          {/* Profile Dropdown Menu */}
+          {/* Profile Dropdown Menu — same fixed positioning as admin Header ✅ */}
           {isProfileMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn">
+            <div
+              className="fixed w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn"
+              style={{ top: menuPosition.top, right: menuPosition.right }}
+            >
               <div className="px-4 py-3 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-800">{empName || "Employee"}</p>
+                <p className="text-sm font-semibold text-gray-800">
+                  {empName || "Employee"}
+                </p>
                 <p className="text-xs text-gray-500 truncate capitalize">
                   {empRole.toLowerCase()}
                 </p>

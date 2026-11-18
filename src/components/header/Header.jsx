@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { IoIosSettings } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
-import Menu from "@mui/material/Menu";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import useDashboard from "../../hooks/unisol/hrDashboard/useDashborad";
@@ -15,6 +14,8 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notificationCount, setNotificationCount] = useState(3); // Example count
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const profileMenuRef = useRef(null);
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const superAdminId = sessionStorage.getItem("superAdminId");
@@ -31,8 +32,16 @@ const Header = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleProfileMenuToggle = () => {
-    setIsProfileMenuOpen(!isProfileMenuOpen);
+  const handleProfileMenuToggle = (event) => {
+    event.stopPropagation();
+    if (!isProfileMenuOpen && profileMenuRef.current) {
+      const rect = profileMenuRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 8,
+        right: Math.max(window.innerWidth - rect.right, 8),
+      });
+    }
+    setIsProfileMenuOpen((prev) => !prev);
   };
 
   const handleLogout = () => {
@@ -88,7 +97,7 @@ const Header = () => {
         <div className="w-[1px] h-8 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
 
         {/* Profile Section */}
-        <div className="relative profile-menu-container">
+        <div ref={profileMenuRef} className="relative profile-menu-container">
           <button
             onClick={handleProfileMenuToggle}
             className="flex items-center gap-3 p-1.5 rounded-2xl hover:bg-gray-50 transition-all duration-200 group"
@@ -119,7 +128,10 @@ const Header = () => {
 
           {/* Profile Dropdown Menu */}
           {isProfileMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn">
+            <div
+              className="fixed w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn"
+              style={{ top: menuPosition.top, right: menuPosition.right }}
+            >
               <div className="px-4 py-3 border-b border-gray-100">
                 <p className="text-sm font-semibold text-gray-800">{name || "Admin"}</p>
                 <p className="text-xs text-gray-500 truncate">
