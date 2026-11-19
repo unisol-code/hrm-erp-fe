@@ -39,11 +39,19 @@ const YearlyEmpWise = () => {
 
   const summary = data?.summary || {};
   const months = data?.monthlyAttendance || [];
-  const leaveDetails = data?.leaveDetails || {};
+  const leaveDetails = summary?.leaveDetails || data?.leaveDetails || {};
 
-  const workingDays = summary.workingDays || 0;
+  // ✅ Same fallback pattern for the counter fields
+  const present  = summary.present  ?? data?.present  ?? 0;
+  const absent   = summary.absent   ?? data?.absent   ?? 0;
+  const leaves   = summary.leaves   ?? data?.leaves   ?? 0;
+  const holidays = summary.holidays ?? data?.holidays ?? 0;
+  const sundays  = summary.sundays  ?? data?.sundays  ?? 0;
+  const workingDays = summary.workingDays ?? data?.workingDays ?? 0;
+  const missedPunchRemarksCount = summary.totalRemarks ?? data?.totalRemarks ?? 0;
+
   const attendancePercent =
-    workingDays > 0 ? Math.round(((summary.present || 0) / workingDays) * 100) : 0;
+    workingDays > 0 ? Math.round((present / workingDays) * 100) : 0;
 
   const leaveTypes = [
     { key: "sickLeave", label: "Sick Leave" },
@@ -67,13 +75,6 @@ const YearlyEmpWise = () => {
       />
 
       <div className="mt-4">
-        {/* <Button
-          variant={2}
-          text="Back"
-          onClick={() => navigate(`/employeeAttendence/employeeAttendenceDetails/${id}`)}
-          className="mb-4"
-        /> */}
-
         {loading ? (
           <div className="flex justify-center items-center min-h-[300px] bg-white rounded-xl shadow">
             <LoaderSpinner />
@@ -127,76 +128,110 @@ const YearlyEmpWise = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+                {/* ✅ Stat cards — now identical to MonthlyEmpWise (icon pill + progress bar on Present) */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                  {/* Present */}
                   <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-green-600 font-medium">Present</p>
                         <p className="text-2xl font-bold text-green-700 mt-1">
-                          {summary.present ?? 0}
+                          {present}
                         </p>
                       </div>
-                      <FaCalendarCheck className="text-green-600 text-xl" />
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <FaCalendarCheck className="text-green-600 text-xl" />
+                      </div>
+                    </div>
+                    <div className="h-2 bg-green-200 rounded-full mt-3 overflow-hidden">
+                      <div
+                        className="h-full bg-green-500 rounded-full"
+                        style={{
+                          width: `${workingDays ? (present / workingDays) * 100 : 0}%`,
+                        }}
+                      ></div>
                     </div>
                   </div>
+
+                  {/* Absent */}
                   <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-red-600 font-medium">Absent</p>
                         <p className="text-2xl font-bold text-red-700 mt-1">
-                          {summary.absent ?? 0}
+                          {absent}
                         </p>
                       </div>
-                      <FaCalendarTimes className="text-red-600 text-xl" />
+                      <div className="p-2 bg-red-100 rounded-lg">
+                        <FaCalendarTimes className="text-red-600 text-xl" />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Leaves */}
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-blue-600 font-medium">Leaves</p>
                         <p className="text-2xl font-bold text-blue-700 mt-1">
-                          {summary.leaves ?? 0}
+                          {leaves}
                         </p>
                       </div>
-                      <FaUmbrellaBeach className="text-blue-600 text-xl" />
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <FaUmbrellaBeach className="text-blue-600 text-xl" />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Holidays */}
                   <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-purple-600 font-medium">Holidays</p>
+                        <p className="text-sm text-purple-600 font-medium">Official Holidays</p>
                         <p className="text-2xl font-bold text-purple-700 mt-1">
-                          {summary.holidays ?? 0}
+                          {holidays}
                         </p>
                       </div>
-                      <FaHome className="text-purple-600 text-xl" />
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <FaHome className="text-purple-600 text-xl" />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Sundays */}
                   <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-orange-600 font-medium">Sundays</p>
                         <p className="text-2xl font-bold text-orange-700 mt-1">
-                          {summary.sundays ?? 0}
+                          {sundays}
                         </p>
                       </div>
-                      <FaSun className="text-orange-600 text-xl" />
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <FaSun className="text-orange-600 text-xl" />
+                      </div>
                     </div>
                   </div>
-                  {/* <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <div>
-                      <p className="text-sm text-gray-600 font-medium">Working Days</p>
-                      <p className="text-2xl font-bold text-gray-700 mt-1">
-                        {summary.workingDays ?? 0}
-                      </p>
-                    </div>
-                  </div> */}
+
+                                             
+                                                  <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200 shadow-sm">
+                                                      <div className="flex items-center justify-between">
+                                                          <div>
+                                                              <p className="text-sm text-pink-600 font-medium">Missed Punch Remarks</p>
+                                                              <p className="text-2xl font-bold text-pink-700 mt-1">
+                                                                  {missedPunchRemarksCount ?? 0}
+                                                              </p>
+                                                          </div>
+                                                          <div className="p-2 bg-red-100 rounded-lg">
+                                                              <FaCalendarTimes className="text-pink-600 text-xl" />
+                                                          </div>
+                                                      </div>
+                                                  </div>
                 </div>
 
                 <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-4 flex-wrap">
-
                       <div className="text-center">
                         <p className="text-sm text-gray-600">Calendar Days</p>
                         <p className="text-lg font-bold text-gray-800">
@@ -207,67 +242,67 @@ const YearlyEmpWise = () => {
                       <div className="text-center">
                         <p className="text-sm text-gray-600">Net Working Days</p>
                         <p className="text-lg font-bold text-gray-800">
-                          {data.daysConsideredInYear ?? 0}
+                          {data.totalWorkingDaysInYear ?? 0}
                         </p>
                       </div>
-                       <div className="h-8 w-px bg-gray-300"></div>
-                                  <div className="text-center">
+                      <div className="h-8 w-px bg-gray-300"></div>
+                      <div className="text-center">
                         <p className="text-sm text-gray-600">Elapsed Working Days</p>
                         <p className="text-lg font-bold text-gray-800">
-                          {summary.workingDays ?? 0}
+                          {workingDays}
                         </p>
                       </div>
                       <div className="h-8 w-px bg-gray-300"></div>
                       <div className="text-center">
                         <p className="text-sm text-gray-600">Attendance %</p>
                         <p className="text-lg font-bold text-green-600">
-                          {summary.present && summary.workingDays
-                            ? `${Math.round((summary.present / summary.workingDays) * 100)}%`
-                            : "0%"}
+                          {attendancePercent}%
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Leave Details (same as MonthlyEmpWise) */}
+                {leaveTypes.some((type) => leaveDetails[type.key]) && (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                      Leave Details
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {leaveTypes.map((type) => {
+                        const detail = leaveDetails[type.key];
+                        if (!detail) return null;
+                        return (
+                          <div
+                            key={type.key}
+                            className="bg-blue-50 rounded-xl p-4 border border-blue-100"
+                          >
+                            <p className="text-sm font-semibold text-gray-700 mb-2">
+                              {type.label}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Taken:{" "}
+                              <span className="font-semibold text-blue-700">
+                                {detail.taken ?? 0}
+                              </span>
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Pending:{" "}
+                              <span className="font-semibold text-blue-700">
+                                {detail.pending ?? 0}
+                              </span>
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {leaveTypes.some((type) => leaveDetails[type.key]) && (
-              <div className="border-t border-gray-200">
-                <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white">
-                  <h2 className="text-xl font-bold text-gray-800">Leave Details</h2>
-                </div>
-                <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {leaveTypes.map((type) => {
-                    const detail = leaveDetails[type.key];
-                    if (!detail) return null;
-                    return (
-                      <div
-                        key={type.key}
-                        className="bg-blue-50 rounded-xl p-4 border border-blue-100"
-                      >
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
-                          {type.label}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Taken:{" "}
-                          <span className="font-semibold text-blue-700">
-                            {detail.taken ?? 0}
-                          </span>
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Pending:{" "}
-                          <span className="font-semibold text-blue-700">
-                            {detail.pending ?? 0}
-                          </span>
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
+            {/* Monthly Attendance table — unchanged */}
             <div className="border-t border-gray-200">
               <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white">
                 <h2 className="text-xl font-bold text-gray-800">
@@ -281,30 +316,14 @@ const YearlyEmpWise = () => {
                 <table className="w-full table-auto">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="p-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Month
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Present
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Absent
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Leaves
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Holidays
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Sundays
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Working Days
-                      </th>
-                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Days Considered
-                      </th>
+                      <th className="p-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Month</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Present</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Absent</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Leaves</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Holidays</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Sundays</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Working Days</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Days Considered</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">

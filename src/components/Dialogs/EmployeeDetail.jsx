@@ -43,6 +43,7 @@ const validationSchema = Yup.object().shape({
     .matches(/^[0-9]+$/, "Phone number must be numeric")
     .min(10, "Phone number must be at least 10 digits"),
   dateOfBirth: Yup.date().nullable().required("Date of Birth is required"),
+  bloodGroup: Yup.string(),
   department: Yup.string().required("Department is required"),
   joiningDate: Yup.date().required("Joining Date is required"),
   employmentType: Yup.string().required("Employment Type is required"),
@@ -178,6 +179,7 @@ const tabFieldMap = {
     "empPassword",
     "phoneNumber",
     "dateOfBirth",
+    "bloodGroup",
     "department",
     "designation",
     "payrollGrade",
@@ -345,6 +347,7 @@ const EmployeeDetail = ({ onClose }) => {
           .toISOString()
           .split("T")[0]
       : "",
+    bloodGroup: coreHREmployeeDetails?.data?.bloodGroup || "",
     department: coreHREmployeeDetails?.data?.department || "",
     designation: coreHREmployeeDetails?.data?.designation || "",
     payrollGrade: coreHREmployeeDetails?.data?.payrollGrade || "",
@@ -1282,6 +1285,37 @@ const EmployeeDetail = ({ onClose }) => {
                       formik.errors.dateOfBirth ? (
                         <div className="text-red-500">
                           {formik.errors.dateOfBirth}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  {/* Blood Group */}
+                  <div className="grid grid-cols-3">
+                    <div className="w-full col-span-1 ">
+                      <label>Blood Group: </label>
+                    </div>
+                    <div className="col-span-2">
+                      <select
+                        className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
+                        name="bloodGroup"
+                        value={formik.values.bloodGroup}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        disabled={!isEditing}
+                      >
+                        <option value="" label="Select Blood Group" />
+                        {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                          (bloodGroup) => (
+                            <option key={bloodGroup} value={bloodGroup}>
+                              {bloodGroup}
+                            </option>
+                          )
+                        )}
+                      </select>
+                      {formik.touched.bloodGroup &&
+                      formik.errors.bloodGroup ? (
+                        <div className="text-red-500">
+                          {formik.errors.bloodGroup}
                         </div>
                       ) : null}
                     </div>

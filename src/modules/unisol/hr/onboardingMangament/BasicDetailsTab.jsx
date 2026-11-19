@@ -1,8 +1,6 @@
-import React from "react";
-import { useFormikContext } from "formik";
+import { useEffect } from "react";
 import MuiButton from "@mui/material/Button";
 import { useTheme } from "../../../../hooks/theme/useTheme";
-import { useState, useEffect } from "react";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import Select from "react-select";
 
@@ -428,6 +426,33 @@ const BasicDetailsTab = ({
               ) : null}
             </div>
           </div>
+          {/* Blood Group */}
+          <div className="grid grid-cols-3">
+            <div className="w-full col-span-1 ">
+              <label>Blood Group: </label>
+            </div>
+            <div className="col-span-2">
+              <select
+                className="w-full px-2 py-2 border-2 border-gray-400 rounded-lg"
+                name="bloodGroup"
+                value={formik.values.bloodGroup}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              >
+                <option value="" label="Select Blood Group" />
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                  (bloodGroup) => (
+                    <option key={bloodGroup} value={bloodGroup}>
+                      {bloodGroup}
+                    </option>
+                  )
+                )}
+              </select>
+              {formik.touched.bloodGroup && formik.errors.bloodGroup ? (
+                <div className="text-red-500">{formik.errors.bloodGroup}</div>
+              ) : null}
+            </div>
+          </div>
           {/* Marital Status */}
           <div className="grid grid-cols-3">
             <div className="w-full col-span-1 ">
@@ -484,7 +509,7 @@ const BasicDetailsTab = ({
 
           <div>
             <h2 className="text-lg font-semibold">Current Address</h2>
-            <span class="text-md text-gray-500 dark:text-gray-400 italic mt-1 block">
+            <span className="text-md text-gray-500 dark:text-gray-400 italic mt-1 block">
               Enter the ZIP code and details will be automatically fetched.
             </span>
             <div className="grid grid-cols-3 mb-6 mt-4">
@@ -649,7 +674,7 @@ const BasicDetailsTab = ({
                   setSamePermenanttAddressChecked(e.target.checked)
                 }
               />
-              <span class="text-md text-gray-500 dark:text-gray-400 italic">
+              <span className="text-md text-gray-500 dark:text-gray-400 italic">
                 Check if the current address is same as permanent address.
               </span>
             </div>
@@ -1060,7 +1085,7 @@ const BasicDetailsTab = ({
                 closeMenuOnSelect={true}
                 className="w-full"
                 styles={{
-                  control: (provided, state) => ({
+                  control: (provided) => ({
                     ...provided,
                     borderColor: "#9ca3af", // Tailwind: border-gray-400
                     borderWidth: "2px",

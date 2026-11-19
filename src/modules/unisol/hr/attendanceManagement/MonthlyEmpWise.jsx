@@ -313,7 +313,7 @@ const MonthlyEmpWise = () => {
                                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200 shadow-sm">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-purple-600 font-medium">Holidays</p>
+                                            <p className="text-sm text-purple-600 font-medium">Official Holidays</p>
                                             <p className="text-2xl font-bold text-purple-700 mt-1">
                                                 {monthlyAttendanceOfEmployee?.data?.summary?.holidays || 0}
                                             </p>
@@ -337,6 +337,21 @@ const MonthlyEmpWise = () => {
                                         </div>
                                     </div>
                                 </div>
+
+                                
+                                <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200 shadow-sm">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-pink-600 font-medium">Missed Punch Remarks</p>
+                                            <p className="text-2xl font-bold text-pink-700 mt-1">
+                                                {monthlyAttendanceOfEmployee?.data?.totalRemarks || 0}
+                                            </p>
+                                        </div>
+                                        <div className="p-2 bg-red-100 rounded-lg">
+                                            <FaCalendarTimes className="text-pink-600 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Summary Bar */}
@@ -344,23 +359,23 @@ const MonthlyEmpWise = () => {
                                 <div className="flex flex-wrap items-center justify-between gap-4">
                                     <div className="flex items-center gap-4 flex-wrap">
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">Working Days</p>
+                                            <p className="text-sm text-gray-600">Calender Days</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {summary.workingDays ?? 0}
+                                                {data?.totalDaysInMonth  ?? 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">Total Days</p>
+                                            <p className="text-sm text-gray-600">Net Working Days</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {data?.totalDaysInMonth ?? 0}
+                                                {data?.totalWorkingDaysInMonth ?? 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">Days Considered</p>
+                                            <p className="text-sm text-gray-600">Elapsed Days Considered</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {data?.daysConsidered ?? 0}
+                                                {data?.workingDaysTillDate ?? 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>

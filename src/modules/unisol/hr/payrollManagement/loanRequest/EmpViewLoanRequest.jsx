@@ -349,6 +349,14 @@ const EmpViewLoanRequest = () => {
               icon={Calendar}
               color="#8B5CF6"
             />
+          {empLoanReqDetailToAdmin?.approvalDate && (
+  <StatCard
+    title="Approval Date"
+    value={formatDate(empLoanReqDetailToAdmin.approvalDate)}
+    icon={Calendar}
+    color="#8B5CF6"
+  />
+)}
           </div>
 
           {/* Nill Amount Request Status - Show for both "requested" and "reject" */}
