@@ -9,6 +9,9 @@ import {
   expenseSheetAtom,
   empWiseYearsAtom,
   yearWiseMonthsAtom,
+  expensesMonthlyTrendAtom,
+  expensesCategoryBreakdownAtom,
+  categoryWiseEmployeeExpensesAtom,
 } from "../../../state/hrExpense/useHrExpenseState";
 
 const useHrExpense = () => {
@@ -19,6 +22,9 @@ const useHrExpense = () => {
   const [expenseSheet, setExpenseSheet] = useRecoilState(expenseSheetAtom);
   const [empWiseYears, setEmpWiseYears] = useRecoilState(empWiseYearsAtom);
   const [yearWiseMonths, setYearWiseMonths] = useRecoilState(yearWiseMonthsAtom);
+  const [expensesMonthlyTrend, setExpensesMonthlyTrend] = useRecoilState(expensesMonthlyTrendAtom);
+  const [expensesCategoryBreakdown, setExpensesCategoryBreakdown] = useRecoilState(expensesCategoryBreakdownAtom);
+  const [categoryWiseEmployeeExpenses, setCategoryWiseEmployeeExpenses] = useRecoilState(categoryWiseEmployeeExpensesAtom);
 
   const fetchEmpWiseYears = async (id) => {
     setEmpWiseYears([])
@@ -57,6 +63,66 @@ const useHrExpense = () => {
       setLoading(false);
     }
   }
+
+  const fetchExpensesMonthlyTrend = async (year) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (year) params.append("year", year);
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}analytics/getExpensesMonthlyTrend?${params}`,
+      });
+      if (res) {
+        setExpensesMonthlyTrend(res);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Fetching Expenses Monthly Trend:", error);
+      setLoading(false);
+    }
+  };
+
+  const fetchExpensesCategoryBreakdown = async (year, month) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (year) params.append("year", year);
+      if (month) params.append("month", month);
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}analytics/getExpensesCategoryBreakdown?${params}`,
+      });
+      if (res) {
+        setExpensesCategoryBreakdown(res);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Fetching Expenses Category Breakdown:", error);
+      setLoading(false);
+    }
+  };
+
+  const fetchCategoryWiseEmployeeExpenses = async (year, month, category) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (year) params.append("year", year);
+      if (month) params.append("month", month);
+      if (category) params.append("category", category);
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}analytics/getCategoryWiseEmployeeExpenses?${params}`,
+      });
+      if (res) {
+        setCategoryWiseEmployeeExpenses(res);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Fetching Category Wise Employee Expenses:", error);
+      setLoading(false);
+    }
+  };
 
   const fetchSalesExpList = async (page, limit, department) => {
     setExpenseList(null);
@@ -143,6 +209,12 @@ const useHrExpense = () => {
     empWiseYears,
     fetchYearWiseMonth,
     yearWiseMonths,
+    fetchExpensesMonthlyTrend,
+    expensesMonthlyTrend,
+    fetchExpensesCategoryBreakdown,
+    expensesCategoryBreakdown,
+    fetchCategoryWiseEmployeeExpenses,
+    categoryWiseEmployeeExpenses,
   };
 };
 

@@ -34,6 +34,10 @@ import HomeDashboard from "./modules/unisol/hr/home/dashboard/HomeDashboard";
 import HomeLayout from "./modules/unisol/layouts/HomeLayout";
 import EmployeeLogin from "./modules/unisol/hr/home/employeeLogins/EmployeeLogin";
 import ExpenseSheet from "./modules/unisol/hr/expenseManagement/overallExpense/ExpenseSheet";
+import YearWiseExpenses from "./modules/unisol/hr/expenseManagement/overallExpense/YearWiseExpenses";
+import MonthWiseExpeses from "./modules/unisol/hr/expenseManagement/overallExpense/MonthWiseExpeses";
+import CategoryMonthWiseExpenses from "./modules/unisol/hr/expenseManagement/overallExpense/MonthlyCategeoryBreakdown";
+import MonthlyCategeoryBreakdownView from "./modules/unisol/hr/expenseManagement/overallExpense/MonthlyCategeoryBreakdownView";
 import ExpenseSheet2 from "./modules/unisol/hr/expenseManagement/expenseApproval/ExpenseSheet_2";
 import {
   Appraisal,
@@ -1214,6 +1218,38 @@ function App() {
             element={
               <HrLayout activeTab={activeTab} setActiveTab={setActiveTab}>
                 <SalesTeam />{" "}
+              </HrLayout>
+            }
+          ></Route>
+          <Route
+            path="/expensesheet/yearwiseexpense"
+            element={
+              <HrLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+                <YearWiseExpenses />
+              </HrLayout>
+            }
+          ></Route>
+          <Route
+            path="/expensesheet/monthwise-expense/:year"
+            element={
+              <HrLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+                <MonthWiseExpeses />
+              </HrLayout>
+            }
+          ></Route>
+            <Route
+            path="/expensesheet/category-monthwise-expense/:year/:month"
+            element={
+              <HrLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+                <CategoryMonthWiseExpenses />
+              </HrLayout>
+            }
+          ></Route>
+               <Route
+            path="/expensesheet/category-monthwise-expense/:year/:month/:category"
+            element={
+              <HrLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+                <MonthlyCategeoryBreakdownView />
               </HrLayout>
             }
           ></Route>

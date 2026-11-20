@@ -155,6 +155,12 @@ return (
           <FaUsers style={{ color: theme.primaryColor, fontSize: 32 }} />
           <span className="text-2xl font-bold">Overall Expense</span>
         </div>
+            <Button
+            variant={1}
+            type="button"
+            text="Year Wise Expenses"
+            onClick={() => navigate("/expensesheet/yearwiseexpense")}
+          />
          <Button
             variant={1}
             type="button"

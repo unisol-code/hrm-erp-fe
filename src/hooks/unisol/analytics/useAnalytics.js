@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import conf from "../../../config/index";
 import useFetch from "../../useFetch";
-import { analyticsAppraisalDetailsAtom, analyticsAppraisalTrendAtom, analyticsAttendanceTrendsAtom, analyticsEmpAttendanceAtom, analyticsExpensesDetailsAtom, analyticsExpensesTrendAtom, analyticsLeaveDetailsAtom, analyticsLeaveDistributionAtom, analyticsloanDetailsAtom, analyticsLoanTrendAtom, analyticsYearAtom, empAnalyticsCardsAtom } from "../../../state/analytics/analyticsState";
+import { analyticsAppraisalDetailsAtom, analyticsAppraisalTrendAtom, analyticsAttendanceTrendsAtom, analyticsEmpAttendanceAtom, analyticsExpensesDetailsAtom, analyticsExpensesTrendAtom, analyticsExpensesYearlyTrendAtom, analyticsLeaveDetailsAtom, analyticsLeaveDistributionAtom, analyticsloanDetailsAtom, analyticsLoanTrendAtom, analyticsYearAtom, empAnalyticsCardsAtom } from "../../../state/analytics/analyticsState";
 
 const useAnalytics = () => {
     const [fetchData] = useFetch();
@@ -14,6 +14,7 @@ const useAnalytics = () => {
     const [analyticsLeaveDistribution, setAnalyticsLeaveDistribution] = useRecoilState(analyticsLeaveDistributionAtom);
     const [analyticsLeaveDetails, setAnalyticsLeaveDetails] = useRecoilState(analyticsLeaveDetailsAtom);
     const [analyticsExpensesTrend, setAnalyticsExpensesTrend] = useRecoilState(analyticsExpensesTrendAtom);
+    const [analyticsExpensesYearlyTrend, setAnalyticsExpensesYearlyTrend] = useRecoilState(analyticsExpensesYearlyTrendAtom);
     const [analyticsExpensesDetails, setAnalyticsExpensesDetails] = useRecoilState(analyticsExpensesDetailsAtom);
     const [analyticsLoanTrend, setAnalyticsLoanTrend] = useRecoilState(analyticsLoanTrendAtom);
     const [analyticsLoanDetails, setAnalyticsLoanDetails] = useRecoilState(analyticsloanDetailsAtom);
@@ -158,6 +159,25 @@ const useAnalytics = () => {
         }
     }
 
+    const fetchAnalyticsExpensesYearlyTrend = async (year) => {
+        setLoading(true)
+        try {
+            const params = new URLSearchParams();
+            if (year) params.append("year", year);
+            const res = await fetchData({
+                url: `${conf.apiBaseUrl}analytics/getExpensesYearlyTrend`,
+                params
+            });
+            if (res) {
+                setAnalyticsExpensesYearlyTrend(res);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("Error while fetching Analytics Expenses Yearly Trend:", error);
+            setLoading(false);
+        }
+    }
+
     const fetchAnalyticsExpensesDetails = async (year, month) => {
         setLoading(true)
         try {
@@ -263,6 +283,7 @@ const useAnalytics = () => {
         fetchAnalyticsYear, fetchAnalyticsAttendanceTrends, analyticsAttendanceTrends,
         fetchAnalyticsEmpAttendance, analyticsEmpAttendance, fetchAnalyticsLeaveDistribution, analyticsLeaveDistribution,
         fetchAnalyticsLeaveDetails, analyticsLeaveDetails, fetchAnalyticsExpensesTrend, analyticsExpensesTrend,
+        fetchAnalyticsExpensesYearlyTrend, analyticsExpensesYearlyTrend,
         fetchAnalyticsExpensesDetails, analyticsExpensesDetails, fetchAnalyticsLoanTrend, analyticsLoanTrend,
         fetchAnalyticsLoanDetails, analyticsLoanDetails, fetchAnalyticsAppraisalTrend, analyticsAppraisalTrend, fetchAnalyticsAppraisalDetails, analyticsAppraisalDetails
     };
