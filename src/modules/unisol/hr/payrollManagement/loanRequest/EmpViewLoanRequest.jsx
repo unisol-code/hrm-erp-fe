@@ -290,7 +290,7 @@ const EmpViewLoanRequest = () => {
             { text: "Payroll Management" },
             { text: "Loan Request", href: "/emp_loan_RequestList" },
             { text: `${empLoanReqDetailToAdmin.employeeName}'s Loan Request`, href: `/emp_loan_RequestList/per_Emp_Loan_Request/${empLoanReqDetailToAdmin.employeeId}` },
-            { text: `View Loan Request Details` },  
+            { text: `View Loan Request Details` },
           ]}
         />
 
@@ -349,63 +349,98 @@ const EmpViewLoanRequest = () => {
               icon={Calendar}
               color="#8B5CF6"
             />
-          {empLoanReqDetailToAdmin?.approvalDate && (
-  <StatCard
-    title="Approval Date"
-    value={formatDate(empLoanReqDetailToAdmin.approvalDate)}
-    icon={Calendar}
-    color="#8B5CF6"
-  />
-)}
+            {empLoanReqDetailToAdmin?.approvalDate && (
+              <StatCard
+                title="Approval Date"
+                value={formatDate(empLoanReqDetailToAdmin.approvalDate)}
+                icon={Calendar}
+                color="#8B5CF6"
+              />
+            )}
+            <StatCard
+              title="Repayment Status"
+              value={
+                empLoanReqDetailToAdmin.repaymentStatus
+                  ? String(empLoanReqDetailToAdmin.repaymentStatus).charAt(0).toUpperCase() +
+                  String(empLoanReqDetailToAdmin.repaymentStatus).slice(1)
+                  : "-"
+              }
+              icon={Clock}
+              color="#0EA5E9"
+            />
+            <StatCard
+              title="Total Deducted"
+              value={formatCurrency(empLoanReqDetailToAdmin.totalDeductedAmount)}
+              icon={IndianRupee}
+              color="#22C55E"
+            />
+            <StatCard
+              title="Settled Amount"
+              value={formatCurrency(empLoanReqDetailToAdmin.settledAmount)}
+              icon={IndianRupee}
+              color="#14B8A6"
+            />
+            <StatCard
+              title="Installments Paid"
+              value={empLoanReqDetailToAdmin.installmentsPaid ?? "-"}
+              icon={Calendar}
+              color="#6366F1"
+            />
+            <StatCard
+              title="Remaining Amount"
+              value={formatCurrency(empLoanReqDetailToAdmin.remainingAmount)}
+              icon={IndianRupee}
+              color="#F59E0B"
+            />
           </div>
 
           {/* Nill Amount Request Status - Show for both "requested" and "reject" */}
-          {(empLoanReqDetailToAdmin.requestForNillLoanAmount === "requested" || 
+          {(empLoanReqDetailToAdmin.requestForNillLoanAmount === "requested" ||
             empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject") && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <IndianRupee size={20} className="text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="font-semibold text-blue-800">Zero Loan Amount Request</h3>
-                      <p className="text-sm text-blue-600">
-                        {empLoanReqDetailToAdmin.requestForNillLoanAmount === "requested" 
-                          ? "Employee has requested to process the loan with zero amount"
-                          : "Zero amount request was rejected"}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                      empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "rejected" : 
-                      empLoanReqDetailToAdmin.nillLoanAmountStatus
-                    )}`}>
-                      {empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "Rejected" : 
-                       empLoanReqDetailToAdmin.nillLoanAmountStatus || "Pending"}
-                    </span>
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <IndianRupee size={20} className="text-blue-600" />
                   </div>
-
-                  {/* Nill Amount Rejection Reason Display - Show when rejected */}
-                  {(empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" || 
-                    empLoanReqDetailToAdmin.nillLoanAmountStatus === "rejected") && 
-                    empLoanReqDetailToAdmin.loanNillAmountRejectionReason && (
-                    <div className="mt-3 p-3 bg-white border border-red-100 rounded-lg">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle size={16} className="text-red-500 mt-0.5" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-red-700 mb-1">Rejection Reason:</p>
-                          <p className="text-sm text-slate-700 whitespace-pre-line">
-                            {empLoanReqDetailToAdmin.loanNillAmountRejectionReason}
-                          </p>
-                        </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="font-semibold text-blue-800">Zero Loan Amount Request</h3>
+                        <p className="text-sm text-blue-600">
+                          {empLoanReqDetailToAdmin.requestForNillLoanAmount === "requested"
+                            ? "Employee has requested to process the loan with zero amount"
+                            : "Zero amount request was rejected"}
+                        </p>
                       </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                        empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "rejected" :
+                          empLoanReqDetailToAdmin.nillLoanAmountStatus
+                      )}`}>
+                        {empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "Rejected" :
+                          empLoanReqDetailToAdmin.nillLoanAmountStatus || "Pending"}
+                      </span>
                     </div>
-                  )}
+
+                    {/* Nill Amount Rejection Reason Display - Show when rejected */}
+                    {(empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ||
+                      empLoanReqDetailToAdmin.nillLoanAmountStatus === "rejected") &&
+                      empLoanReqDetailToAdmin.loanNillAmountRejectionReason && (
+                        <div className="mt-3 p-3 bg-white border border-red-100 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <AlertTriangle size={16} className="text-red-500 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-red-700 mb-1">Rejection Reason:</p>
+                              <p className="text-sm text-slate-700 whitespace-pre-line">
+                                {empLoanReqDetailToAdmin.loanNillAmountRejectionReason}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Rejection Reason Display - Only show if rejected */}
           {isRejected() && empLoanReqDetailToAdmin.rejectionReason && (
@@ -571,19 +606,19 @@ const EmpViewLoanRequest = () => {
                 </div>
 
                 {/* Nill Loan Amount Status - Show for both requested and rejected */}
-                {(empLoanReqDetailToAdmin.requestForNillLoanAmount === "requested" || 
+                {(empLoanReqDetailToAdmin.requestForNillLoanAmount === "requested" ||
                   empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject") && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-600">Zero Amount Status:</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                      empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "rejected" : 
-                      empLoanReqDetailToAdmin.nillLoanAmountStatus
-                    )}`}>
-                      {empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "Rejected" : 
-                       empLoanReqDetailToAdmin.nillLoanAmountStatus || "Pending"}
-                    </span>
-                  </div>
-                )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-600">Zero Amount Status:</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                        empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "rejected" :
+                          empLoanReqDetailToAdmin.nillLoanAmountStatus
+                      )}`}>
+                        {empLoanReqDetailToAdmin.requestForNillLoanAmount === "reject" ? "Rejected" :
+                          empLoanReqDetailToAdmin.nillLoanAmountStatus || "Pending"}
+                      </span>
+                    </div>
+                  )}
 
                 {empLoanReqDetailToAdmin.rejectionReason && (
                   <div className="pt-3 border-t border-slate-200">
@@ -604,67 +639,68 @@ const EmpViewLoanRequest = () => {
               </div>
             </div>
 
-            {/* Supporting Documents - Grid Layout */}
+            {/* Supporting Documents - Grid Layout (container-query responsive) */}
             {empLoanReqDetailToAdmin.documents && empLoanReqDetailToAdmin.documents.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-md p-4 md:p-6">
+              <div className="@container w-full min-w-0 bg-white rounded-2xl shadow-md p-4 sm:p-5 lg:p-6">
                 <SectionHeader number="3" title="Supporting Documents" icon={FileText} />
 
-                {/* Responsive Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4 @lg:grid-cols-2 @4xl:grid-cols-3">
                   {empLoanReqDetailToAdmin.documents.map((doc, index) => (
                     <div
                       key={index}
-                      className="flex flex-col p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                      className="flex flex-col min-w-0 p-3 sm:p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors duration-200"
                     >
-                      {/* Document Info */}
-                      <div className="flex items-start gap-3 mb-4 flex-1">
+                      <div className="flex items-start gap-3 mb-3 sm:mb-4 flex-1 min-w-0">
                         <div
-                          className="w-12 h-12 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0"
+                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center shadow-sm shrink-0"
                           style={{ backgroundColor: theme.highlightColor }}
                         >
-                          <FileText size={20} style={{ color: theme.primaryColor }} />
+                          <FileText size={18} className="sm:hidden" style={{ color: theme.primaryColor }} />
+                          <FileText size={20} className="hidden sm:block" style={{ color: theme.primaryColor }} />
                         </div>
+
                         <div className="flex-1 min-w-0">
-                          <div className="mb-2">
-                            <span className="inline-block px-2 py-1 text-xs font-semibold rounded-md mb-2"
-                              style={{
-                                color: theme.primaryColor,
-                                backgroundColor: `${theme.primaryColor}15`
-                              }}>
-                              Document {index + 1}
-                            </span>
-                          </div>
-                          <p className="font-medium text-slate-800 text-sm md:text-base truncate">
+                          <span
+                            className="inline-block px-2 py-1 text-xs font-semibold rounded-md mb-1.5"
+                            style={{
+                              color: theme.primaryColor,
+                              backgroundColor: `${theme.primaryColor}15`,
+                            }}
+                          >
+                            Document {index + 1}
+                          </span>
+                          <p
+                            className="font-medium text-slate-800 text-sm md:text-base truncate"
+                            title={doc.split('/').pop()}
+                          >
                             {doc.split('/').pop()}
                           </p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-xs text-slate-500 mt-1 truncate">
                             Uploaded: {formatDate(empLoanReqDetailToAdmin.createdAt)}
                           </p>
                         </div>
                       </div>
 
-                      {/* Action Button - Always at bottom */}
-                      <div className="mt-auto pt-4 border-t border-slate-200">
+                      <div className="mt-auto pt-3 sm:pt-4 border-t border-slate-200">
                         <button
                           onClick={() => handleDownload(doc)}
-                          className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-sm w-full group"
+                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-sm w-full min-w-0 group"
                           style={{
                             color: theme.primaryColor,
                             backgroundColor: `${theme.primaryColor}15`,
                           }}
                         >
-                          <Download size={16} className="group-hover:animate-bounce" />
-                          <span>Download Document</span>
+                          <Download size={16} className="shrink-0 group-hover:animate-bounce" />
+                          <span className="truncate">Download Document</span>
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Document Summary Footer */}
                 {empLoanReqDetailToAdmin.documents.length > 1 && (
-                  <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <div className="text-center sm:text-left">
+                  <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 sm:p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="text-center sm:text-left min-w-0">
                       <p className="text-sm font-medium text-slate-700">
                         {empLoanReqDetailToAdmin.documents.length} documents available
                       </p>
@@ -674,26 +710,55 @@ const EmpViewLoanRequest = () => {
                     </div>
                     <button
                       onClick={() => {
-                        // Open all documents in new tabs
                         empLoanReqDetailToAdmin.documents.forEach((doc, i) => {
-                          setTimeout(() => {
-                            window.open(doc, '_blank');
-                          }, i * 200);
+                          setTimeout(() => window.open(doc, '_blank'), i * 200);
                         });
                       }}
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-sm"
-                      style={{
-                        color: "#ffffff",
-                        backgroundColor: theme.primaryColor,
-                      }}
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-sm w-full sm:w-auto shrink-0"
+                      style={{ color: '#ffffff', backgroundColor: theme.primaryColor }}
                     >
-                      <Download size={16} />
-                      Open All Documents
+                      <Download size={16} className="shrink-0" />
+                      <span className="whitespace-nowrap">Open All Documents</span>
                     </button>
                   </div>
                 )}
               </div>
             )}
+            {/* Deduction History */}
+            {empLoanReqDetailToAdmin.deductionHistory && empLoanReqDetailToAdmin.deductionHistory.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-md p-4 md:p-6">
+                <SectionHeader number="4" title="Deduction History" icon={Calendar} />
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-600">
+                        <th className="py-3 pr-3 font-semibold">#</th>
+                        <th className="py-3 pr-3 font-semibold">Month</th>
+                        <th className="py-3 pr-3 font-semibold">Installment</th>
+                        <th className="py-3 pr-3 font-semibold">Deducted</th>
+                        <th className="py-3 pr-3 font-semibold">Before</th>
+                        <th className="py-3 pr-3 font-semibold">After</th>
+                        <th className="py-3 pr-0 font-semibold">Deducted On</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {empLoanReqDetailToAdmin.deductionHistory.map((item, idx) => (
+                        <tr key={idx} className="border-b border-slate-100 last:border-0">
+                          <td className="py-3 pr-3 text-slate-700">{idx + 1}</td>
+                          <td className="py-3 pr-3 text-slate-700">{item.month || "-"}</td>
+                          <td className="py-3 pr-3 text-slate-700">{item.installmentNo ?? "-"}</td>
+                          <td className="py-3 pr-3 text-slate-700">{formatCurrency(item.deductedAmount)}</td>
+                          <td className="py-3 pr-3 text-slate-700">{formatCurrency(item.balanceBefore)}</td>
+                          <td className="py-3 pr-3 text-slate-700">{formatCurrency(item.balanceAfter)}</td>
+                          <td className="py-3 pr-0 text-slate-700">{formatDate(item.deductedOn)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
 

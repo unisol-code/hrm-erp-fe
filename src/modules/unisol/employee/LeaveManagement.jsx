@@ -377,6 +377,12 @@ const LeaveManagement = () => {
                       {card.data?.sickLeaves ?? "0"}
                     </span>
                   </div>
+                     <div className="flex justify-between">
+                    <span className="font-semibold">Vacation Leaves:</span>
+                    <span className={`font-bold text-lg ${card.colors}`}>
+                      {card.data?.vacationLeaves ?? "0"}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
