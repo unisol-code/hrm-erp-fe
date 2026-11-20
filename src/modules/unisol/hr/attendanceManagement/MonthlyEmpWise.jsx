@@ -413,12 +413,12 @@ const MonthlyEmpWise = () => {
                                                             {detail.taken ?? 0}
                                                         </span>
                                                     </p>
-                                                    <p className="text-sm text-gray-600">
+                                                    {/* <p className="text-sm text-gray-600">
                                                         Pending:{" "}
                                                         <span className="font-semibold text-blue-700">
                                                             {detail.pending ?? 0}
                                                         </span>
-                                                    </p>
+                                                    </p> */}
                                                 </div>
                                             );
                                         })}

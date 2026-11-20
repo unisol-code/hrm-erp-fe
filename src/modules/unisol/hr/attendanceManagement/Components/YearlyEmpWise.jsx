@@ -293,6 +293,12 @@ const YearlyEmpWise = () => {
                                 {detail.pending ?? 0}
                               </span>
                             </p>
+                             <p className="text-sm text-gray-600">
+                             Total:{" "}
+                              <span className="font-semibold text-blue-700">
+                                {detail.total ?? 0}
+                              </span>
+                            </p>
                           </div>
                         );
                       })}
