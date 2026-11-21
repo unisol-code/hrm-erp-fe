@@ -201,8 +201,8 @@ function Sidebar() {
   };
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--primary-color', theme?.primaryColor || "#4FA8E5");
-    document.documentElement.style.setProperty('--highlight-color', theme?.highlightColor || "#A7D8FF");
+    document.documentElement.style.setProperty('--primary-color', theme?.primaryColor );
+    document.documentElement.style.setProperty('--highlight-color', theme?.highlightColor );
   }, [theme]);
 
   return (

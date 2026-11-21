@@ -18,7 +18,7 @@ export const useTheme = () => {
 
   const switchTheme = (company) => {
     const themeKey = companyThemeMap[company];
-    setTheme(themes[themeKey] || themes.UniSol);
+    setTheme(themes[themeKey]);
   };
 
   return { theme, switchTheme };
