@@ -207,6 +207,9 @@ const PerEmpLoanReq = () => {
                 <td className="px-6 py-4 text-center">
                     {formatDate(loan.loanRequestDate)}
                 </td>
+                 <td className="px-6 py-4 text-center">
+                    {formatDate(loan.approvalDate || "-")}
+                </td>
                 <td className="px-6 py-4 text-center">
                     <span className={getStatusColor(loan.status)}>
                         {loan.status?.charAt(0).toUpperCase() + loan.status?.slice(1)}
@@ -313,6 +316,9 @@ const PerEmpLoanReq = () => {
                                 </th>
                                 <th className="px-6 py-4 text-center">
                                     Request Date
+                                </th>
+                                 <th className="px-6 py-4 text-center">
+                                    Approval Date
                                 </th>
                                 <th className="px-6 py-4 text-center">
                                     Status

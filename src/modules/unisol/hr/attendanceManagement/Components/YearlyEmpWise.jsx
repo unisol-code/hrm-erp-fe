@@ -1,0 +1,400 @@
+import React, { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  FaCalendarAlt,
+  FaCalendarCheck,
+  FaCalendarTimes,
+  FaHome,
+  FaSun,
+  FaUmbrellaBeach,
+  FaUserCircle,
+} from "react-icons/fa";
+import BreadCrumb from "../../../../../components/BreadCrumb";
+import Button from "../../../../../components/Button";
+import LoaderSpinner from "../../../../../components/LoaderSpinner";
+import { useTheme } from "../../../../../hooks/theme/useTheme";
+import useEmpAttendence from "../../../../../hooks/unisol/empAttendence/useEmpAttendence";
+
+const YearlyEmpWise = () => {
+  const { id, year: yearParam } = useParams();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const query = new URLSearchParams(window.location.search);
+  const year = yearParam || query.get("year") || new Date().getFullYear();
+
+  const {
+    loading,
+    fetchYearlyAttendanceOfEmployee,
+    employeeYearlyAttendanceOfEmployee,
+  } = useEmpAttendence();
+
+  useEffect(() => {
+    if (id) {
+      fetchYearlyAttendanceOfEmployee(id, year);
+    }
+  }, [id, year]);
+
+  const data =
+    employeeYearlyAttendanceOfEmployee?.data || employeeYearlyAttendanceOfEmployee;
+
+  const summary = data?.summary || {};
+  const months = data?.monthlyAttendance || [];
+  const leaveDetails = summary?.leaveDetails || data?.leaveDetails || {};
+
+  // ✅ Same fallback pattern for the counter fields
+  const present  = summary.present  ?? data?.present  ?? 0;
+  const absent   = summary.absent   ?? data?.absent   ?? 0;
+  const leaves   = summary.leaves   ?? data?.leaves   ?? 0;
+  const holidays = summary.holidays ?? data?.holidays ?? 0;
+  const sundays  = summary.sundays  ?? data?.sundays  ?? 0;
+  const workingDays = summary.workingDays ?? data?.workingDays ?? 0;
+  const missedPunchRemarksCount = summary.totalRemarks ?? data?.totalRemarks ?? 0;
+
+  const attendancePercent =
+    workingDays > 0 ? Math.round((present / workingDays) * 100) : 0;
+
+  const leaveTypes = [
+    { key: "sickLeave", label: "Sick Leave" },
+    { key: "casualLeave", label: "Casual Leave" },
+    { key: "vacationLeave", label: "Vacation Leave" },
+  ];
+
+  return (
+    <div className="w-full min-h-screen">
+      <BreadCrumb
+        linkText={[
+          { text: "Dashboard", href: "/hrDashboard" },
+          { text: "Attendance", href: "/employeeAttendence" },
+          {
+            text: "Employee Details",
+            href: `/employeeAttendence/employeeAttendenceDetails/${id}`,
+          },
+          { text: "Yearly Attendance" },
+        ]}
+        className="bg-white p-3 rounded-lg shadow-sm"
+      />
+
+      <div className="mt-4">
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[300px] bg-white rounded-xl shadow">
+            <LoaderSpinner />
+          </div>
+        ) : !data ? (
+          <div className="bg-white rounded-xl shadow p-8 text-center text-gray-600">
+            No yearly attendance data found
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+            <div className="md:flex">
+              <div
+                className="md:w-1/4 p-6 flex flex-col items-center justify-center"
+                style={{ backgroundColor: theme.primaryColor }}
+              >
+                {data.photo ? (
+                  <img
+                    src={data.photo}
+                    alt="Employee"
+                    className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover mb-4"
+                  />
+                ) : (
+                  <FaUserCircle className="w-32 h-32 text-white opacity-90 mb-4" />
+                )}
+                <h3 className="text-white text-xl font-bold text-center">
+                  {data.employeeName || "Employee Name"}
+                </h3>
+                <p className="text-blue-100 text-sm mt-1">
+                  Employee ID: {data.employeeId || "N/A"}
+                </p>
+              </div>
+
+              <div className="md:w-3/4 p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-800">
+                      {data.year} Yearly Attendance
+                    </h1>
+                    <p className="text-gray-600 mt-1 flex items-center gap-2">
+                      <FaCalendarAlt className="text-blue-500" />
+                      Monthly breakdown for the year
+                    </p>
+                  </div>
+                  <div className="px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="text-sm text-blue-600 font-medium">
+                      Attendance:{" "}
+                    </span>
+                    <span className="text-blue-800 font-semibold">
+                      {attendancePercent}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* ✅ Stat cards — now identical to MonthlyEmpWise (icon pill + progress bar on Present) */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                  {/* Present */}
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-green-600 font-medium">Present</p>
+                        <p className="text-2xl font-bold text-green-700 mt-1">
+                          {present}
+                        </p>
+                      </div>
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <FaCalendarCheck className="text-green-600 text-xl" />
+                      </div>
+                    </div>
+                    <div className="h-2 bg-green-200 rounded-full mt-3 overflow-hidden">
+                      <div
+                        className="h-full bg-green-500 rounded-full"
+                        style={{
+                          width: `${workingDays ? (present / workingDays) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* Absent */}
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-red-600 font-medium">Absent</p>
+                        <p className="text-2xl font-bold text-red-700 mt-1">
+                          {absent}
+                        </p>
+                      </div>
+                      <div className="p-2 bg-red-100 rounded-lg">
+                        <FaCalendarTimes className="text-red-600 text-xl" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Leaves */}
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-blue-600 font-medium">Leaves</p>
+                        <p className="text-2xl font-bold text-blue-700 mt-1">
+                          {leaves}
+                        </p>
+                      </div>
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <FaUmbrellaBeach className="text-blue-600 text-xl" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Holidays */}
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-purple-600 font-medium">Official Holidays</p>
+                        <p className="text-2xl font-bold text-purple-700 mt-1">
+                          {holidays}
+                        </p>
+                      </div>
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <FaHome className="text-purple-600 text-xl" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sundays */}
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-orange-600 font-medium">Sundays</p>
+                        <p className="text-2xl font-bold text-orange-700 mt-1">
+                          {sundays}
+                        </p>
+                      </div>
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <FaSun className="text-orange-600 text-xl" />
+                      </div>
+                    </div>
+                  </div>
+
+                                             
+                                                  <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200 shadow-sm">
+                                                      <div className="flex items-center justify-between">
+                                                          <div>
+                                                              <p className="text-sm text-pink-600 font-medium">Missed Punch Remarks</p>
+                                                              <p className="text-2xl font-bold text-pink-700 mt-1">
+                                                                  {missedPunchRemarksCount ?? 0}
+                                                              </p>
+                                                          </div>
+                                                          <div className="p-2 bg-red-100 rounded-lg">
+                                                              <FaCalendarTimes className="text-pink-600 text-xl" />
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Calendar Days</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {data.totalDaysInYear ?? 0}
+                        </p>
+                      </div>
+                      <div className="h-8 w-px bg-gray-300"></div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Net Working Days</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {data.totalWorkingDaysInYear ?? 0}
+                        </p>
+                      </div>
+                      <div className="h-8 w-px bg-gray-300"></div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Elapsed Working Days</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {workingDays}
+                        </p>
+                      </div>
+                      <div className="h-8 w-px bg-gray-300"></div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600">Attendance %</p>
+                        <p className="text-lg font-bold text-green-600">
+                          {attendancePercent}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Leave Details (same as MonthlyEmpWise) */}
+                {leaveTypes.some((type) => leaveDetails[type.key]) && (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                      Leave Details
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {leaveTypes.map((type) => {
+                        const detail = leaveDetails[type.key];
+                        if (!detail) return null;
+                        return (
+                          <div
+                            key={type.key}
+                            className="bg-blue-50 rounded-xl p-4 border border-blue-100"
+                          >
+                            <p className="text-sm font-semibold text-gray-700 mb-2">
+                              {type.label}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Taken:{" "}
+                              <span className="font-semibold text-blue-700">
+                                {detail.taken ?? 0}
+                              </span>
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Pending:{" "}
+                              <span className="font-semibold text-blue-700">
+                                {detail.pending ?? 0}
+                              </span>
+                            </p>
+                             <p className="text-sm text-gray-600">
+                             Total:{" "}
+                              <span className="font-semibold text-blue-700">
+                                {detail.total ?? 0}
+                              </span>
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Monthly Attendance table — unchanged */}
+            <div className="border-t border-gray-200">
+              <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white">
+                <h2 className="text-xl font-bold text-gray-800">
+                  Monthly Attendance
+                </h2>
+                <p className="text-gray-600 text-sm mt-1">
+                  Month-wise attendance summary for {data.year}
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full table-auto">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="p-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Month</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Present</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Absent</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Leaves</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Holidays</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Sundays</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Working Days</th>
+                      <th className="p-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Days Considered</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {months.length > 0 ? (
+                      months.map((m) => (
+                        <tr
+                          key={m.month}
+                          className="hover:bg-gray-50 transition-colors cursor-pointer"
+                          onClick={() =>
+                            navigate(
+                              `/employeeAttendence/employeeAttendenceDetails/${id}/${data.year}/${m.month}`
+                            )
+                          }
+                          title="Click to view monthly attendance"
+                        >
+                          <td className="p-4 font-medium text-gray-800">{m.month}</td>
+                          <td className="p-4 text-center">
+                            <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                              {m.summary?.present ?? 0}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
+                              {m.summary?.absent ?? 0}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                              {m.summary?.leaves ?? 0}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
+                              {m.summary?.holidays ?? 0}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
+                              {m.summary?.sundays ?? 0}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center font-medium text-gray-700">
+                            {m.summary?.workingDays ?? 0}
+                          </td>
+                          <td className="p-4 text-center text-gray-600">
+                            {m.daysConsidered ?? 0}/{m.totalDaysInMonth ?? 0}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8} className="p-8 text-center text-gray-500">
+                          No monthly attendance records found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default YearlyEmpWise;

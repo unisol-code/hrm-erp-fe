@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import LeaveSummary from "./Components/LeaveSummary";
 
 const LeaveManagementDetails = () => {
-  const [value, setValue] = useState("1");
+  const [value, setValue] = useState("2");
   const isEmployeeLogin = sessionStorage.getItem("isEmployeeLogin");
   const handleChange = (event, newValue) => {
     setValue(newValue);

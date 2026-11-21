@@ -18,3 +18,7 @@ export const empByIdAtom = atom(createPersistedAtom("empById", null));
 export const empByIdForDashboardAtom = atom(createPersistedAtom("empByIdForDashboardAttendence", null));
 
 export const employeeAttendanceMontlyDetailsAtom = atom(createPersistedAtom("employeeAttendanceMontlyDetailsKey", null));
+
+export const employeeYearlyAttendanceDetailsAtom = atom(createPersistedAtom("employeeYearlyAttendanceDetailsKey", null));
+
+export const employeeYearlyAttendanceOfEmployeeAtom = atom(createPersistedAtom("employeeYearlyAttendanceOfEmployeeKey", null));

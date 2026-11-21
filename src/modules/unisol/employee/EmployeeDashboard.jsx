@@ -23,6 +23,8 @@ import { useTheme } from "../../../hooks/theme/useTheme";
 import useDashboard from "../../../hooks/unisol/hrDashboard/useDashborad";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
+import useCoreHREvent from "../../../hooks/unisol/coreHr/useCoreHREvent";
+import { format, isValid, isSameDay } from "date-fns";
 
 const defaultEventAvatar = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
@@ -44,6 +46,7 @@ const EmployeeDashboard = () => {
   const attendanceStatus = sessionStorage.getItem("attendanceStatus");
   const { fetchCoreHREmployeeById, coreHREmployeeDetails } = useCoreHR();
   const { fetchAllSpecialDay, specialDays } = useDashboard();
+  const { fetchEventList, getEventList } = useCoreHREvent();
 
   const empName = sessionStorage.getItem("name");
   const empId = sessionStorage.getItem("empId");
@@ -66,29 +69,31 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     fetchCoreHREmployeeById(empId);
     fetchAllSpecialDay();
+    fetchEventList();
 
     // Check if we should show the attendance popup
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
-    
-    // Check if current time is between 9:00 AM and 8:00 PM
-    const isWithinAllowedTime = 
+
+    // Check if current time is between 9:00 AM and 10:30 AM
+    const isWithinAllowedTime =
       (currentHour > 9 || (currentHour === 9 && currentMinute >= 0)) &&
       (currentHour < 10 || (currentHour === 10 && currentMinute <= 30));
 
     // Only show popup if status is not marked and within allowed time
-    if (attendanceStatus === 'Not Marked' && isWithinAllowedTime) {
+    if (attendanceStatus === "Not Marked" && isWithinAllowedTime) {
       setOpenMarkYourAttendance(true);
     }
 
-    if (attendanceStatus === 'Absent') {
+    if (attendanceStatus === "Absent") {
       setOpenAbsentPopup(true);
     }
   }, [empId, attendanceStatus]);
 
   const todaySpecialEvents = specialDays?.todaySpecialEvents || [];
   const upcomingSpecialEvents = specialDays?.upcomingSpecialEvents || [];
+  const eventList = Array.isArray(getEventList) ? getEventList : [];
 
   // Animation variants
   const containerVariants = {
@@ -97,9 +102,9 @@ const EmployeeDashboard = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -109,9 +114,9 @@ const EmployeeDashboard = () => {
       opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 100
-      }
-    }
+        stiffness: 100,
+      },
+    },
   };
 
   const cardHoverVariants = {
@@ -120,27 +125,11 @@ const EmployeeDashboard = () => {
       rotateY: 5,
       transition: {
         type: "spring",
-        stiffness: 300
-      }
+        stiffness: 300,
+      },
     },
-    tap: { scale: 0.98 }
+    tap: { scale: 0.98 },
   };
-
-  // Enhanced latest updates with interactive features
-  const latestUpdates = [
-    {
-      id: 1,
-      text: "Reminder: The project report for the XYZ client is due on August 25, 2024. Please ensure all tasks are completed and submitted on time.",
-      read: false,
-      priority: "high"
-    },
-    {
-      id: 2,
-      text: "You have been assigned a new task: 'Prepare the Q3 Sales Presentation.' The deadline for this task is August 30, 2024.",
-      read: false,
-      priority: "medium"
-    },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col w-full pt-0 px-0 sm:pt-0 sm:px-0 relative">
@@ -172,7 +161,7 @@ const EmployeeDashboard = () => {
                 transition={{
                   duration: 3 + i,
                   repeat: Infinity,
-                  delay: i * 0.5
+                  delay: i * 0.5,
                 }}
                 style={{
                   left: `${20 + i * 15}%`,
@@ -228,7 +217,6 @@ const EmployeeDashboard = () => {
             background: `linear-gradient(135deg, #f5f9fc 0%, ${theme.highlightColor}15 100%)`,
           }}
         >
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
@@ -243,20 +231,25 @@ const EmployeeDashboard = () => {
                 onClick: () => navigator("/EmployeeDashboard/emp/leavemanagement"),
                 secondaryAction: {
                   text: "View Leave Status",
-                  onClick: () => navigator(`/EmployeeDashboard/emp/leavemanagement/leaveStatus/${empId}`)
-                }
+                  onClick: () =>
+                    navigator(
+                      `/EmployeeDashboard/emp/leavemanagement/leaveStatus/${empId}`
+                    ),
+                },
               },
               {
                 id: "attendance",
                 icon: <CgLoadbarDoc />,
                 title: "Attendance",
-                description: "Mark your daily attendance and view your attendance history.",
+                description:
+                  "Mark your daily attendance and view your attendance history.",
                 color: "#17BCF3",
                 bgColor: "#EBFAFF",
                 hoverBg: "#D1F3FF",
                 action: "View History",
-                onClick: () => navigator("/EmployeeDashboard/emp/attendanceHistory"),
-                highlight: attendanceStatus === "Not Marked"
+                onClick: () =>
+                  navigator("/EmployeeDashboard/emp/attendanceHistory"),
+                highlight: attendanceStatus === "Not Marked",
               },
               {
                 id: "salary",
@@ -267,41 +260,46 @@ const EmployeeDashboard = () => {
                 bgColor: "#FFEBFB",
                 hoverBg: "#FFD6F5",
                 action: "Download",
-                onClick: () => navigator(`/EmployeeDashboard/downloadPaySlip/${empId}`)
+                onClick: () =>
+                  navigator(`/EmployeeDashboard/downloadPaySlip/${empId}`),
               },
               {
                 id: "calendar",
                 icon: <RxCalendar />,
                 title: "Calendar",
-                description: "Check upcoming events, meetings, and important dates.",
+                description:
+                  "Check upcoming events, meetings, and important dates.",
                 color: "#E41E1E",
                 bgColor: "#FFEBEB",
                 hoverBg: "#FFD6D6",
                 action: "View",
-                onClick: () => navigator(`/EmployeeDashboard/calender/${empId}`)
+                onClick: () =>
+                  navigator(`/EmployeeDashboard/calender/${empId}`),
               },
               {
                 id: "holiday",
                 icon: <GrTicket />,
                 title: "Holiday",
-                description: "View the list of company holidays and download the holiday schedule.",
+                description:
+                  "View the list of company holidays and download the holiday schedule.",
                 color: "#3229E1",
                 bgColor: "#EFEDFF",
                 hoverBg: "#D6D1F6",
                 action: "View",
-                onClick: () => setHoliday(true)
+                onClick: () => setHoliday(true),
               },
               {
                 id: "expense",
                 icon: <BsPerson />,
                 title: "Expense",
-                description: "Track and manage your expenses. Submit new claims and view recent transactions.",
+                description:
+                  "Track and manage your expenses. Submit new claims and view recent transactions.",
                 color: "#837425",
                 bgColor: "#FFFBE5",
                 hoverBg: "#FFF2B2",
                 action: "Manage",
-                onClick: () => navigator("/EmployeeDashboard/emp/expense")
-              }
+                onClick: () => navigator("/EmployeeDashboard/emp/expense"),
+              },
             ].map((card) => (
               <motion.div
                 key={card.id}
@@ -326,18 +324,23 @@ const EmployeeDashboard = () => {
 
                 <motion.div
                   variants={cardHoverVariants}
-                  className={`bg-white rounded-2xl shadow-lg flex flex-col min-h-[220px] p-6 border-2 transition-all duration-300 cursor-pointer ${activeCard === card.id ? 'shadow-2xl' : 'shadow-md'
-                    }`}
+                  className={`bg-white rounded-2xl shadow-lg flex flex-col min-h-[220px] p-6 border-2 transition-all duration-300 cursor-pointer ${
+                    activeCard === card.id ? "shadow-2xl" : "shadow-md"
+                  }`}
                   style={{
-                    borderColor: activeCard === card.id ? card.color : '#F3F3F3',
-                    background: activeCard === card.id ? card.hoverBg : card.bgColor
+                    borderColor:
+                      activeCard === card.id ? card.color : "#F3F3F3",
+                    background:
+                      activeCard === card.id ? card.hoverBg : card.bgColor,
                   }}
                   onClick={card.onClick}
                 >
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-3">
                       <motion.div
-                        animate={{ rotate: activeCard === card.id ? [0, 360] : 0 }}
+                        animate={{
+                          rotate: activeCard === card.id ? [0, 360] : 0,
+                        }}
                         transition={{ duration: 0.5 }}
                         className="text-2xl"
                         style={{ color: card.color }}
@@ -354,7 +357,7 @@ const EmployeeDashboard = () => {
                       className="text-sm font-bold px-4 py-1 rounded-lg"
                       style={{
                         color: card.color,
-                        backgroundColor: `${card.color}15`
+                        backgroundColor: `${card.color}15`,
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -404,40 +407,102 @@ const EmployeeDashboard = () => {
                   <TbBellRingingFilled className="text-2xl text-purple-500" />
                   Latest Announcements
                 </div>
+                {eventList.length > 0 && (
+                  <span className="rounded-full bg-purple-50 px-2.5 py-1 text-[11px] font-semibold text-purple-600 ring-1 ring-purple-100">
+                    {eventList.length}{" "}
+                    {eventList.length === 1 ? "event" : "events"}
+                  </span>
+                )}
               </div>
 
-              <div className="space-y-4 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                 <AnimatePresence>
-                  {latestUpdates.map((update) => (
-                    <motion.div
-                      key={update.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      className={`p-4 rounded-xl transition-all duration-300 cursor-pointer ${update.read ? 'bg-gray-50' : 'bg-blue-50 border-l-4'
-                        }`}
-                      style={{
-                        borderLeftColor: update.priority === 'high' ? '#EF4444' :
-                          update.priority === 'medium' ? '#F59E0B' : '#10B981'
-                      }}
-                    >
-                      <div className="flex items-start gap-3">
-                        {!update.read && (
-                          <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
-                        )}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            {update.priority === 'high' && (
-                              <FaFire className="text-red-500 text-sm" />
-                            )}
-                            <p className={`text-sm ${update.read ? 'text-gray-600' : 'text-gray-800 font-medium'}`}>
-                              {update.text}
-                            </p>
+                  {eventList.length > 0 ? (
+                    eventList.map((event, index) => {
+                      const parsed = event?.eventDate
+                        ? new Date(event.eventDate)
+                        : null;
+                      const validDate =
+                        parsed && isValid(parsed) ? parsed : null;
+                      const isToday =
+                        validDate && isSameDay(validDate, new Date());
+
+                      return (
+                        <motion.div
+                          key={event._id || index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="group relative overflow-hidden rounded-xl border border-slate-100 bg-gradient-to-br from-white to-indigo-50/30 p-3 transition-shadow hover:shadow-md"
+                        >
+                          {/* accent strip */}
+                          <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-indigo-500 to-fuchsia-500" />
+
+                          <div className="flex items-start gap-3 pl-2">
+                            {/* date badge */}
+                            <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-gradient-to-br from-indigo-50 to-violet-50 ring-1 ring-indigo-100">
+                              <span className="text-[9px] font-semibold uppercase tracking-wider text-indigo-500">
+                                {validDate ? format(validDate, "MMM") : "—"}
+                              </span>
+                              <span className="text-sm font-bold leading-none text-slate-900">
+                                {validDate ? format(validDate, "dd") : "—"}
+                              </span>
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                {event?.eventType && (
+                                  <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-indigo-700 ring-1 ring-indigo-100">
+                                    {event.eventType}
+                                  </span>
+                                )}
+                                {isToday && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-rose-600 ring-1 ring-rose-100">
+                                    <FaFire className="text-[8px]" /> Today
+                                  </span>
+                                )}
+                              </div>
+
+                              <p
+                                className="mt-1 truncate text-sm font-semibold text-slate-800"
+                                title={event?.eventTitle}
+                              >
+                                {event?.eventTitle || "Untitled Event"}
+                              </p>
+
+                              {event?.eventNote && (
+                                <p className="mt-0.5 line-clamp-1 text-[11px] text-slate-500">
+                                  {event.eventNote}
+                                </p>
+                              )}
+
+                              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500">
+                                {event?.eventTime && (
+                                  <span>🕒 {event.eventTime}</span>
+                                )}
+                                {event?.Venue && (
+                                  <span>📍 {event.Venue}</span>
+                                )}
+                                {event?.dressCode && (
+                                  <span>👔 {event.dressCode}</span>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                        </motion.div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-sm text-gray-500 italic">
+                        No announcements right now
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        New updates will appear here 📢
+                      </p>
+                    </div>
+                  )}
                 </AnimatePresence>
               </div>
             </motion.div>
@@ -486,10 +551,14 @@ const EmployeeDashboard = () => {
                             {event?.eventCelebration || "Celebration"}
                           </p>
                           <p className="text-xs text-gray-500">
-                            📅 {new Date(event?.eventDate).toLocaleDateString('en-GB', {
-                              day: 'numeric',
-                              month: 'short'
-                            })}
+                            📅{" "}
+                            {new Date(event?.eventDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "numeric",
+                                month: "short",
+                              }
+                            )}
                           </p>
                         </div>
                       </motion.div>
@@ -538,10 +607,14 @@ const EmployeeDashboard = () => {
                             {event?.eventCelebration || "Exciting Event"}
                           </p>
                           <p className="text-xs text-gray-500">
-                            📅 {new Date(event?.eventDate).toLocaleDateString('en-GB', {
-                              day: 'numeric',
-                              month: 'short'
-                            })}
+                            📅{" "}
+                            {new Date(event?.eventDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "numeric",
+                                month: "short",
+                              }
+                            )}
                           </p>
                           <div className="mt-1 text-xs text-blue-600 font-medium">
                             Coming soon!
@@ -579,11 +652,7 @@ const EmployeeDashboard = () => {
               />
             )}
 
-            {holiday && (
-              <CompanyHoliday
-                onClose={() => setHoliday(false)}
-              />
-            )}
+            {holiday && <CompanyHoliday onClose={() => setHoliday(false)} />}
           </AnimatePresence>
         </motion.div>
       </motion.div>
@@ -591,4 +660,4 @@ const EmployeeDashboard = () => {
   );
 };
 
-export default EmployeeDashboard;
+export default EmployeeDashboard; 

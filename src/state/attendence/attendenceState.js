@@ -56,3 +56,9 @@ export const approvedLeavesOfEmployeeAtom = atom({
   default: null,
   effects_UNSTABLE: [persistAtom],
 });
+
+export const allEmployeeLeavesAtom = atom({
+  key: "allEmployeeLeaves",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});

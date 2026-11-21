@@ -10,3 +10,9 @@ export const expenseSheetAtom = atom(createPersistedAtom("expenseSheetKey", []))
 export const empWiseYearsAtom = atom(createPersistedAtom("empWiseYearsKey", []))
 
 export const yearWiseMonthsAtom = atom(createPersistedAtom("yearWiseMonthsKey", []))
+
+export const expensesMonthlyTrendAtom = atom(createPersistedAtom("expensesMonthlyTrendKey", []))
+
+export const expensesCategoryBreakdownAtom = atom(createPersistedAtom("expensesCategoryBreakdownKey", null))
+
+export const categoryWiseEmployeeExpensesAtom = atom(createPersistedAtom("categoryWiseEmployeeExpensesKey", null))

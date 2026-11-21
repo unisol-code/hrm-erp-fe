@@ -91,7 +91,13 @@ const EmpLoanRequestList = () => {
 
   /* ---------------- Render Rows ---------------- */
   const renderTableRow = (employee, index) => {
-    const requestAmount = employee.totalRequestAmount || 0;
+    const badge = (value, activeClass = "bg-yellow-100 text-red-800") => (
+      <span
+        className={`px-3 py-1 rounded-full text-sm ${Number(value) > 0 ? activeClass : "bg-gray-100 text-gray-800"}`}
+      >
+        {value ?? 0}
+      </span>
+    );
 
     return (
       <TableRow
@@ -105,7 +111,7 @@ const EmpLoanRequestList = () => {
         </TableCell>
 
         <TableCell align="center">
-          {employee.employeeId}
+          {employee.employeeId || "-"}
         </TableCell>
 
         <TableCell align="center">
@@ -113,57 +119,41 @@ const EmpLoanRequestList = () => {
             <div className="w-10 h-10 rounded-full overflow-hidden border">
               <img
                 src={employee.photo || Profile}
-                alt={employee.fullName}
+                alt={employee.fullName || "Employee"}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="text-left">
-              <p className="font-medium">{employee.fullName}</p>
+              <p className="font-medium">{employee.fullName || "-"}</p>
             </div>
           </div>
         </TableCell>
 
         <TableCell align="center">
-          <a
-            href={`mailto:${employee.email}`}
-            className="text-blue-600 hover:underline"
-          >
-            {employee.email}
-          </a>
+          {employee.email ? (
+            <a href={`mailto:${employee.email}`} className="text-blue-600 hover:underline">
+              {employee.email}
+            </a>
+          ) : (
+            "-"
+          )}
         </TableCell>
 
         <TableCell align="center">
           {employee.department || "-"}
         </TableCell>
 
-        <TableCell align="center">
-          <span
-            className={`px-3 py-1 rounded-full text-sm ${employee.loanCount > 0
-              ? "bg-yellow-100 text-red-800"
-              : "bg-gray-100 text-gray-800"
-              }`}
-          >
-            {employee.loanCount || 0}
-          </span>
-        </TableCell>
-
-        <TableCell align="center">
-          <span
-            className={`px-3 py-1 rounded-full text-sm ${employee.pendingNillLoanRequests > 0
-              ? "bg-yellow-100 text-red-800"
-              : "bg-gray-100 text-gray-800"
-              }`}
-          >
-            {employee.pendingNillLoanRequests || 0}
-          </span>
-        </TableCell>
+        <TableCell align="center">{badge(employee.pendingLoanRequestCount)}</TableCell>
+        <TableCell align="center">{badge(employee.approvedLoanRequestCount, "bg-green-100 text-green-800")}</TableCell>
+        <TableCell align="center">{badge(employee.rejectedLoanRequestCount, "bg-red-100 text-red-800")}</TableCell>
+        <TableCell align="center">{badge(employee.totalLoanRequestCount, "bg-blue-100 text-blue-800")}</TableCell>
+        <TableCell align="center">{badge(employee.pendingNillLoanRequests)}</TableCell>
 
         <TableCell align="center">
           <button
             aria-label="View"
             title={canRead ? "View" : "No permission"}
-            className={`p-2 rounded-full hover:bg-yellow-100 hover:scale-105 transition-all duration-200 ${!canRead ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`p-2 rounded-full hover:bg-yellow-100 hover:scale-105 transition-all duration-200 ${!canRead ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={!canRead}
             style={{ color: theme.primaryColor }}
             onClick={() => handleViewClick(employee.employeeId)}
@@ -180,7 +170,7 @@ const EmpLoanRequestList = () => {
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={7} sx={{ py: 8 }}>
+          <TableCell colSpan={11} sx={{ py: 8 }}>
             <div className="flex justify-center items-center min-h-[200px]">
               <LoaderSpinner />
             </div>
@@ -192,7 +182,7 @@ const EmpLoanRequestList = () => {
     if (!forAdminEmpLoanRequestList?.data?.length) {
       return (
         <TableRow>
-          <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+          <TableCell colSpan={11} align="center" sx={{ py: 8 }}>
             <div className="flex flex-col items-center gap-3">
               <FaSearch className="text-gray-400 text-2xl" />
               <p className="text-gray-500 font-medium">
@@ -275,8 +265,11 @@ const EmpLoanRequestList = () => {
                     "Employee Name",
                     "Email",
                     "Department",
-                    "Pending Loan Request Count",
-                    "Pending Nil Amt Request Count",
+                    "Pending",
+                    "Approved",
+                    "Rejected",
+                    "Total",
+                    "Nil Amt Pending",
                     "Action"
                   ].map((head) => (
                     <TableCell key={head} align="center" sx={{ fontWeight: "bold" }}>

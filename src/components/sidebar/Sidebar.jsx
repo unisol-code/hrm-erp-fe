@@ -35,8 +35,7 @@ function Sidebar() {
   const SidebarItems = [
     { id: 1, icon: <LayoutDashboard className="w-6 h-6" />, name: "Dashboard", path: "/hrDashboard" },
     { id: 2, icon: <IoPeopleCircleOutline className="w-6 h-6" />, name: "Core HR", path: "/coreHR" },
-    { id: 3, icon: <Trophy className="w-6 h-6" />, name: "Employee Achievement", path: "/hr/employeeAchievement" },
-    {
+   {
       id: 4,
       icon: <HandCoins className="w-6 h-6" />,
       name: 'Payroll Management',
@@ -93,6 +92,8 @@ function Sidebar() {
         { id: 84, name: 'Result', path: '/result' }
       ],
     },
+     { id: 3, icon: <Trophy className="w-6 h-6" />, name: "Employee Achievement", path: "/hr/employeeAchievement" },
+    
     {
       id: 9,
       icon: <SiProcessingfoundation className="w=6 h-6" />,

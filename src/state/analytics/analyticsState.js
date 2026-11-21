@@ -15,6 +15,8 @@ export const analyticsLeaveDetailsAtom = atom(createPersistedAtom("analyticsLeav
 
 export const analyticsExpensesTrendAtom = atom(createPersistedAtom("analyticsExpensesTrendKey", []));
 
+export const analyticsExpensesYearlyTrendAtom = atom(createPersistedAtom("analyticsExpensesYearlyTrendKey", null));
+
 export const analyticsExpensesDetailsAtom = atom(createPersistedAtom("analyticsExpensesDetailsKey", []));
 
 export const analyticsLoanTrendAtom = atom(createPersistedAtom("analyticsLoanTrendKey", []));

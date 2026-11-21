@@ -43,6 +43,7 @@ const validationSchema = Yup.object().shape({
   dateOfBirth: Yup.date()
     .nullable()
     .required("Date of Birth is required"),
+  bloodGroup: Yup.string(),
   department: Yup.string().required("Department is required"),
   joiningDate: Yup.date().required("Joining Date is required"),
   employmentType: Yup.string().required("Employment Type is required"),
@@ -158,6 +159,7 @@ const tabFieldMap = {
     "officialEmail",
     "phoneNumber",
     "dateOfBirth",
+    "bloodGroup",
     "department",
     "joiningDate",
     "employmentType",
@@ -298,6 +300,7 @@ const CreateEmployee = () => {
       fullName: "",
       phoneNumber: "",
       dateOfBirth: "",
+      bloodGroup: "",
       department: "",
       designation: "",
       employmentType: "",

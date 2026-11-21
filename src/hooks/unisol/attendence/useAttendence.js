@@ -12,6 +12,7 @@ import {
   monthlyAttendanceAtom,
   searchEmployeeAtom,
   approvedLeavesOfEmployeeAtom,
+  allEmployeeLeavesAtom,
 } from "../../../state/attendence/attendenceState";
 import { toast } from "react-toastify";
 
@@ -46,6 +47,9 @@ const useAttendence = () => {
 
   const [approvedLeavesOfEmployee, setApprovedLeavesOfEmployee] =
     useRecoilState(approvedLeavesOfEmployeeAtom);
+
+  const [allEmployeeLeaves, setAllEmployeeLeaves] =
+    useRecoilState(allEmployeeLeavesAtom);
 
   const getAllEmployeeAttendanceDetails = async (page, limit, filters) => {
     setLoading(true);
@@ -92,14 +96,16 @@ const useAttendence = () => {
     }
   };
 
-  const getEmployeeLeaveStatusAndApproval = async (id) => {
+  const getEmployeeLeaveStatusAndApproval = async (id,year) => {
     console.log("id :", id);
     setEmployeeLeaveStatusAndApproval(null);
     setLoading(true);
     try {
+      const params = new URLSearchParams();
+      if (year) params.append("year", year);
       await fetchData({
         method: "GET",
-        url: `${conf.apiBaseUrl}leave/getEmployeeLeaveStatusAndApproval/${id}`,
+        url: `${conf.apiBaseUrl}leave/getEmployeeLeaveStatusAndApproval/${id}?${params.toString()}`,
       }).then((res) => {
         if (res) {
           console.log("leave status res : ", res);
@@ -264,6 +270,30 @@ const useAttendence = () => {
     }
   };
 
+  const getAllEmployeeLeaves = async (params = {}) => {
+    setAllEmployeeLeaves(null);
+    setLoading(true);
+    try {
+      const query = new URLSearchParams(
+        Object.entries(params).filter(
+          ([, value]) => value !== undefined && value !== null && value !== ""
+        )
+      ).toString();
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}leave/getAllEmployeeLeaves${query ? `?${query}` : ""}`,
+      });
+      if (res) {
+        setAllEmployeeLeaves(res);
+      }
+      return res;
+    } catch (error) {
+      console.error("Error while fetching all employee leaves:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resetEmployeeLeaveStatusAndApproval = () => {
     setEmployeeLeaveStatusAndApproval(null);
   };
@@ -281,6 +311,7 @@ const useAttendence = () => {
     functionSearchEmployee,
     getApprovedLeavesOfEmployee,
     remarkLeave,
+    getAllEmployeeLeaves,
     allEmployeeAttendanceDetails,
     employeeLeaveSummary,
     employeeLeaveStatusAndApproval,
@@ -290,6 +321,7 @@ const useAttendence = () => {
     dailyAttendancePercentage,
     searchEmployee,
     approvedLeavesOfEmployee,
+    allEmployeeLeaves,
   };
 };
 

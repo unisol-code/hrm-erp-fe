@@ -30,15 +30,16 @@ const EmployeeAttendenceDetails = () => {
     twoMonthAttendence,
     getWeeklyAttendance,
     weeklyAttendence,
-    loading,
+    loading,fetchYearlyAttendanceSummary, employeeYearlyAttendanceDetails
   } = useEmpAttendence();
 
   const { theme } = useTheme();
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isYearlyCollapsed, setIsYearlyCollapsed] = useState(false);
   const [isSummaryCollapsed, setIsSummaryCollapsed] = useState(false);
   const [isWeeklyCollapsed, setIsWeeklyCollapsed] = useState(false);
-  const [todayDate, setTodayDate] = useState(new Date());
+  const [todayDate] = useState(new Date());
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
@@ -50,6 +51,7 @@ const EmployeeAttendenceDetails = () => {
   useEffect(() => {
     fetchEmpById(id);
     getWeeklyAttendance(id);
+    fetchYearlyAttendanceSummary(id);
   }, []);
   useEffect(() => {
     getTwoMonthAttendance(id, selectedYear);
@@ -195,6 +197,94 @@ const EmployeeAttendenceDetails = () => {
                 </div>
               </div>
             </div>
+
+              {/* Yearly Attendance Summary */}
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div
+                  className="w-full h-[60px] flex items-center justify-between px-8"
+                  style={{ backgroundColor: theme.secondaryColor }}
+                >
+                  <div className="flex items-center gap-3">
+                    <FaChartBar className="text-blue-600 text-xl" />
+                    <h2 className="font-bold text-xl text-gray-700">
+                      Yearly Attendance Summary
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setIsYearlyCollapsed(!isYearlyCollapsed)}
+                    className="focus:outline-none"
+                  >
+                    {isYearlyCollapsed ? (
+                      <FaChevronDown className="text-gray-600" />
+                    ) : (
+                      <FaChevronUp className="text-gray-600" />
+                    )}
+                  </button>
+                </div>
+                {!isYearlyCollapsed && (
+                  <div className="px-4 py-4">
+                    {employeeYearlyAttendanceDetails?.yearlySummaries?.length ? (
+                      <div className="w-full">
+                        <div className="relative">
+                          <table className="w-full text-center table-fixed">
+                            <thead className="bg-white sticky top-0 z-10">
+                              <tr className="font-semibold text-gray-600 h-[40px] border-b-2 border-gray-300">
+                                <th className="px-4 w-1/4">Year</th>
+                                <th className="px-4 w-1/4">Present Days</th>
+                                <th className="px-4 w-1/4">Absent Days</th>
+                                <th className="px-4 w-1/4">Leave Taken</th>
+                              </tr>
+                            </thead>
+                          </table>
+                          <div style={{ maxHeight: 160, overflowY: "auto" }}>
+                            <table className="w-full text-center table-fixed">
+                              <tbody>
+                                {employeeYearlyAttendanceDetails.yearlySummaries.map(
+                                  (data) => (
+                                    <tr
+                                      key={data?.year}
+                                      onClick={() =>
+                                        navigate(
+                                          `/employeeAttendence/employeeAttendenceDetails/${id}/${data.year}`
+                                        )
+                                      }
+                                      className="h-[50px] hover:bg-gray-100 transition-colors cursor-pointer"
+                                      title="Click to view yearly attendance details"
+                                    >
+                                      <td className="px-4 w-1/4 font-medium">
+                                        {data?.year}
+                                      </td>
+                                      <td className="px-4 w-1/4">
+                                        <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                          {data?.totalPresent ?? 0}
+                                        </span>
+                                      </td>
+                                      <td className="px-4 w-1/4">
+                                        <span className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
+                                          {data?.totalAbsent ?? 0}
+                                        </span>
+                                      </td>
+                                      <td className="px-4 w-1/4">
+                                        <span className="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
+                                          {data?.totalLeavesTaken ?? 0}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500">
+                        No yearly attendance summary available
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
 
             {/* Attendance Summary */}
 

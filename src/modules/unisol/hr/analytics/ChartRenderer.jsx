@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import LoaderSpinner from "../../../../components/LoaderSpinner";
 
 const ChartRenderer = ({
@@ -19,6 +20,7 @@ const ChartRenderer = ({
   monthOptions,
   theme
 }) => {
+  const navigate = useNavigate();
   if (loading && !attendanceData.length && !leavesData.length && !expensesData.length && !loanData.length && !appraisalData?.leadership?.length) {
     return (
       <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -179,8 +181,22 @@ const ChartRenderer = ({
                 : "Monthly expense analysis"}
             </p>
           </div>
-          <div className="text-sm font-medium text-gray-600">
-            Total: {formatCurrency(totalExpenseAmount)}
+           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/expensesheet/yearwiseexpense")}
+              className="flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors"
+              style={{
+                color: theme.primaryColor,
+                backgroundColor: `${theme.primaryColor}15`,
+                borderColor: `${theme.primaryColor}40`
+              }}
+            >
+              VIEW ALL
+            </button>
+            <div className="text-sm font-medium text-gray-600">
+              Total: {formatCurrency(totalExpenseAmount)}
+            </div>
           </div>
         </div>
         {loading ? (

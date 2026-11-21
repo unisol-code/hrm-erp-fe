@@ -55,8 +55,17 @@ const MonthlyEmpWise = () => {
         }
     }, [id, year, month, page, limit]);
 
+    const data = monthlyAttendanceOfEmployee?.data;
+    const summary = data?.summary || {};
+    const leaveDetails = summary?.leaveDetails || data?.leaveDetails || {};
+    const leaveTypes = [
+        { key: "sickLeave", label: "Sick Leave" },
+        { key: "casualLeave", label: "Casual Leave" },
+        { key: "vacationLeave", label: "Vacation Leave" },
+    ];
+
     const downloadAsPDF = () => {
-        if (!monthlyAttendanceOfEmployee?.data) return;
+        if (!data) return;
 
         const pdf = new jsPDF("p", "mm", "a4");
 
@@ -267,7 +276,7 @@ const MonthlyEmpWise = () => {
                                         <div
                                             className="h-full bg-green-500 rounded-full"
                                             style={{
-                                                width: `${((monthlyAttendanceOfEmployee?.data?.summary?.present || 0) / (monthlyAttendanceOfEmployee?.data?.workingDays || 1)) * 100}%`
+                                                width: `${summary.workingDays ? ((summary.present || 0) / summary.workingDays) * 100 : 0}%`
                                             }}
                                         ></div>
                                     </div>
@@ -304,7 +313,7 @@ const MonthlyEmpWise = () => {
                                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200 shadow-sm">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-purple-600 font-medium">Holidays</p>
+                                            <p className="text-sm text-purple-600 font-medium">Official Holidays</p>
                                             <p className="text-2xl font-bold text-purple-700 mt-1">
                                                 {monthlyAttendanceOfEmployee?.data?.summary?.holidays || 0}
                                             </p>
@@ -328,31 +337,53 @@ const MonthlyEmpWise = () => {
                                         </div>
                                     </div>
                                 </div>
+
+                                
+                                <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200 shadow-sm">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-pink-600 font-medium">Missed Punch Remarks</p>
+                                            <p className="text-2xl font-bold text-pink-700 mt-1">
+                                                {monthlyAttendanceOfEmployee?.data?.totalRemarks || 0}
+                                            </p>
+                                        </div>
+                                        <div className="p-2 bg-red-100 rounded-lg">
+                                            <FaCalendarTimes className="text-pink-600 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Summary Bar */}
                             <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200">
                                 <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-4 flex-wrap">
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">Working Days</p>
+                                            <p className="text-sm text-gray-600">Calender Days</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.workingDays || 0}
+                                                {data?.totalDaysInMonth  ?? 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">Total Days</p>
+                                            <p className="text-sm text-gray-600">Net Working Days</p>
                                             <p className="text-lg font-bold text-gray-800">
-                                                {monthlyAttendanceOfEmployee?.data?.totalDaysInMonth || 0}
+                                                {data?.totalWorkingDaysInMonth ?? 0}
+                                            </p>
+                                        </div>
+                                        <div className="h-8 w-px bg-gray-300"></div>
+                                        <div className="text-center">
+                                            <p className="text-sm text-gray-600">Elapsed Days Considered</p>
+                                            <p className="text-lg font-bold text-gray-800">
+                                                {data?.workingDaysTillDate ?? 0}
                                             </p>
                                         </div>
                                         <div className="h-8 w-px bg-gray-300"></div>
                                         <div className="text-center">
                                             <p className="text-sm text-gray-600">Attendance %</p>
                                             <p className="text-lg font-bold text-green-600">
-                                                {monthlyAttendanceOfEmployee?.data?.summary?.present && monthlyAttendanceOfEmployee?.data?.summary?.workingDays
-                                                    ? `${Math.round((monthlyAttendanceOfEmployee.data.summary.present / monthlyAttendanceOfEmployee.data.summary.workingDays) * 100)}%`
+                                                {summary.present && summary.workingDays
+                                                    ? `${Math.round((summary.present / summary.workingDays) * 100)}%`
                                                     : '0%'
                                                 }
                                             </p>
@@ -360,6 +391,40 @@ const MonthlyEmpWise = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {leaveTypes.some((type) => leaveDetails[type.key]) && (
+                                <div className="mt-4">
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Leave Details</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        {leaveTypes.map((type) => {
+                                            const detail = leaveDetails[type.key];
+                                            if (!detail) return null;
+                                            return (
+                                                <div
+                                                    key={type.key}
+                                                    className="bg-blue-50 rounded-xl p-4 border border-blue-100"
+                                                >
+                                                    <p className="text-sm font-semibold text-gray-700 mb-2">
+                                                        {type.label}
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">
+                                                        Taken:{" "}
+                                                        <span className="font-semibold text-blue-700">
+                                                            {detail.taken ?? 0}
+                                                        </span>
+                                                    </p>
+                                                    {/* <p className="text-sm text-gray-600">
+                                                        Pending:{" "}
+                                                        <span className="font-semibold text-blue-700">
+                                                            {detail.pending ?? 0}
+                                                        </span>
+                                                    </p> */}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
