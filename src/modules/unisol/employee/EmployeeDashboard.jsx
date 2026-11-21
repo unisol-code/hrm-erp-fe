@@ -552,7 +552,7 @@ const EmployeeDashboard = () => {
                           </p>
                           <p className="text-xs text-gray-500">
                             📅{" "}
-                            {new Date(event?.eventDate).toLocaleDateString(
+                            {new Date(event?.date).toLocaleDateString(
                               "en-GB",
                               {
                                 day: "numeric",
@@ -608,7 +608,7 @@ const EmployeeDashboard = () => {
                           </p>
                           <p className="text-xs text-gray-500">
                             📅{" "}
-                            {new Date(event?.eventDate).toLocaleDateString(
+                            {new Date(event?.date).toLocaleDateString(
                               "en-GB",
                               {
                                 day: "numeric",
