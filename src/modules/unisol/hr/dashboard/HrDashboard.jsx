@@ -109,7 +109,7 @@ const OfficeEventItem = ({ event }) => {
 };
 
 const SpecialDayItem = ({ event, accent = "pink" }) => {
-  const date = safeDate(event?.eventDate);
+  const date = safeDate(event?.date);
   const isBlue = accent === "blue";
 
   const gradient = isBlue

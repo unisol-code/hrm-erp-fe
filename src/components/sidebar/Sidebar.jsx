@@ -201,8 +201,8 @@ function Sidebar() {
   };
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
-    document.documentElement.style.setProperty('--highlight-color', theme.highlightColor);
+    document.documentElement.style.setProperty('--primary-color', theme?.primaryColor );
+    document.documentElement.style.setProperty('--highlight-color', theme?.highlightColor );
   }, [theme]);
 
   return (
@@ -218,7 +218,7 @@ function Sidebar() {
           className={`transition-transform duration-300 ${collapsed ? "rotate-180" : "rotate-0"
             }`}
           style={{
-            fill: theme.primaryColor,
+            fill: theme?.primaryColor || "#4FA8E5",
             color: "#ffffff",
             width: '28px',
             height: '28px'
@@ -277,7 +277,7 @@ function Sidebar() {
         <div
           onClick={handleLogout}
           className="sticky bottom-0 flex items-center pt-2 pb-2 w-full h-full border-t-2"
-          style={{ backgroundColor: "white", borderColor: theme.highlightColor }}
+          style={{ backgroundColor: "white", borderColor: theme?.highlightColor }}
         >
           <div
             className={`flex items-center gap-3 p-2 mx-4 rounded-lg w-full shadow-sm transition-all duration-300
