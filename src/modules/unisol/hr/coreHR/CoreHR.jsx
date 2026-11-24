@@ -853,11 +853,6 @@ const CoreHR = () => {
                               />
                             </IconButton>
                           </div>
-                          {empDetails && (
-                            <EmployeeDetail
-                              onClose={() => setEmpDetails(false)}
-                            />
-                          )}
                         </td>
                       </tr>
                     ))
@@ -974,6 +969,10 @@ const CoreHR = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {empDetails && (
+        <EmployeeDetail onClose={() => setEmpDetails(false)} />
+      )}
     </div>
   );
 };

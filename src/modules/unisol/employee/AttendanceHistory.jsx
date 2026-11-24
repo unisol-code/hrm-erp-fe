@@ -61,7 +61,7 @@ const AttendanceHistory = () => {
     const fetchAllData = async () => {
       try {
         await Promise.all([
-          getAttendanceSummary(empId),
+          // getAttendanceSummary(empId),
           fetchEmpById(empId),
           getWeeklyAttendance(empId),
         ]);

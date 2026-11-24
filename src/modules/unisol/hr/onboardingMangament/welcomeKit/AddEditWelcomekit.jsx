@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -21,14 +21,11 @@ const AddEditWelcomeKit = () => {
   const [wordCount, setWordCount] = useState(0);
   const textareaRef = useRef(null);
   const {
-  createWelcomeKit,updateWelcomeKit,
-  fetchWelcomeKitById,
-  welcomeKitDetails,
-  loading,
-} = useWelcomeKit();
-
-
-
+    createWelcomeKit, updateWelcomeKit,
+    fetchWelcomeKitById,
+    welcomeKitDetails,
+    loading,
+  } = useWelcomeKit();
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -49,38 +46,38 @@ const AddEditWelcomeKit = () => {
       photos: [],
     },
     validationSchema: validationSchema,
- onSubmit: async (values) => {
-  const formData = new FormData();
+    onSubmit: async (values) => {
+      const formData = new FormData();
 
-  // formData.append("name", values.name);
-  // Backend update API expects only description + photos
-  formData.append("description", values.description);
+      // formData.append("name", values.name);
+      // Backend update API expects only description + photos
+      formData.append("description", values.description);
 
-  // NEW uploaded photos
-  selectedPhotos.forEach((file) => {
-    formData.append("photos", file);
-  });
+      // NEW uploaded photos
+      selectedPhotos.forEach((file) => {
+        formData.append("photos", file);
+      });
 
-  // Existing photos to KEEP
-  existingPhotos.forEach((url) => {
-    formData.append("photos", url);
-  });
+      // Existing photos to KEEP
+      existingPhotos.forEach((url) => {
+        formData.append("photos", url);
+      });
 
-  try {
-    if (id) {
-      // UPDATE
-      await updateWelcomeKit(id, formData);
-    } else {
-      // CREATE
-      formData.append("name", values.name);
-      await createWelcomeKit(formData);
+      try {
+        if (id) {
+          // UPDATE
+          await updateWelcomeKit(id, formData);
+        } else {
+          // CREATE
+          formData.append("name", values.name);
+          await createWelcomeKit(formData);
+        }
+
+
+      } catch (error) {
+        console.log("Submit failed", error);
+      }
     }
-
- 
-  } catch (error) {
-    console.log("Submit failed", error);
-  }
-}
 
 
   });
@@ -107,38 +104,38 @@ const AddEditWelcomeKit = () => {
     ? formik.values.description.split("\n").length
     : 0;
 
-useEffect(() => {
-  if (id) {
-    fetchWelcomeKitById(id);
-  }
-}, [id]);
-
-
-useEffect(() => {
-  if (id && welcomeKitDetails?.data) {
-    const kit = welcomeKitDetails.data;
-
-    // Fill form values
-    formik.setValues({
-      name: kit.name || "",
-      description: kit.description || "",
-      photos: kit.photos || [],
-    });
-
-    // Set existing photos
-    if (kit.photos?.length > 0) {
-      setExistingPhotos(kit.photos);
-
-      const previews = kit.photos.map((url, index) => ({
-        url,
-        name: `existing_${index}`,
-        isExisting: true,
-      }));
-
-      setPhotoPreview(previews);
+  useEffect(() => {
+    if (id) {
+      fetchWelcomeKitById(id);
     }
-  }
-}, [id, welcomeKitDetails]);
+  }, [id]);
+
+
+  useEffect(() => {
+    if (id && welcomeKitDetails?.data) {
+      const kit = welcomeKitDetails.data;
+
+      // Fill form values
+      formik.setValues({
+        name: kit.name || "",
+        description: kit.description || "",
+        photos: kit.photos || [],
+      });
+
+      // Set existing photos
+      if (kit.photos?.length > 0) {
+        setExistingPhotos(kit.photos);
+
+        const previews = kit.photos.map((url, index) => ({
+          url,
+          name: `existing_${index}`,
+          isExisting: true,
+        }));
+
+        setPhotoPreview(previews);
+      }
+    }
+  }, [id, welcomeKitDetails]);
 
   const handlePhotoChange = (event) => {
     const files = Array.from(event.target.files);
@@ -245,7 +242,7 @@ useEffect(() => {
                     />
                     <button
                       type="button"
-                      
+
                       onClick={() => handleDeletePhoto(index)}
                       className="absolute -top-2 -right-2 bg-red-600 text-white w-6 h-6 rounded hover:bg-red-700 transition flex items-center justify-center text-lg font-bold"
                     >
@@ -271,7 +268,7 @@ useEffect(() => {
             <input
               type="text"
               name="name"
-               readOnly={!!id}
+              readOnly={!!id}
               placeholder="Enter welcome kit name"
               {...formik.getFieldProps("name")}
               className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
@@ -285,8 +282,8 @@ useEffect(() => {
 
           {/* Description */}
           <label className="block font-medium text-gray-700 ">
-              Description <span className="text-red-500">*</span>
-            </label>
+            Description <span className="text-red-500">*</span>
+          </label>
           <textarea
             ref={textareaRef}
             name="description"
@@ -298,7 +295,7 @@ useEffect(() => {
             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm
              focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
-  {/* <textarea         
+          {/* <textarea         
                 name="purposeReason"
                 value={formData.purposeReason}
                 onChange={handleInputChange}

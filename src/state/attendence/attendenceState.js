@@ -62,3 +62,15 @@ export const allEmployeeLeavesAtom = atom({
   default: null,
   effects_UNSTABLE: [persistAtom],
 });
+
+export const editLeaveResponseAtom = atom({
+  key: "editLeaveResponse",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const leaveDetailsByIdAtom = atom({
+  key: "leaveDetailsById",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});

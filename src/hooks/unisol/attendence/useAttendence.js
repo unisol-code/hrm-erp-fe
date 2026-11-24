@@ -13,6 +13,8 @@ import {
   searchEmployeeAtom,
   approvedLeavesOfEmployeeAtom,
   allEmployeeLeavesAtom,
+  editLeaveResponseAtom,
+  leaveDetailsByIdAtom,
 } from "../../../state/attendence/attendenceState";
 import { toast } from "react-toastify";
 
@@ -50,6 +52,12 @@ const useAttendence = () => {
 
   const [allEmployeeLeaves, setAllEmployeeLeaves] =
     useRecoilState(allEmployeeLeavesAtom);
+
+  const [editLeaveResponse, setEditLeaveResponse] =
+    useRecoilState(editLeaveResponseAtom);
+
+  const [leaveDetailsById, setLeaveDetailsById] =
+    useRecoilState(leaveDetailsByIdAtom);
 
   const getAllEmployeeAttendanceDetails = async (page, limit, filters) => {
     setLoading(true);
@@ -294,6 +302,47 @@ const useAttendence = () => {
     }
   };
 
+  const editAnyEmployeeLeave = async (empId, data) => {
+    setLoading(true);
+    setEditLeaveResponse(null);
+    try {
+      const res = await fetchData({
+        method: "PUT",
+        url: `${conf.apiBaseUrl}leave/editAnyEmployeeLeave/${empId}`,
+        data: data,
+      });
+      if (res) {
+        setEditLeaveResponse(res);
+        toast.success(res?.message || "Leave updated successfully");
+        return res;
+      }
+    } catch (error) {
+      console.error("Error while editing employee leave:", error);
+      toast.error("Failed to update leave");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getLeaveDetailsById = async (empId) => {
+    setLeaveDetailsById(null);
+    setLoading(true);
+    try {
+      const res = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}leave/getLeaveDetailsById/${empId}`,
+      });
+      if (res) {
+        setLeaveDetailsById(res?.data ?? res);
+        return res;
+      }
+    } catch (error) {
+      console.error("Error while fetching leave details by id:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resetEmployeeLeaveStatusAndApproval = () => {
     setEmployeeLeaveStatusAndApproval(null);
   };
@@ -312,6 +361,8 @@ const useAttendence = () => {
     getApprovedLeavesOfEmployee,
     remarkLeave,
     getAllEmployeeLeaves,
+    editAnyEmployeeLeave,
+    getLeaveDetailsById,
     allEmployeeAttendanceDetails,
     employeeLeaveSummary,
     employeeLeaveStatusAndApproval,
@@ -322,6 +373,8 @@ const useAttendence = () => {
     searchEmployee,
     approvedLeavesOfEmployee,
     allEmployeeLeaves,
+    editLeaveResponse,
+    leaveDetailsById,
   };
 };
 
