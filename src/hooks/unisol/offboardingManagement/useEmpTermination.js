@@ -203,6 +203,28 @@ const useEmpTermination = () => {
         }
     };
 
+    const updateSettlementStatus = async (id, data) => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "PUT",
+                url: `${conf.apiBaseUrl}hrTermination/updateSettlementStatus/${id}`,
+                data: data
+            });
+            if (res) {
+                toast.success(res?.message || "Settlement status updated successfully");
+                setLoading(false);
+                return res;
+            }
+        } catch (error) {
+            console.log("Error while updating settlement status:", error);
+            toast.error(error?.response?.data?.message || "Failed to update settlement status");
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         empInfoForTermination,
         fetchEmpInfoForTermination,
@@ -216,7 +238,8 @@ const useEmpTermination = () => {
         terminatedEmpsList,
         fetchEmpWiseTerminationList,
         empWiseTerminationList,
-        approveOrRejectTermination
+        approveOrRejectTermination,
+        updateSettlementStatus
     }
 }
 

@@ -4,6 +4,7 @@ import useEmpTermination from "../../../../../hooks/unisol/offboardingManagement
 import { useParams, useNavigate } from "react-router-dom";
 import LoaderSpinner from "../../../../../components/LoaderSpinner";
 import { useRoles } from "../../../../../hooks/auth/useRoles";
+import { toast } from "react-toastify";
 import {
     Calendar,
     User,
@@ -47,7 +48,8 @@ const ViewEmpTermination = () => {
         terminatedEmpById, 
         loading, 
         approveOrRejectTermination, 
-        updateTerminatedEmployee 
+        updateTerminatedEmployee,
+        updateSettlementStatus
     } = useEmpTermination();
     const { id } = useParams();
     const navigate = useNavigate();
@@ -64,6 +66,7 @@ const ViewEmpTermination = () => {
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [settlementSubmitting, setSettlementSubmitting] = useState(false);
 
     useEffect(() => {
         if (id) fetchTerminatedEmpById({ id, role });
@@ -246,6 +249,38 @@ const ViewEmpTermination = () => {
             console.error("Rejection error:", error);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    // Handle Final Settlement Approve
+    const handleApproveSettlement = async () => {
+        try {
+            setSettlementSubmitting(true);
+            console.log("Calling updateSettlementStatus approved:", id);
+            await updateSettlementStatus(id, { settlementStatus: "approved" });
+            toast.success("Final settlement approved successfully");
+            fetchTerminatedEmpById({ id, role });
+        } catch (error) {
+            console.error("Settlement approve error:", error);
+            toast.error("Failed to approve final settlement");
+        } finally {
+            setSettlementSubmitting(false);
+        }
+    };
+
+    // Handle Final Settlement Reject
+    const handleRejectSettlement = async () => {
+        try {
+            setSettlementSubmitting(true);
+            console.log("Calling updateSettlementStatus rejected:", id);
+            await updateSettlementStatus(id, { settlementStatus: "rejected" });
+            toast.success("Final settlement rejected successfully");
+            fetchTerminatedEmpById({ id, role });
+        } catch (error) {
+            console.error("Settlement reject error:", error);
+            toast.error("Failed to reject final settlement");
+        } finally {
+            setSettlementSubmitting(false);
         }
     };
 
@@ -829,6 +864,37 @@ const ViewEmpTermination = () => {
                                                             ? "Final settlement has been completed and processed."
                                                             : "Final settlement is pending. Please process after all clearances."}
                                                 </p>
+                                            </div>
+
+                                            {/* Settlement Action Buttons */}
+                                            <div className="flex gap-3 pt-4">
+                                                {terminatedEmpById?.finalSettlement?.settlementStatus === "pending" && (
+                                                    <>
+                                                        <button
+                                                            onClick={handleApproveSettlement}
+                                                            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            disabled={settlementSubmitting}
+                                                        >
+                                                            {settlementSubmitting ? "Processing..." : "Approve Settlement"}
+                                                        </button>
+                                                        <button
+                                                            onClick={handleRejectSettlement}
+                                                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            disabled={settlementSubmitting}
+                                                        >
+                                                            {settlementSubmitting ? "Processing..." : "Reject Settlement"}
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {terminatedEmpById?.finalSettlement?.settlementStatus === "rejected" && (
+                                                    <button
+                                                        onClick={handleApproveSettlement}
+                                                        className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        disabled={settlementSubmitting}
+                                                    >
+                                                        {settlementSubmitting ? "Processing..." : "Approve Settlement"}
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

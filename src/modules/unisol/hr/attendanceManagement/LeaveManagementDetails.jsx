@@ -7,6 +7,7 @@ import { useState } from "react";
 import CalenderLeaves from "./Components/CalenderLeaves";
 import StatusApproval from "./Components/StatusApproval";
 import HolidayList from "./Components/HolidayList";
+import TeamLeaves from "./Components/TeamLeaves";
 import BreadCrumb from "../../../../components/BreadCrumb";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -91,6 +92,11 @@ const LeaveManagementDetails = () => {
                 value="4"
                 sx={{ flex: 1, minWidth: 0 }}
               />
+              <Tab
+                label="Team Leaves"
+                value="5"
+                sx={{ flex: 1, minWidth: 0 }}
+              />
             </TabList>
           </Box>
           <TabPanel style={{ padding: 0 }} value="1">
@@ -104,6 +110,9 @@ const LeaveManagementDetails = () => {
           </TabPanel>
           <TabPanel style={{ padding: 0 }} value="4">
             <HolidayList />
+          </TabPanel>
+           <TabPanel style={{ padding: 0 }} value="5">
+            <TeamLeaves />
           </TabPanel>
         </TabContext>
       </Box>

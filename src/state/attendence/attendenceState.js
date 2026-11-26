@@ -74,3 +74,9 @@ export const leaveDetailsByIdAtom = atom({
   default: null,
   effects_UNSTABLE: [persistAtom],
 });
+
+export const teamLeavesAtom = atom({
+  key: "teamLeaves",
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});
