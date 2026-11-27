@@ -274,8 +274,6 @@ const EmployeeDetail = ({ onClose }) => {
   const [filePreview, setFilePreview] = useState(null);
   const [samePermemnantAddressChecked, setSamePermenanttAddressChecked] =
     useState(false);
-  const compId = sessionStorage.getItem("companyId") || "";
-  const [companyId, setCompanyId] = useState(compId);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDesignation, setSelectDesignation] = useState(null);
   const {
@@ -295,7 +293,9 @@ const EmployeeDetail = ({ onClose }) => {
     fetchEmployeeTypes,
     fetchPayrollGrade,
     fetchReportingManager,
-    perDepartment
+    perDepartment,
+    departmentDrop,
+    fetchDepartments
   } = useEmployee();
   const [companyList, setCompanyList] = useState([]);
   const [selectedWelcomeKits, setSelectedWelcomeKits] = useState([]);
@@ -303,8 +303,6 @@ const EmployeeDetail = ({ onClose }) => {
   const {
     fetchPrivilegeCompany,
     privilegeCompany,
-    fetchCompaniesDept,
-    companyDepartment,
   } = useHRPrivilege();
   const [photoFile, setPhotoFile] = useState(null);
   const handleToggleItem = (itemId) => {
@@ -553,10 +551,8 @@ const EmployeeDetail = ({ onClose }) => {
   }, [selectedDepartment]);
 
   useEffect(() => {
-    if (companyId) {
-      fetchCompaniesDept(companyId);
-    }
-  }, [companyId]);
+    fetchDepartments();
+  }, []);
 
   useEffect(() => {
     if (formik.values.designation) {
@@ -924,7 +920,6 @@ const EmployeeDetail = ({ onClose }) => {
                               "companyName",
                               selectedOption?.label || ""
                             );
-                            setCompanyId(selectedOption?.value || "");
                           }}
                           placeholder="Select a company"
                           isClearable
@@ -987,7 +982,7 @@ const EmployeeDetail = ({ onClose }) => {
                           inputId="department"
                           name="department"
                           isClearable
-                          options={companyDepartment.map((dept) => ({
+                          options={departmentDrop.map((dept) => ({
                             label: dept,
                             value: dept,
                           }))}

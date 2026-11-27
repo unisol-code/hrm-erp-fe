@@ -161,10 +161,10 @@ const EARNINGS_LABELS = {
   basicSalary: "BASIC",
   houseRentAllowance: "HRA",
   specialAllowance: "SPECIAL ALLOWANCE",
-  conveyanceAllowance: "CONVEYANCE ALLOWANCE",
-  dearnessAllowance: "DEARNESS ALLOWANCE",
+  conveyanceAllowance: "Conveyance Allowance",
+  dearnessAllowance: "Dearness Allowance",
   medicalAllowance: "MEDICAL ALLOWANCE",
-  joiningBonus: "JOINING BONUS",
+  joiningBonus: "Joining Bonus",
   LTAAllowance: "LTA",
   ltaAllowance: "LTA",
   statutoryBonus: "STATUTORY BONUS",
@@ -178,9 +178,9 @@ const EARNINGS_LABELS = {
 const DEDUCTION_LABELS = {
   pf: "STATUTORY P.F.",
   providentFund: "STATUTORY P.F.",
-  professionalTax: "PROFESSIONAL TAX",
-  incomeTaxDeduction: "INCOME TAX",
-  incomeTax: "INCOME TAX",
+  professionalTax: "Professional Tax",
+  incomeTaxDeduction: "Income Tax",
+  incomeTax: "Income Tax",
   monthlyLoanRepayment: "MONTHLY LOAN REPAYMENT",
   loanRepayment: "MONTHLY LOAN REPAYMENT",
   advanceLoanDeductions: "ADVANCE LOAN DEDUCTION",
@@ -190,21 +190,21 @@ const DEDUCTION_LABELS = {
 };
 
 const EARNINGS_FIXED_ROWS = [
-  { label: "BASIC", keys: ["basicSalary", "basic"] },
+  { label: "Basic Salary", keys: ["basicSalary", "basic"] },
   { label: "HRA", keys: ["houseRentAllowance", "hra"] },
-  { label: "SPECIAL ALLOWANCE", keys: ["specialAllowance"] },
+  { label: "Special Allowance", keys: ["specialAllowance"] },
   {
-    label: "LTMA OPERATING ALLOWANCE",
-    keys: ["ltmaOperatingAllowance", "LTMAOperatingAllowance", "ltma_operating_allowance"],
+    label: "Lease Operating Allowance",
+    keys: ["leaseOperatingAllowance", "LEASEOperatingAllowance", "lease_operating_allowance"],
   },
-  { label: "LTA TAXABLE", keys: ["ltaTaxable", "LTATaxable", "lta_taxable"] },
-  { label: "MEDICAL ALLOWANCE", keys: ["medicalAllowance"] },
+  // { label: "LTA TAXABLE", keys: ["ltaTaxable", "LTATaxable", "lta_taxable"] },
+  { label: "Medical Allowance", keys: ["medicalAllowance"] },
   {
-    label: "CAR OPERATING ALLOWANCE",
+    label: "Car Operating Allowance",
     keys: ["carOperatingAllowance", "car_operating_allowance"],
   },
   {
-    label: "ANNUAL PERFORMANCE LINKED VARIABLE PAY",
+    label: "Annual Performance Linked Variable Pay",
     keys: [
       "annualPerformanceLinkedVariablePay",
       "annualPerformanceLinkedVariablePayAmount",
@@ -215,45 +215,45 @@ const EARNINGS_FIXED_ROWS = [
 
 const DEDUCTION_FIXED_ROWS = [
   { label: "Statutory P.F.", keys: ["pf", "providentFund", "pfAmount"] },
-  { label: "PROFESSIONAL FEX", keys: ["professionalTax", "professionalFex"] },
-  { label: "INCOME TOX", keys: ["incomeTaxDeduction", "incomeTax"] },
-  { label: "STAFF FALE", keys: ["staffFale", "staffWelfare", "staffFaleAmount"] },
+  { label: "Professional Tax", keys: ["professionalTax", "Tax"] },
+  { label: "Income Tax", keys: ["incomeTaxDeduction", "incomeTax"] },
+  { label: "Staff Sale", keys: ["staffSale", "staffWelfare", "staffSaleAmount"] },
 ];
 
 const INCOME_TAX_ROWS = [
   { label: "Basic Pay", keys: ["basicPay", "basic_pay"] },
   { label: "House Rent Allowance", keys: ["houseRentAllowance", "house_rent_allowance"] },
-  { label: "Car Allowance Allowance", keys: ["carAllowance", "car_allowance"] },
+  { label: "Car Operating Allowance", keys: ["carOperatingAllowance", "car_operating_allowance"] },
   { label: "Special Allowance", keys: ["specialAllowance", "special_allowance"] },
-  { label: "Secon/Performance Bonus", keys: ["performanceBonus", "performance_bonus"] },
+  { label: "Bonus/Performance Bonus", keys: ["performanceBonus", "performance_bonus"] },
   { label: "Fl. Reg. Allow, etc.", keys: ["flRegAllow", "fl_reg_allow"] },
   { label: "Taxable LTA", keys: ["taxableLTA", "taxable_lta"] },
-  { label: "Other Othow/Payments", keys: ["otherPayments", "other_payments"] },
-  { label: "TOTAL PERQUISITS", keys: ["totalPerquisits", "total_perquisits"] },
+  { label: "Other Allow/Payments", keys: ["otherPayments", "other_payments"] },
+  { label: "Total Perquisits", keys: ["totalPerquisits", "total_perquisits"] },
   { label: "Awards in King", keys: ["awardsInKing", "awards_in_king"] },
-  { label: "Gross Income Active Exemption", keys: ["grossIncomeActiveExemption", "gross_income_active_exemption"] },
+  { label: "Gross Income Before Exemption", keys: ["grossIncomeActiveExemption", "gross_income_active_exemption"] },
   { label: "Les.: Conveyance Allowance Exemption", keys: ["conveyanceAllowanceExemption", "conveyance_allowance_exemption"] },
   { label: "Les. - Professional Tax", keys: ["professionalTax", "professional_tax"] },
-  { label: "Gross/ SIR/ Various Exemption", keys: ["grossSirVariousExemption", "gross_sir_various_exemption"] },
+  { label: "Award/ Gifts/ Vouchers Exemption", keys: ["awardGiftsVouchersExemption", "award_gifts_vouchers_exemption"] },
   { label: "Les.: Income From House Property", keys: ["incomeFromHouseProperty", "income_from_house_property"] },
   { label: "Ded-80C", keys: ["ded80C", "ded_80c"] },
   { label: "Ded-80C", keys: ["ded80C2", "ded_80c_2"] },
-  { label: "Total Deduction Unkereption 80", keys: ["totalDeduction80", "total_deduction_80"] },
+  { label: "Total Deduction UnderSection 80", keys: ["totalDeduction80", "total_deduction_80"] },
   { label: "Taxable Gross Total Income", keys: ["taxableGrossTotalIncome", "taxable_gross_total_income"] },
   { label: "Income Tax", keys: ["incomeTax", "income_tax"] },
-  { label: "Add Coss", keys: ["addCoss", "add_coss", "addCess"] },
+  { label: "Add Cess", keys: ["addCoss", "add_coss", "addCess"] },
   { label: "Total Tax Due", keys: ["totalTaxDue", "total_tax_due"] },
-  { label: "Tax Incensed from Income", keys: ["taxIncensedFromIncome", "tax_incensed_from_income"] },
-  { label: "Tax Payable in Possible Balance/Refotable", keys: ["taxPayable", "tax_payable"] },
+  { label: "Tax Deducted From Salary", keys: ["taxDeductedFromSalary", "tax_deducted_from_salary"] },
+  { label: "Tax Payable in Possible Balance/Refundable", keys: ["taxPayable", "tax_payable"] },
 ];
 
 const INVESTMENT_FIXED_ROWS = [
   {
-    label: "CONTRIBUTION TO PF",
+    label: "Contribution to PF",
     keys: ["contributionToPF", "contributionPf", "contribution_to_pf"],
   },
   {
-    label: "REPAYMENT OF PRINCIPAL AMT - HSG LOAN",
+    label: "Repayment of Principal Amount of HSG Loan",
     keys: [
       "repaymentOfPrincipalAmtHsgLoan",
       "repaymentOfPrincipalHsgLoan",
@@ -1018,12 +1018,12 @@ const GeneratePaySlip = () => {
                     alt="logo"
                     crossOrigin="anonymous"
                   />
-                  <div
+                  {/* <div
                     className="text-[11px] font-semibold mt-1"
                     style={{ color: "#a08b4b", fontFamily: "Georgia, serif" }}
                   >
                     {displayValue(companyName)}
-                  </div>
+                  </div> */}
                 </div>
                 <div className="text-right text-[9px] max-w-[40%] leading-tight">
                   {displayValue(companyAddress)}
@@ -1201,13 +1201,13 @@ const GeneratePaySlip = () => {
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td className="border-t border-r border-black px-2 py-[2px] font-semibold">
+                        <td className="border-t border-r border-b border-black px-2 py-[2px] font-semibold">
                           Total Deductions
                         </td>
-                        <td className="border-t border-r border-black px-2 py-[2px] text-right font-semibold">
+                        <td className="border-t border-r border-b border-black px-2 py-[2px] text-right font-semibold">
                           {formatAmount(totalDeductions)}
                         </td>
-                        <td className="border-t border-black px-2 py-[2px]"></td>
+                        <td className="border-t border-b border-black px-2 py-[2px]"></td>
                       </tr>
                     </tfoot>
                   </table>
@@ -1239,7 +1239,7 @@ const GeneratePaySlip = () => {
                     <thead>
                       <tr>
                         <th className="border-b border-r border-black px-2 py-[2px] text-left">
-                          For Yr year {displayValue(reimbursementYear)}
+                          For The year {displayValue(`${monthYear.year}`)}
                         </th>
                         <th className="border-b border-r border-black px-2 py-[2px] text-left">
                           Particular

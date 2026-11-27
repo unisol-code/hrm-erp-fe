@@ -126,12 +126,12 @@ const buildDoc = (data, k) => {
       logoH
     );
   }
-  doc.setFont("times", "bold");
-  doc.setFontSize(9 * k);
-  doc.setTextColor(...GOLD);
-  doc.text(String(data.companyName), pageW / 2, y + logoH + 3.6 * k, {
-    align: "center",
-  });
+  // doc.setFont("times", "bold");
+  // doc.setFontSize(9 * k);
+  // doc.setTextColor(...GOLD);
+  // doc.text(String(data.companyName), pageW / 2, y + logoH + 3.6 * k, {
+  //   align: "center",
+  // });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.5 * k);

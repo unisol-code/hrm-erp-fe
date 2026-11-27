@@ -116,6 +116,26 @@ const CoreHR = () => {
   const [selectedDesignation, setSelectDesignation] = useState(null);
   const { theme } = useTheme();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+
+  // Handle department change - update both formik and local state
+  const handleDepartmentChange = (event) => {
+    const value = event.target?.value || event?.value || "";
+    formik.setFieldValue("department", value);
+    setSelectedDepartment(value);
+    // Clear designation when department changes
+    formik.setFieldValue("designation", "");
+    setSelectDesignation(null);
+    setSelectedEmployeeId("");
+  };
+
+  // Handle designation change - update both formik and local state
+  const handleDesignationChange = (event) => {
+    const value = event.target?.value || event?.value || "";
+    formik.setFieldValue("designation", value);
+    setSelectDesignation(value);
+    setSelectedEmployeeId("");
+  };
+
   const navigate = useNavigate();
 
   // 👇 ref + highlight state for "Employee List"
@@ -372,10 +392,7 @@ const CoreHR = () => {
                     formik.resetForm();
                     setSelectedEmployeeId("");
                   }
-                  formik.setFieldValue("department", value);
-                  handleDepartmentChange({
-                    target: { name: "department", value },
-                  });
+                  handleDepartmentChange({ value });
                 }}
                 onBlur={() => formik.setFieldTouched("department", true)}
                 placeholder="Select Department"
@@ -424,10 +441,7 @@ const CoreHR = () => {
                     formik.setFieldValue("empId", "");
                     setSelectedEmployeeId("");
                   }
-                  formik.setFieldValue("designation", value);
-                  handleDesignationChange({
-                    target: { name: "designation", value },
-                  });
+                  handleDesignationChange({ value });
                 }}
                 onBlur={() => formik.setFieldTouched("designation", true)}
                 placeholder="Select Designation"
@@ -853,11 +867,6 @@ const CoreHR = () => {
                               />
                             </IconButton>
                           </div>
-                          {empDetails && (
-                            <EmployeeDetail
-                              onClose={() => setEmpDetails(false)}
-                            />
-                          )}
                         </td>
                       </tr>
                     ))
@@ -974,6 +983,10 @@ const CoreHR = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {empDetails && (
+        <EmployeeDetail onClose={() => setEmpDetails(false)} />
+      )}
     </div>
   );
 };
